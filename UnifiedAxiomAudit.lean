@@ -6,6 +6,9 @@ that the declarations below have already been accepted by Lean. -/
 #print axioms ThreeUnitSquaresInCircle.Unified.safe_openRay_of_disjoint
 #print axioms ThreeUnitSquaresInCircle.Unified.open_arc_budget
 #print axioms ThreeUnitSquaresInCircle.Unified.three_exterior_reduction
+#print axioms ThreeUnitSquaresInCircle.Unified.three_containing_impossible
+#print axioms ThreeUnitSquaresInCircle.Unified.three_polygon_strict_impossible
+#print axioms ThreeUnitSquaresInCircle.ThreeArc.optimality
 #print axioms ThreeUnitSquaresInCircle.Unified.three_optimality
 #print axioms ThreeUnitSquaresInCircle.Unified.four_optimality
 #print axioms ThreeUnitSquaresInCircle.Unified.five_optimality

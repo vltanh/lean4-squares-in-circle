@@ -14,18 +14,18 @@ New declarations live in `ThreeUnitSquaresInCircle.Unified`.
 
 | Result | What this extension supplies |
 | --- | --- |
-| Three-square exact lower bound | An adapter to the existing compiled `Cert.optimality` theorem. |
-| Independent three-square arc proof | Exterior occupied-arc theorem and exterior-only contradiction; the containing-square compensation step is **not formalized here**. |
+| Three-square exact lower bound | A standalone proposed occupied-arc proof in `ThreeArc.lean`; it no longer calls `Cert.optimality`. |
+| Independent three-square arc proof | Exterior and containing-square alternatives now have explicit proposed proof bodies. See `THREE_ARC_COMPLETION.md`. |
 | Four-square lower bound | Proposed end-to-end arc proof body, with strict diamond inequalities and a slightly shrunken auxiliary circle. |
 | Five-square lower bound | Proposed end-to-end arc proof body, with dodecagon inequalities and auxiliary radius `5/6`. |
 | Four- and five-square attainment | Explicit block and plus constructions in the original square model. |
-| Unified endpoint | `optimality_and_attainment_345`; its n=3 branch still uses the original certificate proof. |
+| Unified endpoint | Optional `optimality_and_attainment_345`; the n=3 branch uses the standalone arc theorem. Each case may be imported separately. |
 
 Every supplied theorem has an explicit proof body; no `sorry`, `admit`, custom
 `axiom`, or `native_decide` is used. **This does not establish that the source
 elaborates.** Tactic failures, library-interface corrections, or mathematical
-errors may still be found. In particular, do not describe this as a completed
-independent arc formalization of all three cases.
+errors may still be found. In particular, do not describe uncompiled scripts as a kernel-verified
+formalization.
 
 ## Public statements
 
@@ -115,28 +115,18 @@ distance `1/sqrt(2)` from the tested point. That disk contains a 72-degree arc
 on the auxiliary circle. The centered-square exception is excluded under
 strict octagon inequalities using the general separating functional.
 
-## Exact remaining n=3 obligation
+## Standalone n=3 completion
 
-`ThreeExterior.lean` proves an occupied arc longer than 120 degrees for every
-exterior square under the strict contact polygon. It also proves that a
-hypothetical strict polygon packing must contain the tested point inside one
-square. Its truncated-arc bound uses a sine-addition inequality; no derivative
-maximization is needed.
+The independent containing-square argument is now supplied in the new
+`ArcMetric`, `ThreeCoordinates`, `ThreeScalar`, `ThreeCaps`, and
+`ThreeContaining` modules. `ThreeUnitSquaresInCircle.ThreeArc` is its separate
+entry point. The combined API no longer uses `Cert.optimality` as a backstop.
 
-The following independent geometric step remains to be formalized:
-
-> If three disjoint unit squares all satisfy the strict contact 16-gon and
-> the tested point lies inside one square, the arc deficit of that square
-> either forces an excess arc from a neighbor, or forces the two exterior
-> squares into the near-axial configuration in which all four separating axes
-> overlap.
-
-The scalar final projection margins are already in `three_projection_margins`.
-Still needed are the containing-square arc representation, its deficit bound,
-the compensation dichotomy, transport of the resulting center/angle bounds,
-and the geometric overlap conclusion. The existing n=3 certificate theorem
-is a backstop for the public optimum endpoint, **not a proof of this stronger
-polygon statement**.
+The proof uses three actual contained arc witnesses, a three-point circular
+metric inequality, strict-tangent compensation, and an explicit Cartesian
+intersection point for the two surviving exterior caps. No equality or
+uniqueness theorem is claimed. See `THREE_ARC_COMPLETION.md` for the dependency
+map and the precise uncompiled status.
 
 ## Suggested checking order
 
@@ -145,7 +135,8 @@ No commands below were executed during preparation.
 Use the repository's existing dependency setup, then elaborate modules in this
 order: Basic, Tangents, Support, AngularBudget, Charts, ElementaryTrig,
 RectangleArcs, FiveScalar, RadialDisk, Regions, Five, FourScalar, FourRay, Four,
-Constructions, ThreeExterior, Main.
+Constructions, ThreeExterior, ArcMetric, ThreeCoordinates, ThreeScalar,
+ThreeCaps, ThreeContaining, the separate ThreeArc endpoint, and Main.
 
 The optional entry point is `ThreeUnitSquaresInCircle/Unified.lean`. Once its
 imports elaborate, check `UnifiedSanityChecks.lean` and `UnifiedAxiomAudit.lean`.

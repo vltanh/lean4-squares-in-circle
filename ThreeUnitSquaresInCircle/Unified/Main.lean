@@ -1,4 +1,4 @@
-import ThreeUnitSquaresInCircle.Main
+import ThreeUnitSquaresInCircle.ThreeArc
 import ThreeUnitSquaresInCircle.Unified.Four
 import ThreeUnitSquaresInCircle.Unified.Five
 import ThreeUnitSquaresInCircle.Unified.Constructions
@@ -8,18 +8,18 @@ import ThreeUnitSquaresInCircle.Unified.ThreeExterior
 # Shared interface for three, four and five unit squares
 
 Status: uncompiled extension draft, targeting the repository's pinned Lean and
-mathlib versions.  The three-square endpoint below deliberately reuses the
-existing compiled certificate theorem; it is NOT claimed to have been replaced
-by an independent arc proof.  The four- and five-square endpoints have proposed
-end-to-end arc proof bodies in this extension.  See `docs/UNIFIED_ARCS.md`.
+mathlib versions.  The three-square endpoint now uses the standalone occupied-arc development,
+including the containing-square compensation case. The three cases also have
+separate endpoint modules; this combined interface is optional. See
+`docs/THREE_ARC_COMPLETION.md`.
 -/
 noncomputable section
 namespace ThreeUnitSquaresInCircle.Unified
 
-/-- Preserve the checked three-square theorem through a definitionally identical API. -/
+/-- Adapter from the standalone three-square arc theorem to the shared API. -/
 theorem three_optimality (S : Fin 3 → UnitSquare) (o : Point) (R : ℝ)
     (hp : PackingN S o R) : optimalRadius ≤ R :=
-  Cert.optimality S o R hp
+  ThreeArc.optimality S o R hp
 
 def candidateRadius (n : ℕ) : ℝ :=
   if n=3 then optimalRadius else if n=4 then Real.sqrt 2 else
