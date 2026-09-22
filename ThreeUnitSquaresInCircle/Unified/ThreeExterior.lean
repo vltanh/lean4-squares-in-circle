@@ -4,10 +4,10 @@ import ThreeUnitSquaresInCircle.Unified.RectangleArcs
 # Three-square exterior arcs
 
 This is the part of the independent three-square arc proof supplied in this
-extension.  It does not invoke the original certificate theorem.  It proves
+extension. It does not invoke the original certificate theorem. It proves
 that a hypothetical strict contact-polygon packing must have the tested point
-inside one square.  The containing-square compensation step is recorded as a
-remaining obligation in `docs/UNIFIED_ARCS.md`, not asserted here.
+inside one square. The other alternative is developed in `ThreeContaining.lean`;
+`ThreeArc.lean` is the independent, standalone optimality entry point.
 -/
 noncomputable section
 open Set
