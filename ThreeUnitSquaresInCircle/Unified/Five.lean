@@ -8,7 +8,7 @@ namespace ThreeUnitSquaresInCircle.Unified
 
 lemma fin_five_other (i : Fin 5) : ∃ j : Fin 5, i ≠ j := by
   by_cases hi : i=0
-  · exact ⟨1,by simpa [hi]⟩
+  · exact ⟨1,by simp [hi]⟩
   · exact ⟨0,hi⟩
 
 /-- The strict tangent relaxation itself is impossible; no circle is assumed here. -/
@@ -26,15 +26,15 @@ theorem five_polygon_strict_impossible (S : Fin 5 → UnitSquare) (o : Point)
       have hne := center_ne_of_strict_octagons (S i) (S j) o
         (hd i j hij) (hp i).1 (hp j).1
       obtain ⟨A,hA⟩ := five_containing_arc (S i) o hi hne
-      simp only [rayRegions,if_pos hi]
+      rw [rayRegions_pos hi]
       exact ⟨A,by rw [hA],fun hn => False.elim (hn hi)⟩
     · obtain ⟨A,hA⟩ := five_exterior_arc (S i) o (hweak i) hi
-      simp only [rayRegions,if_neg hi]
+      rw [rayRegions_neg hi]
       exact ⟨A,hA.le,fun _ => hA⟩
   choose A hA hstrict using hext
   have hout : ∃ i : Fin 5, ¬ openSquare (S i) o := by
     by_contra hn
-    push_neg at hn
+    push Not at hn
     exact hd 0 1 (by decide) o ⟨hn 0,hn 1⟩
   apply uniform_arc_excess (n := 5) (by decide) A
     (rayRegions_disjoint hd (fun i => (hweak i).1)) hA

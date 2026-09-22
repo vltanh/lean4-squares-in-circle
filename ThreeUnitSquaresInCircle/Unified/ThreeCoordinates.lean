@@ -123,11 +123,11 @@ lemma inscribed_disk_mem (S : UnitSquare) (o : Point) {a p : ℝ}
     dsimp [localY,frameY,sub]; ring
   refine ⟨?_,?_⟩
   · rw [heX]
-    have hb := abs_add (frameX S (sub z o)) (localX S o)
+    have hb := abs_add_le (frameX S (sub z o)) (localX S o)
     change |localX S o| ≤ a at hx
     linarith
   · rw [heY]
-    have hb := abs_add (frameY S (sub z o)) (localY S o)
+    have hb := abs_add_le (frameY S (sub z o)) (localY S o)
     change |localY S o| ≤ a at hy
     linarith
 
@@ -148,10 +148,10 @@ def symmetricChartArc {S : UnitSquare} {o : Point} (C : SquareChart S o)
     have he : θ=C.phase+(t:Direction) := direction_offset _ _
     cases hr : C.reversed
     · have h := (C.membership r t).mpr (hm t (abs_lt.mp ht))
-      simpa only [chartAngle,hr,Bool.false_eq_true,ite_false,he] using h
+      simpa only [chartAngle,hr,Bool.false_eq_true,ite_false,he,Set.mem_ofPred_eq] using h
     · have h := (C.membership r (-t)).mpr (hm (-t)
         ⟨by linarith [(abs_lt.mp ht).2],by linarith [(abs_lt.mp ht).1]⟩)
-      simpa only [chartAngle,hr,ite_true,neg_neg,he] using h
+      simpa only [chartAngle,hr,ite_true,neg_neg,he,Set.mem_ofPred_eq] using h
 
 lemma near_axis_angles {φ ψ : Direction}
     (hlo : 2*Real.pi/3 ≤ dist φ ψ)
@@ -170,11 +170,11 @@ lemma near_axis_angles {φ ψ : Direction}
     norm_num
   have hcle : Real.cos γ ≤ -1/2 := by
     rcases eq_or_lt_of_le (hlo.trans_eq hγ.symm) with he | he
-    · rw [← he,hcbase]
+    · rw [← he,hcbase]; norm_num
     · have hh := Real.cos_lt_cos_of_nonneg_of_le_pi
         (show 0 ≤ 2*Real.pi/3 by positivity) hγpi he
       rw [hcbase] at hh
-      exact hh.le
+      linarith
   let ε := γ-2*Real.pi/3
   have hε0 : 0 ≤ ε := by dsimp [ε]; linarith
   have hε1 : ε < 1/12 := by dsimp [ε]; linarith

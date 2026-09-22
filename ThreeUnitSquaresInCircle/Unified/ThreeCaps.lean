@@ -170,9 +170,9 @@ lemma three_gap_from_containing {S T : UnitSquare} {o : Point}
     refine ⟨abs_lt.mpr ⟨by linarith,by linarith⟩,?_⟩
     simpa only [zero_sub,abs_neg,D.abs_signedB] using hdb
   have hα : alpha S o ≤ C.a := by
-    rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩ <;> rw [ha,hb] at * <;> linarith
+    rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩ <;> linarith
   have hβ : beta S o ≤ C.a := by
-    rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩ <;> rw [ha,hb] at * <;> linarith
+    rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩ <;> linarith
   have hzS : openSquare S z := by
     apply inscribed_disk_mem S o (a := C.a) (p := 1/2-C.a)
       (by linarith [hc.1]) (by ring) hα hβ

@@ -10,6 +10,14 @@ def rayRegions {n : ℕ} (S : Fin n → UnitSquare) (o : Point) (i : Fin n) : Se
     classical
     exact if openSquare (S i) o then openRay (S i) o else {p | openSquare (S i) p}
 
+lemma rayRegions_pos {n : ℕ} {S : Fin n → UnitSquare} {o : Point} {i : Fin n}
+    (h : openSquare (S i) o) : rayRegions S o i = openRay (S i) o :=
+  ite_eq_left h
+
+lemma rayRegions_neg {n : ℕ} {S : Fin n → UnitSquare} {o : Point} {i : Fin n}
+    (h : ¬ openSquare (S i) o) : rayRegions S o i = {p | openSquare (S i) p} :=
+  ite_eq_right h
+
 lemma rayRegions_disjoint {n : ℕ} {S : Fin n → UnitSquare} {o : Point}
     (hd : InteriorDisjoint S) (hp : ∀ i, P8 (alpha (S i) o) (beta (S i) o)) :
     Pairwise (fun i j => Disjoint (rayRegions S o i) (rayRegions S o j)) := by

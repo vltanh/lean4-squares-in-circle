@@ -36,13 +36,13 @@ lemma three_asin_increment_mono {P u : ℝ}
       by linarith [ht.1],by linarith [ht.2]⟩
   have hder (t : ℝ) (ht : t ∈ Icc P u) : HasDerivAt f (df t) t := by
     obtain ⟨ht0,ht1,hg0,hg1⟩ := htdata t ht
-    have hg : HasDerivAt (fun z : ℝ => 1/2+(16/13)*z) (16/13) t := by
-      simpa only [id_eq,zero_add,mul_one] using
-        (hasDerivAt_const t (1/2 : ℝ)).add ((hasDerivAt_id t).const_mul (16/13))
+    have hg : HasDerivAt (fun z : ℝ => 1/2+(16/13)*z) (16/13) t :=
+      (((hasDerivAt_id' t).const_mul (16/13 : ℝ)).const_add (1/2 : ℝ)).congr_deriv
+        (by ring)
     have hd := ((Real.hasDerivAt_arcsin (by linarith : 1/2+(16/13)*t ≠ -1)
       (by linarith : 1/2+(16/13)*t ≠ 1)).comp t hg).sub
         (Real.hasDerivAt_arcsin (by linarith : t ≠ -1) (by linarith : t ≠ 1))
-    simpa only [f,df] using hd
+    exact hd
   have hdf (t : ℝ) (ht : t ∈ Icc P u) : 0 ≤ df t := by
     obtain ⟨ht0,ht1,hg0,hg1⟩ := htdata t ht
     have hs0 : 0 < Real.sqrt (1-(1/2+(16/13)*t)^2) :=
@@ -88,8 +88,8 @@ lemma three_compensation {P Q u v : ℝ}
 
 /-- The deficit bounds use the two first contact tangents, not numerical trig. -/
 lemma three_deficit_bounds {a b : ℝ}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (hba : b ≤ a)
-    (ha1 : a < 1/2) (hb1 : b < 1/2) (hp : P3Strict a b)
+    (_ha : 0 ≤ a) (_hb : 0 ≤ b) (hba : b ≤ a)
+    (ha1 : a < 1/2) (_hb1 : b < 1/2) (hp : P3Strict a b)
     (hlen : Real.pi/2+Real.arcsin ((1/2-a)/auxThree)+
       Real.arcsin ((1/2-b)/auxThree) < 2*Real.pi/3) :
     let P := (1/2-a)/auxThree

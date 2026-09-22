@@ -17,20 +17,18 @@ lemma five_arcsin_sum {x y : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1/2)
     (hy0 : -1/2 ≤ y) (hy1 : y ≤ 1/2)
     (hsum : x+y ≤ 237/1000) (hside : 3*x+y ≤ 1) :
     Real.arcsin (x/auxFive)+Real.arcsin (y/auxFive) < Real.pi/10 := by
-  have hFx := arcsin_le_cubic (x := x/auxFive)
-    (by dsimp [auxFive]; positivity) (by dsimp [auxFive]; linarith)
-  have hrat : Real.arcsin (x/auxFive)+Real.arcsin (y/auxFive) < 313/1000 := by
+  have ex : x/auxFive = 6/5*x := by rw [auxFive]; ring
+  have ey : y/auxFive = 6/5*y := by rw [auxFive]; ring
+  rw [ex,ey]
+  have hFx := arcsin_le_cubic (x := 6/5*x) (by positivity) (by linarith)
+  have hrat : Real.arcsin (6/5*x)+Real.arcsin (6/5*y) < 313/1000 := by
     by_cases hy : 0 ≤ y
-    · have hFy := arcsin_le_cubic (x := y/auxFive)
-        (by dsimp [auxFive]; positivity) (by dsimp [auxFive]; linarith)
+    · have hFy := arcsin_le_cubic (x := 6/5*y) (by positivity) (by linarith)
       have hcross := mul_nonneg (mul_nonneg hx0 hy) (add_nonneg hx0 hy)
       have hcubes : x^3+y^3 ≤ (x+y)^3 := by nlinarith
       have hsumcube : (x+y)^3 ≤ (237/1000:ℝ)^3 := by gcongr
-      norm_num [auxFive,div_eq_mul_inv] at hFx hFy
       nlinarith
-    · have hFy := arcsin_le_self_of_nonpos (x := y/auxFive)
-        (by dsimp [auxFive]; linarith) (by dsimp [auxFive]; linarith)
-      norm_num [auxFive,div_eq_mul_inv] at hFx hFy
+    · have hFy := arcsin_le_self_of_nonpos (x := 6/5*y) (by linarith) (by linarith)
       by_cases hxq : x ≤ 23/60
       · have hc : x^3 ≤ (23/60:ℝ)^3 := by gcongr
         nlinarith
@@ -67,8 +65,10 @@ lemma five_rectangle_length {a b : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b)
       dsimp [Real.arccos] at hfirst
       linarith
     · have hbhalf : b < 1/2 := by dsimp [auxFive] at htop; linarith
+      have htop' : b+1/2 < 5/6 := by dsimp [auxFive] at htop; linarith
       have hu : (b+1/2)/auxFive ∈ Icc (0:ℝ) 1 := by
-        dsimp [auxFive]; constructor <;> linarith
+        rw [show (b+1/2)/auxFive = 6/5*(b+1/2) by rw [auxFive]; ring]
+        constructor <;> linarith
       have hv : (1/2-b)/auxFive ∈ Icc (0:ℝ) 1 := by
         dsimp [auxFive]; constructor <;> linarith
       have hh := arcsin_sum_gt_of_sin_lt hu hv

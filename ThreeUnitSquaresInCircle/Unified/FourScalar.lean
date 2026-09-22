@@ -73,7 +73,7 @@ lemma common_four_radius {n : ℕ} (a b : Fin n → ℝ)
 
 lemma four_rectangle_length {a b r : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b)
     (hs : a+b < 1) (hr0 : 1/2 < r) (hr1 : r < halfDiagonal)
-    (hcorner : (a-1/2)^2+(b-1/2)^2 < r^2) :
+    (_hcorner : (a-1/2)^2+(b-1/2)^2 < r^2) :
     Real.pi/2 < rectangleHi a b r-rectangleLo b r := by
   have hr : 0 < r := by linarith
   have hr2 : r^2 < 1/2 := by nlinarith [halfDiagonal_sq,halfDiagonal_pos]

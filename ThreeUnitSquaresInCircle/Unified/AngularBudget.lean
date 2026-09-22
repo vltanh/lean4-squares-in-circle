@@ -52,8 +52,10 @@ structure OpenArc (o : Point) (r : ℝ) (U : Set Point) where
   atMostPi : halfWidth ≤ Real.pi
   inside : ∀ θ, dist θ center < halfWidth → circlePoint o r θ ∈ U
 
-/-- The measure-theoretic core, independent of squares and their orientations. -/
-theorem closed_arc_budget {n : ℕ} (c : Fin n → Direction) (w : Fin n → ℝ)
+/-- The measure-theoretic core, independent of squares and their orientations.
+It is stated on `AddCircle (2*pi)`, which carries the Haar measure; `Direction`
+is definitionally the same circle with the same metric. -/
+theorem closed_arc_budget {n : ℕ} (c : Fin n → AddCircle (2*Real.pi)) (w : Fin n → ℝ)
     (hw : ∀ i, 0 ≤ w i ∧ w i ≤ Real.pi)
     (hd : Pairwise (fun i j => Disjoint
       (Metric.closedBall (c i) (w i)) (Metric.closedBall (c j) (w j)))) :
@@ -63,17 +65,18 @@ theorem closed_arc_budget {n : ℕ} (c : Fin n → Direction) (w : Fin n → ℝ
       volume (Metric.closedBall (c i) (w i)) = ENNReal.ofReal (2*w i) := by
     rw [AddCircle.volume_closedBall (2*Real.pi)]
     rw [min_eq_right (by linarith [(hw i).2])]
-  have hd' : (Finset.univ : Finset (Fin n)).toSet.PairwiseDisjoint
+  have hd' : ((Finset.univ : Finset (Fin n)) : Set (Fin n)).PairwiseDisjoint
       (fun i => Metric.closedBall (c i) (w i)) := by
-    intro i hi j hj hij
+    intro i _ j _ hij
     exact hd hij
-  have hm := measure_biUnion_finset (μ := (volume : Measure Direction)) hd'
-    (fun i hi => measurableSet_closedBall)
+  have hm := measure_biUnion_finset (μ := (volume : Measure (AddCircle (2*Real.pi)))) hd'
+    (fun i _ => measurableSet_closedBall)
   have hmu : (∑ i, ENNReal.ofReal (2*w i)) ≤ ENNReal.ofReal (2*Real.pi) := by
     calc
-      _ = volume (⋃ i : Fin n, Metric.closedBall (c i) (w i)) := by
-        simpa only [Finset.mem_univ,iUnion_true,hvol] using hm.symm
-      _ ≤ volume (univ : Set Direction) := measure_mono (subset_univ _)
+      _ = volume (⋃ i ∈ (Finset.univ : Finset (Fin n)), Metric.closedBall (c i) (w i)) := by
+        rw [hm]
+        exact Finset.sum_congr rfl (fun i _ => (hvol i).symm)
+      _ ≤ volume (univ : Set (AddCircle (2*Real.pi))) := measure_mono (subset_univ _)
       _ = ENNReal.ofReal (2*Real.pi) := AddCircle.measure_univ (2*Real.pi)
   have hreal := ENNReal.toReal_mono ENNReal.ofReal_ne_top hmu
   rw [ENNReal.toReal_sum (fun _ _ => ENNReal.ofReal_ne_top)] at hreal
@@ -91,21 +94,24 @@ theorem open_arc_budget {n : ℕ} {o : Point} {r : ℝ} {U : Fin n → Set Point
   intro t ht0 ht1
   have hw (i : Fin n) : 0 ≤ t*(A i).halfWidth ∧ t*(A i).halfWidth ≤ Real.pi := by
     constructor
-    · positivity
+    · exact mul_nonneg ht0 (A i).positive.le
     · have hh := mul_lt_mul_of_pos_right ht1 (A i).positive
       nlinarith [(A i).atMostPi]
+  let c : Fin n → AddCircle (2*Real.pi) := fun i => (A i).center
   have hdisj : Pairwise (fun i j => Disjoint
-      (Metric.closedBall (A i).center (t*(A i).halfWidth))
-      (Metric.closedBall (A j).center (t*(A j).halfWidth))) := by
+      (Metric.closedBall (c i) (t*(A i).halfWidth))
+      (Metric.closedBall (c j) (t*(A j).halfWidth))) := by
     intro i j hij
     rw [Set.disjoint_left]
     intro θ hi hj
+    have hi' : dist θ (c i) ≤ t*(A i).halfWidth := hi
+    have hj' : dist θ (c j) ≤ t*(A j).halfWidth := hj
     apply Set.disjoint_left.mp (hd hij) ((A i).inside θ ?_) ((A j).inside θ ?_)
     · have h := mul_lt_mul_of_pos_right ht1 (A i).positive
-      exact lt_of_le_of_lt hi (by linarith)
+      exact lt_of_le_of_lt hi' (by linarith)
     · have h := mul_lt_mul_of_pos_right ht1 (A j).positive
-      exact lt_of_le_of_lt hj (by linarith)
-  simpa only [Finset.mul_sum] using closed_arc_budget (fun i => (A i).center)
+      exact lt_of_le_of_lt hj' (by linarith)
+  simpa only [Finset.mul_sum] using closed_arc_budget c
     (fun i => t*(A i).halfWidth) hw hdisj
 
 lemma arc_excess_impossible {n : ℕ} {o : Point} {r : ℝ} {U : Fin n → Set Point}
@@ -123,7 +129,8 @@ theorem uniform_arc_excess {n : ℕ} (hn : 0 < n) {o : Point} {r : ℝ}
   have hsum := Finset.sum_lt_sum (s := Finset.univ)
     (fun i _ => hle i) (by obtain ⟨i,hi⟩ := hlt; exact ⟨i,Finset.mem_univ _,hi⟩)
   have hconst : (∑ _i : Fin n, Real.pi/(n:ℝ)) = Real.pi := by
-    simp [nsmul_eq_mul,hnR]
+    rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
+    field_simp
   rw [hconst] at hsum
   exact arc_excess_impossible A hd hsum
 
