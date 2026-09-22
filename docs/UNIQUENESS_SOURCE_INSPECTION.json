@@ -1,0 +1,168 @@
+{
+  "base_commit": "d7fa1f3c95e92ed6396d8c08d111ecf2427b66e3",
+  "compiled": false,
+  "lean_or_lake_executed": false,
+  "scope": "Text inspection only; not parsing, elaboration, kernel verification, or a mathematical proof audit.",
+  "lean_files": 13,
+  "lean_lines": 1670,
+  "selected_markers": 0,
+  "all_scanned_delimiters_balanced": true,
+  "new_import_cycles": [],
+  "unknown_local_imports": [],
+  "base_import_validation": "Paths compared with the fetched main tree at the pinned base commit. Existing modules were not recompiled.",
+  "files": [
+    {
+      "path": "ThreeUnitSquaresInCircle/FiveUniqueness.lean",
+      "lines": 23,
+      "sha256": "a0f25c1fef1608020f7e62bc42f01aa0905334c09b47b6d603aa509b2e3215ad",
+      "git_blob_sha1": "a44bd2df13655853c3ea0cf3ddcdc561c76b0e98",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Five"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/FourUniqueness.lean",
+      "lines": 18,
+      "sha256": "c7156133a952628b47969acdcc9a75b111fc8d4b8527c77721011c42dd9e3007",
+      "git_blob_sha1": "2853c2e0fc91d9e565b979bf562020294153953d",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Four"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/ThreeUniqueness.lean",
+      "lines": 19,
+      "sha256": "6079da498cd90ba99b931ce252e71f83290d2cad08ec74aabdc9576e8c1fc144",
+      "git_blob_sha1": "d727302b2bd28a497eaa3d3b1d8525eee4412185",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Three"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/Angles.lean",
+      "lines": 172,
+      "sha256": "a3408baa8baa4cf278db1b62f410698bc5c0dfe853d231aff5b7cf3823e9d77a",
+      "git_blob_sha1": "592103b564a3a7bafe5f7fa9961a835139d0f59b",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Basic"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/Basic.lean",
+      "lines": 207,
+      "sha256": "002d9c6afdd4da746fb0730601e14fef083a9f1a23ec0dace18089d5ec9bb152",
+      "git_blob_sha1": "a2107fce201a6beae885cd8a15a99adbe1f2e8ea",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.ThreeCoordinates"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/Contacts.lean",
+      "lines": 185,
+      "sha256": "3f2af99b3e69429acc489d449a365491e1f1b5ddcb64dcd114a5cd4f6362cacc",
+      "git_blob_sha1": "609a7858a626579f6c1adb6c87db59b0470063fb",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Basic",
+        "ThreeUnitSquaresInCircle.Unified.RadialDisk"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/Five.lean",
+      "lines": 101,
+      "sha256": "9f7ab641e6bb5ae478d99ea93e37e8b47689c52c6510e878dd180b0472373d90",
+      "git_blob_sha1": "24c7602faa115bc83b1891c67ab9498d2081bb75",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Contacts",
+        "ThreeUnitSquaresInCircle.Unified.Five"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/Four.lean",
+      "lines": 232,
+      "sha256": "2f05a8c9e2301f3fa2470c82bb5dd3f85ddbe7dd51c8e1001382147cf267f344",
+      "git_blob_sha1": "8190a26e7c22e35f556b24ee6d897d37da56fdef",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Angles",
+        "ThreeUnitSquaresInCircle.Unified.Four"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/Three.lean",
+      "lines": 114,
+      "sha256": "96e9b6adf47baf7b53dd6fd7f9d78c0a1f6323a070542068b6fbf3f5853d8ce4",
+      "git_blob_sha1": "3fc6445cf4a80cba2cffb375e036e6f8733eb0a9",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.ThreeReconstruction",
+        "ThreeUnitSquaresInCircle.ThreeArc"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/ThreeClosed.lean",
+      "lines": 335,
+      "sha256": "9f4367f9af5072e8fa0db03844bfa35662133bed8aeab400f4952a665a6cc3d8",
+      "git_blob_sha1": "af9d32a84f2aa81fd7dae1b7f5d979cac3004778",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.Angles",
+        "ThreeUnitSquaresInCircle.Unified.ThreeContaining"
+      ]
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Uniqueness/ThreeReconstruction.lean",
+      "lines": 229,
+      "sha256": "6a574dd2420361e78aa4f7bd202b905651303d257640307bd645c3b77ef8bc85",
+      "git_blob_sha1": "5cfcfd95ae4965392bcc86b04bd9a5384e4adafc",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.Uniqueness.ThreeClosed"
+      ]
+    },
+    {
+      "path": "UniquenessAxiomAudit.lean",
+      "lines": 12,
+      "sha256": "804ca04cfa20195b9d50e6a6981156b9bed3a6a84c8688ded9fa6ee9d4a38510",
+      "git_blob_sha1": "296877ea2bf6ae61164b6ed902f02abc086cf865",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.ThreeUniqueness",
+        "ThreeUnitSquaresInCircle.FourUniqueness",
+        "ThreeUnitSquaresInCircle.FiveUniqueness"
+      ]
+    },
+    {
+      "path": "UniquenessSanityChecks.lean",
+      "lines": 23,
+      "sha256": "2245429180f2b235d51977799006ea2986fe70ddcc9b5d2c373612b9dc93e4e3",
+      "git_blob_sha1": "d3039d9c522ded395bfa4e51b48df923dd477702",
+      "selected_admission_or_trust_markers": [],
+      "delimiters_balanced": true,
+      "imports": [
+        "ThreeUnitSquaresInCircle.ThreeUniqueness",
+        "ThreeUnitSquaresInCircle.FourUniqueness",
+        "ThreeUnitSquaresInCircle.FiveUniqueness",
+        "ThreeUnitSquaresInCircle.Unified.Constructions"
+      ]
+    }
+  ]
+}
