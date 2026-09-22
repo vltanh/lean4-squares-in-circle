@@ -1,7 +1,8 @@
 import ThreeUnitSquaresInCircle.Unified.Basic
 import ThreeUnitSquaresInCircle.Construction
 
-/-! Attainment for the block and plus packings in the unchanged unit-square model. -/
+/-! Attainment for four and five squares: the 2×2 block and the plus, in the
+unit-square model of `Geometry.lean`. -/
 noncomputable section
 namespace ThreeUnitSquaresInCircle.Unified
 

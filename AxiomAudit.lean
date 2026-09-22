@@ -9,28 +9,40 @@ Any appearance of `sorryAx` would mean an unproved lemma; any appearance of
 used in this development.
 -/
 
--- The unrestricted results.
-#print axioms ThreeUnitSquaresInCircle.Cert.optimality
-#print axioms ThreeUnitSquaresInCircle.Cert.optimality_and_attainment
+-- The three-square result.
+#print axioms ThreeUnitSquaresInCircle.ThreeArc.optimality
+#print axioms ThreeUnitSquaresInCircle.ThreeArc.optimality_and_attainment
 
--- The geometric and analytic reductions.
-#print axioms ThreeUnitSquaresInCircle.Cert.normalize_orientations
-#print axioms ThreeUnitSquaresInCircle.Cert.choose_separating_axes
-#print axioms ThreeUnitSquaresInCircle.Cert.forbidden_chain
-#print axioms ThreeUnitSquaresInCircle.Cert.polynomial_concave
-#print axioms ThreeUnitSquaresInCircle.Cert.coefficient_identity
+-- Four and five squares, and the combined interface.
+#print axioms ThreeUnitSquaresInCircle.Unified.four_optimality
+#print axioms ThreeUnitSquaresInCircle.Unified.five_optimality
+#print axioms ThreeUnitSquaresInCircle.Unified.optimality_and_attainment_345
 
--- Supporting layers.
-#print axioms ThreeUnitSquaresInCircle.Cert.select_certificate
-#print axioms ThreeUnitSquaresInCircle.Cert.table_dual_bound
-#print axioms ThreeUnitSquaresInCircle.Cert.table_checked
-#print axioms ThreeUnitSquaresInCircle.Cert.checked_corner_lower
-#print axioms ThreeUnitSquaresInCircle.Cert.certificate_on_hull
-#print axioms ThreeUnitSquaresInCircle.Combinatorics.classification
+-- The strict polygon relaxations, and the two three-square alternatives.
+#print axioms ThreeUnitSquaresInCircle.Unified.three_polygon_strict_impossible
+#print axioms ThreeUnitSquaresInCircle.Unified.three_exterior_reduction
+#print axioms ThreeUnitSquaresInCircle.Unified.three_containing_impossible
+#print axioms ThreeUnitSquaresInCircle.Unified.four_polygon_strict_impossible
+#print axioms ThreeUnitSquaresInCircle.Unified.five_polygon_strict_impossible
+
+-- The shared framework.
+#print axioms ThreeUnitSquaresInCircle.support_separator
+#print axioms ThreeUnitSquaresInCircle.Unified.safe_openRay_of_disjoint
+#print axioms ThreeUnitSquaresInCircle.Unified.open_arc_budget
+#print axioms ThreeUnitSquaresInCircle.Unified.OpenArc.third_distance_bounds
+#print axioms ThreeUnitSquaresInCircle.Unified.three_compensation
+#print axioms ThreeUnitSquaresInCircle.Unified.near_axis_square_overlap
+
+-- Attaining configurations.
 #print axioms ThreeUnitSquaresInCircle.exists_packing_at_optimum
-#print axioms ThreeUnitSquaresInCircle.three_square_dual
+#print axioms ThreeUnitSquaresInCircle.Unified.block_packing
+#print axioms ThreeUnitSquaresInCircle.Unified.plus_packing
 
 -- The statements being proved, for inspection.
 #print ThreeUnitSquaresInCircle.Packing
-#check @ThreeUnitSquaresInCircle.Cert.optimality
-#check @ThreeUnitSquaresInCircle.Cert.optimality_and_attainment
+#print ThreeUnitSquaresInCircle.Unified.PackingN
+#check @ThreeUnitSquaresInCircle.ThreeArc.optimality
+#check @ThreeUnitSquaresInCircle.ThreeArc.optimality_and_attainment
+#check @ThreeUnitSquaresInCircle.Unified.four_optimality
+#check @ThreeUnitSquaresInCircle.Unified.five_optimality
+#check @ThreeUnitSquaresInCircle.Unified.optimality_and_attainment_345

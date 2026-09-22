@@ -3,11 +3,11 @@ import ThreeUnitSquaresInCircle.Unified.RectangleArcs
 /-!
 # Three-square exterior arcs
 
-This is the part of the independent three-square arc proof supplied in this
-extension. It does not invoke the original certificate theorem. It proves
-that a hypothetical strict contact-polygon packing must have the tested point
-inside one square. The other alternative is developed in `ThreeContaining.lean`;
-`ThreeArc.lean` is the independent, standalone optimality entry point.
+If the tested point lies in none of the three open squares, each square
+supplies an occupied arc longer than 120 degrees on the circle of radius `3/8`,
+which exceeds the angular budget. So a strict contact-polygon configuration
+must have the tested point inside one square; `ThreeContaining.lean` refutes
+that alternative.
 -/
 noncomputable section
 open Set

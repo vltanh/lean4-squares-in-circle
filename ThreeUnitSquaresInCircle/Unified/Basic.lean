@@ -3,9 +3,9 @@ import ThreeUnitSquaresInCircle.Geometry
 /-!
 # A size-independent packing model
 
-This file is an additive extension: the original `Packing` and three-square
-proof are unchanged.  Distances always use `normSq`, not the product-space
-norm on `ℝ × ℝ` (which is the maximum norm).
+`PackingN` generalizes `Packing` from `Fin 3` to `Fin n` without adding any
+hypothesis. Distances always use `normSq`, not the product-space norm on
+`ℝ × ℝ` (which is the maximum norm).
 -/
 noncomputable section
 namespace ThreeUnitSquaresInCircle.Unified

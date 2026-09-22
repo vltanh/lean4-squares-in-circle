@@ -9,7 +9,7 @@ The non-strict forms remain useful for subsequent rigidity statements.
 noncomputable section
 namespace ThreeUnitSquaresInCircle.Unified
 
-/-- Exact tangent-plus-remainder identity, valid at every proposed contact. -/
+/-- Exact tangent-plus-remainder identity, valid at every contact point. -/
 theorem tangent_identity (a b u v : ℝ) :
     phi a b - phi u v =
       2*(u+1/2)*(a-u) + 2*(v+1/2)*(b-v) + (a-u)^2 + (b-v)^2 := by
