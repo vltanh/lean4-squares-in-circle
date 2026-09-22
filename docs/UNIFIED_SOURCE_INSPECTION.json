@@ -1,0 +1,179 @@
+{
+  "scope": "Textual source inspection, NOT Lean verification",
+  "base_commit": "4f73fefceb73e8e707c837f55549bf864f0dfd8a",
+  "compiler_invoked": false,
+  "lean_acceptance": "not tested",
+  "lean_file_count": 12,
+  "lean_line_count": 1262,
+  "sorry_count": 6,
+  "admit_count": 0,
+  "native_decide_count": 0,
+  "custom_axiom_declarations": 0,
+  "local_import_cycles": false,
+  "unknown_imports": [],
+  "files": [
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/AngularMeasure.lean",
+      "lines": 127,
+      "git_blob_sha": "721000e3109c7e30102a973e1d4ed507c1c5e63b",
+      "sha256": "4fcf5ee318661dee9f7e10c876150dfb2babe19d9f57bfab7980180d2e57c936",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Basic"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/ArcGeometry.lean",
+      "lines": 129,
+      "git_blob_sha": "86c53c976d690576de639734dd43bccb6c6ffd9a",
+      "sha256": "0ee9b03719a42bd2f084960e0ccba9a69ab2a6d0b50c59027e3f4b9366d465b4",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.SafePieces",
+        "ThreeUnitSquaresInCircle.Unified.ScalarArcs"
+      ],
+      "markers": [
+        {
+          "token": "sorry",
+          "line": 28
+        },
+        {
+          "token": "sorry",
+          "line": 79
+        },
+        {
+          "token": "sorry",
+          "line": 90
+        },
+        {
+          "token": "sorry",
+          "line": 101
+        },
+        {
+          "token": "sorry",
+          "line": 116
+        },
+        {
+          "token": "sorry",
+          "line": 127
+        }
+      ],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/Basic.lean",
+      "lines": 109,
+      "git_blob_sha": "9a6b8d71e8af529b1364b5da1e3452ae2862bfc3",
+      "sha256": "68e4efe1a12d86728a675648b4c4f289c5ce4eddef629eef2be9ceed14eb8175",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Geometry"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/Cases.lean",
+      "lines": 98,
+      "git_blob_sha": "b134ac555972474fc74c23117dbc4016e43715e2",
+      "sha256": "4caca80b510a875ab00dd2293d265d2740481a370c8fe13869861a68b1433f53",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.ArcGeometry"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/Constructions.lean",
+      "lines": 48,
+      "git_blob_sha": "db967f0a0c0592faec51dcc6265f3bf89790555c",
+      "sha256": "4c6178bd7c84f40bf334d448f3206cdf47888ace084a4952cee902d93fda11b2",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Basic",
+        "ThreeUnitSquaresInCircle.Construction"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/Main.lean",
+      "lines": 36,
+      "git_blob_sha": "b5d80b3b5b47f759d51d51e8df44cd0c66a82503",
+      "sha256": "8e6e5edf1b7707ca813bbd7553259dd9d1537554deecf7fb1728ceb2e041bd93",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Cases",
+        "ThreeUnitSquaresInCircle.Unified.Constructions",
+        "ThreeUnitSquaresInCircle.Main"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/SafePieces.lean",
+      "lines": 53,
+      "git_blob_sha": "a06fee2320caf5c9d0d71ab316c1b134c2d41a2e",
+      "sha256": "7d84a03d4d4e458ba5c81370cf4632f42d514364013a05b85c504434908697cc",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Support",
+        "ThreeUnitSquaresInCircle.Unified.AngularMeasure"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/ScalarArcs.lean",
+      "lines": 252,
+      "git_blob_sha": "f44aaa44489a6c5b62a69039bd0b77d5cb153c8e",
+      "sha256": "7cff8db7a8651ef8740256c918226755e5415b6c83d038930512770639a311c1",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Tangents"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/Support.lean",
+      "lines": 229,
+      "git_blob_sha": "d109d29ac5c43c9ceb22f20c3342ef403edd4eec",
+      "sha256": "2a25d7e1f7d78cca4e92acc3e02ecef93888640c1cf06700df53953092e7e3da",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Tangents",
+        "ThreeUnitSquaresInCircle.SeparatingAxes"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified/Tangents.lean",
+      "lines": 157,
+      "git_blob_sha": "00e78bf349886b5c37303dd8296904561197c99c",
+      "sha256": "ca839efe04898d9f05bdd04d88b696149a2f73e2ead4965a0ada4c2ca177dcbf",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Basic"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "ThreeUnitSquaresInCircle/Unified.lean",
+      "lines": 1,
+      "git_blob_sha": "bab3c10125eb8e315f7063a77c02c98fba1184a1",
+      "sha256": "ed9a28cd324b0aa633070ab2e863cfb4a67667047e9859605885f309c2d89699",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified.Main"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    },
+    {
+      "path": "UnifiedAxiomAudit.lean",
+      "lines": 23,
+      "git_blob_sha": "885b3b56d646ed287fd70c1f81abb8a51e5c1c29",
+      "sha256": "a423b1b318ff1d140daf8ed4825c525a9f634dcac1f0d0d634f4f405c379da02",
+      "imports": [
+        "ThreeUnitSquaresInCircle.Unified"
+      ],
+      "markers": [],
+      "custom_axiom_declarations": 0
+    }
+  ]
+}
