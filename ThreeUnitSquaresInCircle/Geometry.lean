@@ -69,9 +69,9 @@ def optimalRadius : ℝ := 5 * Real.sqrt 17 / 16
 /--
 The square of `optimalRadius`, kept as a separate rational constant.
 
-The proof works with squared lengths so that every intermediate step stays
-polynomial, which is what `nlinarith` and the rational certificates require.
-`Real.sqrt` enters only at the end, in `radius_lower_of_squared`.
+The proof works with squared lengths so that the contact inequalities stay
+polynomial, which is what `nlinarith` needs. `Real.sqrt` enters only at the
+end, in `radius_lower_of_squared`.
 -/
 def targetSq : ℝ := 425 / 256
 

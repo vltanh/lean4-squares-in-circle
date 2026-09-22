@@ -90,7 +90,7 @@ theorem closed_arc_budget {n : ℕ} (c : Fin n → AddCircle (2*Real.pi)) (w : F
 theorem open_arc_budget {n : ℕ} {o : Point} {r : ℝ} {U : Fin n → Set Point}
     (A : ∀ i, OpenArc o r (U i)) (hd : Pairwise (fun i j => Disjoint (U i) (U j))) :
     ∑ i, (A i).halfWidth ≤ Real.pi := by
-  apply Cert.bound_from_shrinks (Finset.sum_nonneg (fun i _ => (A i).positive.le))
+  apply bound_from_shrinks (Finset.sum_nonneg (fun i _ => (A i).positive.le))
   intro t ht0 ht1
   have hw (i : Fin n) : 0 ≤ t*(A i).halfWidth ∧ t*(A i).halfWidth ≤ Real.pi := by
     constructor

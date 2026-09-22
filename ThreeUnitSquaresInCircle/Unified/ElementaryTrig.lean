@@ -7,8 +7,8 @@ import Mathlib.Analysis.Real.Pi.Bounds
 
 All decimal-looking constants below are exact rational numbers.  In particular,
 no floating-point evaluation, external solver, or `native_decide` is used.
-The five-square auxiliary radius is `5/6`; this small change from `sqrt(7/10)`
-makes both the strip and radial-extension estimates rational.
+The five-square auxiliary radius is `5/6`, which keeps both the strip and
+radial-extension estimates rational.
 -/
 noncomputable section
 open Set

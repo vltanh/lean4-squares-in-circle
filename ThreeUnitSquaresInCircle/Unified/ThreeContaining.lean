@@ -1,15 +1,13 @@
 import ThreeUnitSquaresInCircle.Unified.ThreeCaps
 
 /-!
-# The previously missing containing-square case
+# The containing-square case
 
 Three disjoint arc witnesses first bound the containing square's deficit.
 A clipped exterior cap would compensate for that entire deficit. Otherwise
 both exterior witnesses are full, nearly axial caps. Their midpoint distances
 are controlled by the three-point circle perimeter inequality, and the explicit
 Cartesian overlap witness contradicts ordinary interior-disjointness.
-
-This module does not call the original certificate optimality theorem.
 -/
 noncomputable section
 open Set

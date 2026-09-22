@@ -1,12 +1,12 @@
 import ThreeUnitSquaresInCircle.Unified.Tangents
-import ThreeUnitSquaresInCircle.SeparatingAxes
+import ThreeUnitSquaresInCircle.Separation
 
 /-!
 # The common octagon support estimate and safe radial extension
 
 The support estimate does not require a bound on the angle between squares.
 The final `safe_openRay_of_disjoint` theorem uses an arbitrary nonzero separating
-functional from the repository's proved `support_separator`.  No separating-axis
+functional from `support_separator` (`Separation.lean`).  No separating-axis
 enumeration or additional geometric hypothesis is required.
 -/
 noncomputable section
@@ -52,7 +52,7 @@ lemma octagon_linear_lt {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
         (le_trans (le_max_left _ _) (le_max_right _ _))
     · have hA : 0 ≤ (3*p-q)/8 := by linarith
       have hB : 0 ≤ (3*q-p)/8 := by linarith
-      have hw := Cert.weighted_strict hA hB
+      have hw := weighted_strict hA hB
         (show 0 < (3*p-q)/8+(3*q-p)/8 by linarith) h₀ h₁
       exact lt_of_lt_of_le (by nlinarith : p*a+q*b < 3*(p+q)/4)
         (le_trans (le_max_right _ _) (le_max_right _ _))
@@ -128,10 +128,10 @@ structure Separation (S T : UnitSquare) where
   nonzero : normal ≠ (0,0)
   separates : width S normal+width T normal ≤ dot normal (sub T.center S.center)
 
-/-- Reuse the repository's proved Hahn--Banach separation theorem. -/
+/-- The Hahn--Banach supporting functional of `Separation.lean`. -/
 lemma separation_exists (S T : UnitSquare)
     (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) : Nonempty (Separation S T) := by
-  obtain ⟨n,hn,hsep⟩ := Cert.support_separator S T hd
+  obtain ⟨n,hn,hsep⟩ := support_separator S T hd
   exact ⟨⟨n,hn,hsep⟩⟩
 
 lemma dot_center_lt_of_ne (S : UnitSquare) (o : Point) {n : Point}
@@ -165,7 +165,7 @@ lemma Separation.strict_center_signs {S T : UnitSquare} (e : Separation S T) (o 
 
 lemma dot_open_bound_of_ne (S : UnitSquare) {n : Point} (hn : n ≠ (0,0))
     {p : Point} (hp : openSquare S p) : |dot n (sub p S.center)| < width S n := by
-  have hh := Cert.weighted_strict (abs_nonneg (frameX S n)) (abs_nonneg (frameY S n))
+  have hh := weighted_strict (abs_nonneg (frameX S n)) (abs_nonneg (frameY S n))
     (frame_abs_sum_pos S hn) hp.1 hp.2
   rw [← frame_dot S]
   change |frameX S n*localX S p+frameY S n*localY S p| < width S n

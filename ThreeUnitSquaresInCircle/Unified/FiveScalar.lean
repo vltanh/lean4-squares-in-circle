@@ -1,7 +1,7 @@
 import ThreeUnitSquaresInCircle.Unified.RectangleArcs
 
 /-! Scalar estimates for the dodecagon.  The auxiliary radius `5/6` is rational.
-This replaces the earlier calculus maximization by a cubic arcsine bound. -/
+A cubic arcsine bound suffices; no calculus maximization is needed. -/
 noncomputable section
 open Set
 namespace ThreeUnitSquaresInCircle.Unified

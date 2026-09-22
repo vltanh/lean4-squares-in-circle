@@ -2,15 +2,16 @@ import ThreeUnitSquaresInCircle.Unified.ThreeContaining
 import ThreeUnitSquaresInCircle.Construction
 
 /-!
-# Standalone three-square optimum by occupied arcs
+# The three-square optimum by occupied arcs
 
-This entry point does not import `ThreeUnitSquaresInCircle.Main`, nor the
-four-square, five-square, or combined optimum entry points. The lower bound
-uses strict contact-polygon infeasibility, including the containing-square
-case, and never calls `Cert.optimality`.
+`optimality` is the lower bound for arbitrary packings, with every square
+rotated independently and an arbitrary disk centre. `optimality_and_attainment`
+adds the T arrangement of `Construction.lean`, which attains it.
 
-Status: explicit, uncompiled proof scripts. No Lean/Lake/CI execution was
-performed while preparing this change. This header is not an axiom-audit result.
+A packing with `R^2 < 425/256` puts every square's centre strictly inside the
+contact 16-gon (`p3_of_phi_lt`), and `Unified.three_polygon_strict_impossible`
+refutes that polygon relaxation. This module does not import the four-square,
+five-square, or combined endpoints.
 -/
 noncomputable section
 namespace ThreeUnitSquaresInCircle.ThreeArc
@@ -24,7 +25,8 @@ theorem squared_lower (S : Fin 3 → UnitSquare) (o : Point) (R : ℝ)
   exact three_polygon_strict_impossible S o hN.disjoint
     (fun i => p3_of_phi_lt ((hN.phi_le i).trans_lt hsmall))
 
-/-- The ordinary geometric lower bound, with no certificate-existence assumption. -/
+/-- The geometric lower bound; `Packing` carries no arc, tangent, or separator
+assumption. -/
 theorem optimality (S : Fin 3 → UnitSquare) (o : Point) (R : ℝ)
     (hp : Packing S o R) : optimalRadius ≤ R := by
   apply radius_lower_of_squared hp.1

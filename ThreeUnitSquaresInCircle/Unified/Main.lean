@@ -7,11 +7,10 @@ import ThreeUnitSquaresInCircle.Unified.ThreeExterior
 /-!
 # Shared interface for three, four and five unit squares
 
-Status: uncompiled extension draft, targeting the repository's pinned Lean and
-mathlib versions.  The three-square endpoint now uses the standalone occupied-arc development,
-including the containing-square compensation case. The three cases also have
-separate endpoint modules; this combined interface is optional. See
-`docs/THREE_ARC_COMPLETION.md`.
+`optimality_and_attainment_345` gives, for `n = 3, 4, 5`, the lower bound
+`candidateRadius n ≤ R` for every packing together with a packing that attains
+it. Each case can also be imported on its own: `ThreeArc`, `Unified.Four`,
+`Unified.Five`.
 -/
 noncomputable section
 namespace ThreeUnitSquaresInCircle.Unified
