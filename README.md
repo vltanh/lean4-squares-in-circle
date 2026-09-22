@@ -1,5 +1,10 @@
 # Lean 4 formalization of packing three unit squares in a disk
 
+> **Legacy proof.** This branch preserves the original certificate-based
+> formalization. The [`main`](https://github.com/vltanh/three-unit-squares-in-circle/tree/main)
+> branch now carries the occupied-arc proof, which proves the same statement
+> over the same `Geometry.lean` and extends to four and five squares.
+
 A machine-checked proof that the smallest disk containing three
 non-overlapping unit squares has radius `5 * Real.sqrt 17 / 16 ≈ 1.2884705`.
 
