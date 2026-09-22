@@ -105,7 +105,7 @@ theorem three_exterior_reduction (S : Fin 3 → UnitSquare) (o : Point)
     ∃ i, openSquare (S i) o := by
   classical
   by_contra hn
-  push_neg at hn
+  push Not at hn
   choose A hA using (fun i => three_exterior_arc (S i) o (hp i) (hn i))
   have hregions : Pairwise (fun i j => Disjoint {p | openSquare (S i) p} {p | openSquare (S j) p}) := by
     intro i j hij

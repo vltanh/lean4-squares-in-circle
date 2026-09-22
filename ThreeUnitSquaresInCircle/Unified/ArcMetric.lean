@@ -12,9 +12,10 @@ open Set
 namespace ThreeUnitSquaresInCircle.Unified
 
 lemma direction_coe_norm_le (t : ℝ) : ‖(t : Direction)‖ ≤ |t| := by
-  simpa only [Real.norm_eq_abs] using
-    (QuotientAddGroup.norm_mk_le_norm
-      (S := AddSubgroup.zmultiples (2 * Real.pi)) (m := t))
+  have h := QuotientAddGroup.norm_mk_le_norm
+    (S := AddSubgroup.zmultiples (2 * Real.pi)) (m := t)
+  rw [Real.norm_eq_abs] at h
+  exact h
 
 lemma direction_dist_coe_le (a b : ℝ) :
     dist (a : Direction) (b : Direction) ≤ |a-b| := by
@@ -37,9 +38,12 @@ lemma OpenArc.centers_separated {o : Point} {r : ℝ} {U V : Set Point}
   let t := B.halfWidth/H
   have hs : 0 < s := div_pos A.positive hH
   have ht : 0 < t := div_pos B.positive hH
-  have hst : s+t=1 := by dsimp [s,t,H]; field_simp [ne_of_gt hH]; ring
-  have hsH : s*H=A.halfWidth := by dsimp [s]; field_simp [ne_of_gt hH]
-  have htH : t*H=B.halfWidth := by dsimp [t]; field_simp [ne_of_gt hH]
+  have hst : s+t=1 := by
+    dsimp only [s,t]
+    rw [← add_div]
+    exact div_self (ne_of_gt hH)
+  have hsH : s*H=A.halfWidth := div_mul_cancel₀ _ (ne_of_gt hH)
+  have htH : t*H=B.halfWidth := div_mul_cancel₀ _ (ne_of_gt hH)
   let d := (B.center-A.center).toReal
   have hdabs : |d|=dist A.center B.center := by
     rw [dist_comm, direction_dist]
@@ -48,7 +52,7 @@ lemma OpenArc.centers_separated {o : Point} {r : ℝ} {U V : Set Point}
   have hza : z-A.center=((s*d:ℝ):Direction) := by dsimp [z]; abel
   have hzb : z-B.center=((-t*d:ℝ):Direction) := by
     rw [hrep]
-    have he : s*d-d = -t*d := by nlinarith [hst]
+    have he : s*d-d = -t*d := by rw [show s = 1-t by linarith]; ring
     dsimp [z]
     rw [← he,Real.Angle.coe_sub]
     abel
@@ -114,12 +118,11 @@ lemma triple_arc_budget {o : Point} {r : ℝ} {U V W : Set Point}
     (hUV : Disjoint U V) (hUW : Disjoint U W) (hVW : Disjoint V W) :
     A.halfWidth+B.halfWidth+C.halfWidth ≤ Real.pi := by
   let regions : Fin 3 → Set Point := ![U,V,W]
-  let arcs : (i : Fin 3) → OpenArc o r (regions i) := by
-    intro i
-    fin_cases i
-    · exact A
-    · exact B
-    · exact C
+  let arcs : (i : Fin 3) → OpenArc o r (regions i) := fun i =>
+    match i with
+    | 0 => A
+    | 1 => B
+    | 2 => C
   have hdisj : Pairwise (fun i j => Disjoint (regions i) (regions j)) := by
     intro i j hij
     fin_cases i <;> fin_cases j
@@ -133,7 +136,8 @@ lemma triple_arc_budget {o : Point} {r : ℝ} {U V W : Set Point}
     · exact hVW.symm
     · exact False.elim (hij rfl)
   have h := open_arc_budget arcs hdisj
-  simpa [arcs,regions,Fin.sum_univ_succ,add_assoc] using h
+  rw [Fin.sum_univ_three] at h
+  exact h
 
 /-- Bounds for the third separation supplied by three disjoint arc witnesses. -/
 lemma OpenArc.third_distance_bounds {o : Point} {r : ℝ} {U V W : Set Point}

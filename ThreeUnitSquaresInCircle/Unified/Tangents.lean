@@ -125,6 +125,6 @@ lemma strict_diamond_isOpen {n : ℕ} (S : Fin n → UnitSquare) :
     IsOpen {o : Point | ∀ i, P4Strict (alpha (S i) o) (beta (S i) o)} := by
   have hi (i : Fin n) : IsOpen {o : Point | P4Strict (alpha (S i) o) (beta (S i) o)} :=
     isOpen_lt ((alpha_continuous (S i)).add (beta_continuous (S i))) continuous_const
-  simpa only [Set.setOf_forall] using isOpen_iInter_of_finite hi
+  simpa only [Set.ofPred_forall] using isOpen_iInter_of_finite hi
 
 end ThreeUnitSquaresInCircle.Unified

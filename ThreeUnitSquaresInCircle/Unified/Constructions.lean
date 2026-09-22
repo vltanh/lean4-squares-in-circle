@@ -43,8 +43,9 @@ lemma axis_contained {x y B C R : ℝ}
     ∀ p, closedSquare (axisSquare x y) p → inDisk (0,0) R p := by
   intro p hp
   have hh := (closed_axisSquare_iff x y p).mp hp
-  have hx := sq_le_of_interval (B := B) (by linarith [hh.1]) (by linarith [hh.2.1])
-  have hy := sq_le_of_interval (B := C) (by linarith [hh.2.2.1]) (by linarith [hh.2.2.2])
+  have hx := sq_le_of_interval (x := p.1) (B := B) (by linarith [hh.1]) (by linarith [hh.2.1])
+  have hy := sq_le_of_interval (x := p.2) (B := C) (by linarith [hh.2.2.1])
+    (by linarith [hh.2.2.2])
   dsimp [inDisk,normSq,sub]
   nlinarith
 
@@ -53,17 +54,22 @@ lemma block_packing : PackingN block (0,0) (Real.sqrt 2) := by
   intro i
   have hR := Real.sq_sqrt (show (0:ℝ) ≤ 2 by norm_num)
   fin_cases i <;> dsimp [block,blockCorners] <;>
-    apply axis_contained (B := 1) (C := 1) <;> norm_num <;> linarith
+    apply axis_contained (B := 1) (C := 1) <;> norm_num
 
 lemma plus_packing : PackingN plus (0,0) (Real.sqrt ((5:ℝ)/2)) := by
   refine ⟨Real.sqrt_nonneg _,?_,plus_disjoint⟩
   intro i
-  have hR := Real.sq_sqrt (show (0:ℝ) ≤ 5/2 by norm_num)
+  have hR : Real.sqrt ((5:ℝ)/2) ^ 2 = 5/2 := Real.sq_sqrt (by norm_num)
   fin_cases i
-  · apply axis_contained (B := 1/2) (C := 1/2) <;> norm_num [plus,plusCorners] <;> linarith
-  · apply axis_contained (B := 3/2) (C := 1/2) <;> norm_num [plus,plusCorners] <;> linarith
-  · apply axis_contained (B := 3/2) (C := 1/2) <;> norm_num [plus,plusCorners] <;> linarith
-  · apply axis_contained (B := 1/2) (C := 3/2) <;> norm_num [plus,plusCorners] <;> linarith
-  · apply axis_contained (B := 1/2) (C := 3/2) <;> norm_num [plus,plusCorners] <;> linarith
+  · apply axis_contained (B := 1/2) (C := 1/2)
+    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
+  · apply axis_contained (B := 3/2) (C := 1/2)
+    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
+  · apply axis_contained (B := 3/2) (C := 1/2)
+    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
+  · apply axis_contained (B := 1/2) (C := 3/2)
+    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
+  · apply axis_contained (B := 1/2) (C := 3/2)
+    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
 
 end ThreeUnitSquaresInCircle.Unified

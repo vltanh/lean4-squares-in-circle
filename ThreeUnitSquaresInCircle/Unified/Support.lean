@@ -36,7 +36,7 @@ lemma octagon_linear_le {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
         (le_trans (le_max_right _ _) (le_max_right _ _))
 
 lemma octagon_linear_lt {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
-    (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : 0 < p+q) (h : P8Strict a b) :
+    (_hp : 0 ≤ p) (_hq : 0 ≤ q) (hpq : 0 < p+q) (h : P8Strict a b) :
     p*a+q*b < octSupport p q := by
   rcases h with ⟨h₀,h₁⟩
   by_cases hdom : 3*q ≤ p
@@ -62,11 +62,11 @@ def width (S : UnitSquare) (n : Point) : ℝ :=
 
 lemma dot_center_abs_le (S : UnitSquare) (o n : Point) :
     |dot n (sub S.center o)| ≤
-      |frameX S n|*alpha S o+|frameY S n|*beta S o := by
+      |frameX S n| * alpha S o + |frameY S n| * beta S o := by
   rw [← frame_dot S]
   calc
     _ ≤ |frameX S n * frameX S (sub S.center o)| +
-        |frameY S n * frameY S (sub S.center o)| := abs_add _ _
+        |frameY S n * frameY S (sub S.center o)| := abs_add_le _ _
     _ = _ := by rw [abs_mul,abs_mul,abs_frame_centerX,abs_frame_centerY]
 
 lemma dot_center_le (S : UnitSquare) (o n : Point)
@@ -169,7 +169,7 @@ lemma dot_open_bound_of_ne (S : UnitSquare) {n : Point} (hn : n ≠ (0,0))
     (frame_abs_sum_pos S hn) hp.1 hp.2
   rw [← frame_dot S]
   change |frameX S n*localX S p+frameY S n*localY S p| < width S n
-  have ha := abs_add (frameX S n*localX S p) (frameY S n*localY S p)
+  have ha := abs_add_le (frameX S n*localX S p) (frameY S n*localY S p)
   rw [abs_mul,abs_mul] at ha
   dsimp [width]
   linarith
@@ -197,6 +197,6 @@ lemma center_ne_of_strict_octagons (S T : UnitSquare) (o : Point)
   obtain ⟨e⟩ := separation_exists S T hd
   have hh := (e.strict_center_signs o hS hT).1
   intro hc
-  simpa [hc,sub,dot] using hh
+  simp [hc,sub,dot] at hh
 
 end ThreeUnitSquaresInCircle.Unified

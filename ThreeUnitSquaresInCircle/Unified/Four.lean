@@ -9,7 +9,7 @@ namespace ThreeUnitSquaresInCircle.Unified
 
 lemma fin_four_other (i : Fin 4) : ∃ j : Fin 4, i ≠ j := by
   by_cases hi : i=0
-  · exact ⟨1,by simpa [hi]⟩
+  · exact ⟨1,by simp [hi]⟩
   · exact ⟨0,hi⟩
 
 /-- The Diamond Lemma in its strict infeasibility form. -/
@@ -36,15 +36,15 @@ theorem four_polygon_strict_impossible (S : Fin 4 → UnitSquare) (o : Point)
     intro i
     by_cases hi : openSquare (S i) o
     · obtain ⟨A,hA⟩ := four_containing_arc (C i) (hsort i) hi (hpos i) (by linarith) hr1
-      simp only [rayRegions,if_pos hi]
+      rw [rayRegions_pos hi]
       exact ⟨A,by rw [hA],fun hn => False.elim (hn hi)⟩
     · obtain ⟨A,hA⟩ := four_exterior_arc (C i) (hsort i) (hsum i) hi hr0 hr1 (hrc i)
-      simp only [rayRegions,if_neg hi]
+      rw [rayRegions_neg hi]
       exact ⟨A,hA.le,fun _ => hA⟩
   choose A hA hstrict using harcs
   have hout : ∃ i : Fin 4, ¬ openSquare (S i) o := by
     by_contra hn
-    push_neg at hn
+    push Not at hn
     exact hd 0 1 (by decide) o ⟨hn 0,hn 1⟩
   apply uniform_arc_excess (n := 4) (by decide) A
     (rayRegions_disjoint hd (fun i => ⟨(h8 i).1.le,(h8 i).2.le⟩)) hA

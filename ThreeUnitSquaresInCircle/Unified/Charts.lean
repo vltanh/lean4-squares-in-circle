@@ -97,11 +97,11 @@ lemma SquareChart.nonneg {S : UnitSquare} {o : Point} (C : SquareChart S o) :
 
 lemma square_chart (S : UnitSquare) (o : Point) : Nonempty (SquareChart S o) := by
   obtain ⟨θ,hcos,hsin⟩ := frame_angle S
-  let X := frameX S (sub S.center o)
-  let Y := frameY S (sub S.center o)
-  have hX : |X|=alpha S o := abs_frame_centerX S o
-  have hY : |Y|=beta S o := abs_frame_centerY S o
+  have hX : |frameX S (sub S.center o)|=alpha S o := abs_frame_centerX S o
+  have hY : |frameY S (sub S.center o)|=beta S o := abs_frame_centerY S o
   have hc := local_circle_shift S o
+  generalize frameX S (sub S.center o) = X at hc hX
+  generalize frameY S (sub S.center o) = Y at hc hY
   by_cases hx : 0 ≤ X <;> by_cases hy : 0 ≤ Y
   · refine ⟨⟨|X|,|Y|,(θ:Direction),false,Or.inl ⟨hX,hY⟩,?_⟩⟩
     intro r t m
@@ -188,13 +188,13 @@ lemma SquareChart.arc {S : UnitSquare} {o : Point} (C : SquareChart S o)
   · let A := arcOfInterval o r {p | openSquare S p} C.phase l u hlu hlen
       (fun t ht => by
         have hm := (C.membership r t).mpr (hmem t ht)
-        simpa only [chartAngle,hrev,Bool.false_eq_true,ite_false] using hm)
+        simpa only [chartAngle,hrev,Bool.false_eq_true,ite_false,Set.mem_ofPred_eq] using hm)
     refine ⟨A,rfl⟩
   · let A := arcOfInterval o r {p | openSquare S p} C.phase (-u) (-l)
       (by linarith) (by linarith) (fun t ht => by
         have hm := (C.membership r (-t)).mpr
           (hmem (-t) ⟨by linarith [ht.2],by linarith [ht.1]⟩)
-        simpa only [chartAngle,hrev,ite_true,neg_neg] using hm)
+        simpa only [chartAngle,hrev,ite_true,neg_neg,Set.mem_ofPred_eq] using hm)
     refine ⟨A,?_⟩
     dsimp [A,arcOfInterval]; ring
 
