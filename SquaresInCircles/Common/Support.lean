@@ -22,43 +22,40 @@ lemma octagon_linear_le {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
   by_cases hdom : 3*q ≤ p
   · have hmul := mul_le_mul_of_nonneg_left h₀ (show 0 ≤ p/3 by positivity)
     have hrem := mul_nonneg (show 0 ≤ p/3-q by linarith) hb
-    exact le_trans (by nlinarith : p*a+q*b ≤ p) (le_max_left _ _)
+    exact le_trans (by linarith : p*a+q*b ≤ p) (le_max_left _ _)
   · by_cases hdom' : 3*p ≤ q
     · have hmul := mul_le_mul_of_nonneg_left h₁ (show 0 ≤ q/3 by positivity)
       have hrem := mul_nonneg (show 0 ≤ q/3-p by linarith) ha
-      exact le_trans (by nlinarith : p*a+q*b ≤ q)
+      exact le_trans (by linarith : p*a+q*b ≤ q)
         (le_trans (le_max_left _ _) (le_max_right _ _))
     · have hA : 0 ≤ (3*p-q)/8 := by linarith
       have hB : 0 ≤ (3*q-p)/8 := by linarith
       have hmul₀ := mul_le_mul_of_nonneg_left h₀ hA
       have hmul₁ := mul_le_mul_of_nonneg_left h₁ hB
-      exact le_trans (by nlinarith : p*a+q*b ≤ 3*(p+q)/4)
+      exact le_trans (by linarith : p*a+q*b ≤ 3*(p+q)/4)
         (le_trans (le_max_right _ _) (le_max_right _ _))
 
 lemma octagon_linear_lt {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
-    (_hp : 0 ≤ p) (_hq : 0 ≤ q) (hpq : 0 < p+q) (h : P8Strict a b) :
+    (hpq : 0 < p+q) (h : P8Strict a b) :
     p*a+q*b < octSupport p q := by
   rcases h with ⟨h₀,h₁⟩
   by_cases hdom : 3*q ≤ p
   · have hpp : 0 < p := by linarith
     have hmul := mul_lt_mul_of_pos_left h₀ (show 0 < p/3 by positivity)
     have hrem := mul_nonneg (show 0 ≤ p/3-q by linarith) hb
-    exact lt_of_lt_of_le (by nlinarith : p*a+q*b < p) (le_max_left _ _)
+    exact lt_of_lt_of_le (by linarith : p*a+q*b < p) (le_max_left _ _)
   · by_cases hdom' : 3*p ≤ q
     · have hqq : 0 < q := by linarith
       have hmul := mul_lt_mul_of_pos_left h₁ (show 0 < q/3 by positivity)
       have hrem := mul_nonneg (show 0 ≤ q/3-p by linarith) ha
-      exact lt_of_lt_of_le (by nlinarith : p*a+q*b < q)
+      exact lt_of_lt_of_le (by linarith : p*a+q*b < q)
         (le_trans (le_max_left _ _) (le_max_right _ _))
     · have hA : 0 ≤ (3*p-q)/8 := by linarith
       have hB : 0 ≤ (3*q-p)/8 := by linarith
       have hw := weighted_strict hA hB
         (show 0 < (3*p-q)/8+(3*q-p)/8 by linarith) h₀ h₁
-      exact lt_of_lt_of_le (by nlinarith : p*a+q*b < 3*(p+q)/4)
+      exact lt_of_lt_of_le (by linarith : p*a+q*b < 3*(p+q)/4)
         (le_trans (le_max_right _ _) (le_max_right _ _))
-
-def width (S : UnitSquare) (n : Point) : ℝ :=
-  (|frameX S n|+|frameY S n|)/2
 
 lemma dot_center_abs_le (S : UnitSquare) (o n : Point) :
     |dot n (sub S.center o)| ≤
@@ -81,27 +78,14 @@ def openRay (S : UnitSquare) (o : Point) : Set Point :=
   {p | ∃ t : ℝ, 0 ≤ t ∧ ∃ q, openSquare S q ∧
     p = add q (scale t (sub S.center o))}
 
-lemma openSquare_subset_openRay (S : UnitSquare) (o : Point) :
-    {p | openSquare S p} ⊆ openRay S o := by
-  intro p hp
-  exact ⟨0,le_rfl,p,hp,by simp [add,scale]⟩
-
 /-! ## General separators: no edge-axis reduction is needed for extension. -/
 
 lemma frame_abs_sum_pos (S : UnitSquare) {n : Point} (hn : n ≠ (0,0)) :
     0 < |frameX S n|+|frameY S n| := by
-  have hh := frame_norm S n
-  by_contra hnot
-  have hx : frameX S n=0 := by
-    have ha : |frameX S n|=0 := by nlinarith [abs_nonneg (frameX S n),abs_nonneg (frameY S n)]
-    exact abs_eq_zero.mp ha
-  have hy : frameY S n=0 := by
-    have ha : |frameY S n|=0 := by nlinarith [abs_nonneg (frameX S n),abs_nonneg (frameY S n)]
-    exact abs_eq_zero.mp ha
-  rw [hx,hy] at hh
-  apply hn
-  apply Prod.ext <;> dsimp [normSq] at hh ⊢ <;>
-    nlinarith [sq_nonneg n.1,sq_nonneg n.2]
+  have hp := normSq_pos_of_ne hn
+  rw [← frame_norm S n,← sq_abs (frameX S n),← sq_abs (frameY S n)] at hp
+  by_contra h
+  nlinarith [abs_nonneg (frameX S n),abs_nonneg (frameY S n)]
 
 /-- A support bound for *every* normal, not just a square edge normal. -/
 lemma octSupport_le_widths (S T : UnitSquare) (n : Point) :
@@ -123,23 +107,11 @@ lemma octSupport_le_widths (S T : UnitSquare) (n : Point) :
   change max p (max q (3*(p+q)/4)) ≤ (p+q)/2+(u+v)/2
   exact max_le (by linarith) (max_le (by linarith) (by linarith))
 
-structure Separation (S T : UnitSquare) where
-  normal : Point
-  nonzero : normal ≠ (0,0)
-  separates : width S normal+width T normal ≤ dot normal (sub T.center S.center)
-
-/-- The Hahn--Banach supporting functional of `Separation.lean`. -/
-lemma separation_exists (S T : UnitSquare)
-    (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) : Nonempty (Separation S T) := by
-  obtain ⟨n,hn,hsep⟩ := support_separator S T hd
-  exact ⟨⟨n,hn,hsep⟩⟩
-
 lemma dot_center_lt_of_ne (S : UnitSquare) (o : Point) {n : Point}
     (hn : n ≠ (0,0)) (h : P8Strict (alpha S o) (beta S o)) :
     |dot n (sub S.center o)| < octSupport |frameX S n| |frameY S n| :=
   lt_of_le_of_lt (dot_center_abs_le S o n)
-    (octagon_linear_lt (alpha_nonneg _ _) (beta_nonneg _ _)
-      (abs_nonneg _) (abs_nonneg _) (frame_abs_sum_pos S hn) h)
+    (octagon_linear_lt (alpha_nonneg _ _) (beta_nonneg _ _) (frame_abs_sum_pos S hn) h)
 
 lemma Separation.center_signs {S T : UnitSquare} (e : Separation S T) (o : Point)
     (hS : P8 (alpha S o) (beta S o)) (hT : P8 (alpha T o) (beta T o)) :
@@ -149,17 +121,6 @@ lemma Separation.center_signs {S T : UnitSquare} (e : Separation S T) (o : Point
   have hsep := e.separates
   rcases abs_le.mp h₁ with ⟨h₁a,h₁b⟩
   rcases abs_le.mp h₂ with ⟨h₂a,h₂b⟩
-  simp only [dot_sub_right] at *
-  exact ⟨by linarith,by linarith⟩
-
-lemma Separation.strict_center_signs {S T : UnitSquare} (e : Separation S T) (o : Point)
-    (hS : P8Strict (alpha S o) (beta S o)) (hT : P8Strict (alpha T o) (beta T o)) :
-    dot e.normal (sub S.center o) < 0 ∧ 0 < dot e.normal (sub T.center o) := by
-  have h₁ := (dot_center_lt_of_ne S o e.nonzero hS).trans_le (octSupport_le_widths S T e.normal)
-  have h₂ := (dot_center_lt_of_ne T o e.nonzero hT).trans_le (octSupport_le_widths T S e.normal)
-  have hsep := e.separates
-  rcases abs_lt.mp h₁ with ⟨h₁a,h₁b⟩
-  rcases abs_lt.mp h₂ with ⟨h₂a,h₂b⟩
   simp only [dot_sub_right] at *
   exact ⟨by linarith,by linarith⟩
 
@@ -179,7 +140,7 @@ theorem safe_openRay_of_disjoint (S T : UnitSquare) (o : Point)
     (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p))
     (hS : P8 (alpha S o) (beta S o)) (hT : P8 (alpha T o) (beta T o)) :
     Disjoint (openRay S o) {p | openSquare T p} := by
-  obtain ⟨e⟩ := separation_exists S T hd
+  obtain ⟨e⟩ := support_separator S T hd
   rw [Set.disjoint_left]
   rintro p ⟨t,ht,q,hq,rfl⟩ hp
   have hsign := e.center_signs o hS hT
@@ -190,13 +151,16 @@ theorem safe_openRay_of_disjoint (S T : UnitSquare) (o : Point)
   simp only [dot_sub_right,dot_add_right,dot_scale_right] at *
   linarith
 
-lemma center_ne_of_strict_octagons (S T : UnitSquare) (o : Point)
+/-- A square disjoint from one whose centre is strictly inside the octagon is not
+centred at `o`. -/
+lemma center_ne_of_strict_octagon (S T : UnitSquare) (o : Point)
     (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p))
-    (hS : P8Strict (alpha S o) (beta S o)) (hT : P8Strict (alpha T o) (beta T o)) :
-    S.center ≠ o := by
-  obtain ⟨e⟩ := separation_exists S T hd
-  have hh := (e.strict_center_signs o hS hT).1
+    (hT : P8Strict (alpha T o) (beta T o)) : S.center ≠ o := by
+  obtain ⟨e⟩ := support_separator S T hd
   intro hc
-  simp [hc,sub,dot] at hh
+  have h := (dot_center_lt_of_ne T o e.nonzero hT).trans_le (octSupport_le_widths T S e.normal)
+  have hsep := e.separates
+  rw [hc] at hsep
+  linarith [(abs_lt.mp h).2]
 
 end SquaresInCircles

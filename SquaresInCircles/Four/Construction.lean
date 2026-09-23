@@ -15,26 +15,25 @@ lemma Four.radius_sq : Four.radius ^ 2 = 2 := by
   unfold Four.radius
   exact Real.sq_sqrt (by norm_num)
 
-def blockCorners : Fin 4 → Point := ![(-1,-1),(0,-1),(-1,0),(0,0)]
-def block : Fin 4 → UnitSquare := fun i => axisSquare (blockCorners i).1 (blockCorners i).2
+/-- The block in the frame of its disk centre. -/
+def Four.centers : Fin 4 → Point := ![(1/2,1/2),(-1/2,1/2),(-1/2,-1/2),(1/2,-1/2)]
 
-lemma block_disjoint : InteriorDisjoint block := by
+/-- The 2×2 block, centred at the origin. -/
+def Four.model : Fin 4 → UnitSquare := fun i => axisSquare (Four.centers i)
+
+lemma Four.model_disjoint : InteriorDisjoint Four.model := by
   intro i j hij
   apply axis_disjoint
-  fin_cases i <;> fin_cases j <;> norm_num [blockCorners,AxisSeparated] at *
+  fin_cases i <;> fin_cases j <;> norm_num [Four.centers,AxisSeparated] at *
 
-lemma block_packing : Packing block (0,0) (Real.sqrt 2) := by
-  refine ⟨Real.sqrt_nonneg _,?_,block_disjoint⟩
+theorem Four.model_packing : Packing Four.model (0,0) Four.radius := by
+  refine ⟨Four.radius_nonneg,?_,Four.model_disjoint⟩
   intro i
-  have hR := Real.sq_sqrt (show (0:ℝ) ≤ 2 by norm_num)
-  fin_cases i <;> dsimp [block,blockCorners] <;>
-    apply axis_contained (B := 1) (C := 1) <;> norm_num
+  fin_cases i <;> apply axis_contained (B := 1) (C := 1) <;>
+    norm_num [Four.model,Four.centers,Four.radius_sq]
 
 theorem Four.attainment :
     ∃ (S : Fin 4 → UnitSquare) (o : Point), Packing S o Four.radius :=
-  ⟨block,(0,0),block_packing⟩
-
-/-- The block in the frame of its disk centre. -/
-def Four.centers : Fin 4 → Point := ![(1/2,1/2),(-1/2,1/2),(-1/2,-1/2),(1/2,-1/2)]
+  ⟨Four.model,(0,0),Four.model_packing⟩
 
 end SquaresInCircles

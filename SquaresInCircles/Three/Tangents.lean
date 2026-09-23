@@ -1,4 +1,4 @@
-import SquaresInCircles.Common.Charts
+import SquaresInCircles.Common.Tangents
 
 /-!
 # The contact 16-gon
@@ -38,14 +38,13 @@ lemma p3_coordinates {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : P3 a b) :
 
 lemma p3Strict_to_p3 {a b : ℝ} (h : P3Strict a b) : P3 a b :=
   ⟨h.1.le, h.2.1.le, h.2.2.1.le, h.2.2.2.le⟩
+
 lemma p3_swap {a b : ℝ} (h : P3 a b) : P3 b a := by
   rcases h with ⟨h₀,h₁,h₂,h₃⟩
   exact ⟨by linarith, by linarith, by linarith, by linarith⟩
 
-lemma p3_chart {S : UnitSquare} {o : Point} (C : SquareChart S o)
-    (hp : P3 (alpha S o) (beta S o)) : P3 C.a C.b := by
-  rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩
-  · simpa only [ha,hb] using hp
-  · simpa only [ha,hb] using p3_swap hp
+lemma p3Strict_swap {a b : ℝ} (h : P3Strict a b) : P3Strict b a := by
+  rcases h with ⟨h₀,h₁,h₂,h₃⟩
+  exact ⟨by linarith, by linarith, by linarith, by linarith⟩
 
 end SquaresInCircles

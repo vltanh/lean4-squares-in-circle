@@ -80,11 +80,4 @@ theorem Two.uniqueness (S : Fin 2 → UnitSquare) (o : Point)
     · exact ⟨1,by convert q0 using 1; norm_num [Two.centers,turnPoint]⟩
     · exact ⟨0,by convert q1 using 1; norm_num [Two.centers,turnPoint]⟩
 
-theorem Two.rigid_uniqueness (S : Fin 2 → UnitSquare) (o : Point)
-    (hp : Packing S o Two.radius) :
-    ∃ (e : Point ≃ Point) (σ : Equiv.Perm (Fin 2)), e (0,0)=o ∧
-      (∀ p q, normSq (sub (e p) (e q))=normSq (sub p q)) ∧
-      (∀ i p, closedSquare (S (σ i)) (e p) ↔ ClosedRect (Two.centers i) p.1 p.2) :=
-  (Two.uniqueness S o hp).rigid_witness
-
 end SquaresInCircles

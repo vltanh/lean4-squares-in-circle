@@ -1,4 +1,3 @@
-import SquaresInCircles.Common.Charts
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Analysis.Real.Pi.Bounds
 
@@ -37,7 +36,7 @@ lemma arcsin_le_cubic {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 3/5) :
   have hx2 : x^2 ≤ 9/25 := by nlinarith
   have hsmall := mul_nonneg hx0 (show 0 ≤ 9/25-x^2 by linarith)
   have ht0 : 0 < t := by dsimp [t]; positivity
-  have ht : t ≤ (109:ℝ)/100*x := by dsimp [t]; nlinarith
+  have ht : t ≤ (109:ℝ)/100*x := by dsimp [t]; linarith
   have htcube : t^3 ≤ ((109:ℝ)/100)^3*x^3 := by
     calc
       t^3 ≤ ((109:ℝ)/100*x)^3 := by gcongr
@@ -45,19 +44,13 @@ lemma arcsin_le_cubic {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 3/5) :
   have hsin := Real.sin_gt_sub_cube ht0
   have hlower : x ≤ t-t^3/6 := by
     dsimp [t] at *
-    nlinarith [pow_nonneg hx0 3]
+    linarith [pow_nonneg hx0 3]
   have hdom : t ∈ Icc (-(Real.pi/2)) (Real.pi/2) := by
-    have hbound : t < 1 := by nlinarith
+    have hbound : t < 1 := by linarith
     exact ⟨by linarith [Real.pi_pos],by linarith [Real.two_le_pi]⟩
   exact (Real.arcsin_lt_iff_lt_sin
     (show x ∈ Icc (-1:ℝ) 1 by exact ⟨by linarith,by linarith⟩) hdom).mpr
     (lt_of_le_of_lt hlower hsin) |>.le
-
-lemma arcsin_sum_lt_zero {x y : ℝ} (hx : x ∈ Icc (-1:ℝ) 1) (hy : y ∈ Icc (-1:ℝ) 1) (hxy : x+y < 0) :
-    Real.arcsin x+Real.arcsin y < 0 := by
-  have hh := Real.arcsin_lt_arcsin hx.1 (show x < -y by linarith) (by linarith [hy.1])
-  rw [Real.arcsin_neg] at hh
-  linarith
 
 /-- A two-point arcsine comparison, proved by the sine midpoint identity. -/
 lemma arcsin_sum_gt_of_sin_lt {u v θ : ℝ}
@@ -86,7 +79,7 @@ lemma arcsin_sum_gt_of_sin_lt {u v θ : ℝ}
     linarith
   have hsin0 := Real.sin_nonneg_of_nonneg_of_le_pi hm.1 (by linarith [hm.2,Real.pi_pos])
   have hp := mul_nonneg hsin0 (sub_nonneg.mpr (Real.cos_le_one d))
-  have hs' : Real.sin θ < Real.sin m := by nlinarith
+  have hs' : Real.sin θ < Real.sin m := by linarith
   have hθm : θ < m := by
     by_contra hn
     have hle := Real.strictMonoOn_sin.monotoneOn
@@ -97,32 +90,6 @@ lemma arcsin_sum_gt_of_sin_lt {u v θ : ℝ}
   dsimp [m,A,B] at hθm
   linarith
 
-/-- A quarter-circle strip comparison, avoiding a special-angle radical. -/
-lemma arcsin_sum_gt_half_pi {u v : ℝ}
-    (hu : u ∈ Icc (0:ℝ) 1) (hv : v ∈ Icc (0:ℝ) 1)
-    (hsq : 1 < u^2+v^2) :
-    Real.pi/2 < Real.arcsin u+Real.arcsin v := by
-  let A := Real.arcsin u
-  let B := Real.arcsin v
-  have hA0 : 0 ≤ A := Real.arcsin_nonneg.mpr hu.1
-  have hB0 : 0 ≤ B := Real.arcsin_nonneg.mpr hv.1
-  have hA1 : A ≤ Real.pi/2 := Real.arcsin_le_pi_div_two _
-  have hB1 : B ≤ Real.pi/2 := Real.arcsin_le_pi_div_two _
-  by_contra hn
-  have hle : A ≤ Real.pi/2-B := by dsimp [A,B]; linarith
-  have hsin := Real.strictMonoOn_sin.monotoneOn
-    (show A ∈ Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [Real.pi_pos])
-    (show Real.pi/2-B ∈ Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [Real.pi_pos]) hle
-  rw [Real.sin_pi_div_two_sub] at hsin
-  have hsinA : Real.sin A=u := Real.sin_arcsin (by linarith [hu.1]) hu.2
-  have hsinB : Real.sin B=v := Real.sin_arcsin (by linarith [hv.1]) hv.2
-  rw [hsinA] at hsin
-  have hc0 : 0 ≤ Real.cos B := Real.cos_nonneg_of_mem_Icc
-    ⟨by linarith [Real.pi_pos],hB1⟩
-  have hunit := Real.sin_sq_add_cos_sq B
-  rw [hsinB] at hunit
-  nlinarith [mul_nonneg (sub_nonneg.mpr hsin) (add_nonneg hu.1 hc0)]
-
 /-- The crude cosine Taylor bound is sufficient with auxiliary radius `5/6`. -/
 lemma cos_gt_401_500 {t : ℝ} (ht : |t| ≤ Real.pi/5) :
     (401:ℝ)/500 < Real.cos t := by
@@ -130,7 +97,7 @@ lemma cos_gt_401_500 {t : ℝ} (ht : |t| ≤ Real.pi/5) :
   have ht' := abs_lt.mp habs
   have hsq : t^2 < ((22:ℝ)/35)^2 := by nlinarith
   have hc := Real.one_sub_sq_div_two_le_cos (x := t)
-  nlinarith
+  linarith
 
 lemma sin_pi_fifth_lt_three_fifths : Real.sin (Real.pi/5) < 3/5 := by
   have hc := cos_gt_401_500 (t := Real.pi/5)

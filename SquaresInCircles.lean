@@ -1,12 +1,7 @@
-import SquaresInCircles.One.Optimality
 import SquaresInCircles.One.Uniqueness
-import SquaresInCircles.Two.Optimality
 import SquaresInCircles.Two.Uniqueness
-import SquaresInCircles.Three.Optimality
 import SquaresInCircles.Three.Uniqueness
-import SquaresInCircles.Four.Optimality
 import SquaresInCircles.Four.Uniqueness
-import SquaresInCircles.Five.Optimality
 import SquaresInCircles.Five.Uniqueness
 
 /-!
@@ -70,6 +65,16 @@ theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
   · exact Three.uniqueness S o hp
   · exact Four.uniqueness S o hp
   · exact Five.uniqueness S o hp
+
+/-- Uniqueness with the frame replaced by an explicit isometry of the plane that
+takes the origin to the disk centre. -/
+theorem rigid_uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
+    (S : Fin n → UnitSquare) (o : Point) (hp : Packing S o (optimalRadius n)) :
+    ∃ (e : Point ≃ Point) (σ : Equiv.Perm (Fin n)), e (0,0)=o ∧
+      (∀ p q, normSq (sub (e p) (e q))=normSq (sub p q)) ∧
+      (∀ i p, (openSquare (S (σ i)) (e p) ↔ OpenRect (modelCenters n i) p.1 p.2) ∧
+        (closedSquare (S (σ i)) (e p) ↔ ClosedRect (modelCenters n i) p.1 p.2)) :=
+  (uniqueness n hn S o hp).rigid_witness
 
 /-- The optimum for `n ≤ 5` unit squares: lower bound, attainment, uniqueness. -/
 theorem optimality_attainment_uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5) :

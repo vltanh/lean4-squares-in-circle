@@ -1,35 +1,42 @@
 import SquaresInCircles.Common.Basic
 
 /-! Axis-parallel unit squares: the disjointness and disk-containment tests
-used by the attaining packings for one, two, four and five squares. -/
+used by the attaining packings. -/
 noncomputable section
 namespace SquaresInCircles
+
+/-- The axis-parallel unit square centred at `c`. -/
+def axisSquare (c : Point) : UnitSquare where
+  center := c
+  cosine := 1
+  sine := 0
+  unit := by norm_num
+
+lemma axisSquare_local (c p : Point) :
+    localX (axisSquare c) p=p.1-c.1 ∧ localY (axisSquare c) p=p.2-c.2 := by
+  constructor <;> simp [localX,localY,axisSquare]
 
 def AxisSeparated (p q : Point) : Prop :=
   p.1+1 ≤ q.1 ∨ q.1+1 ≤ p.1 ∨ p.2+1 ≤ q.2 ∨ q.2+1 ≤ p.2
 
 lemma axis_disjoint {p q : Point} (hs : AxisSeparated p q) :
-    ∀ x, ¬ (openSquare (axisSquare p.1 p.2) x ∧ openSquare (axisSquare q.1 q.2) x) := by
-  intro x hx
-  have hp := (open_axisSquare_iff _ _ _).mp hx.1
-  have hq := (open_axisSquare_iff _ _ _).mp hx.2
-  rcases hs with h | h | h | h <;> linarith [hp.1,hp.2.1,hp.2.2.1,hp.2.2.2,
-    hq.1,hq.2.1,hq.2.2.1,hq.2.2.2]
+    ∀ x, ¬ (openSquare (axisSquare p) x ∧ openSquare (axisSquare q) x) := by
+  rintro x ⟨hp,hq⟩
+  simp only [openSquare,(axisSquare_local _ _).1,(axisSquare_local _ _).2,abs_lt] at hp hq
+  rcases hs with h | h | h | h <;> linarith [hp.1.1,hp.1.2,hp.2.1,hp.2.2,
+    hq.1.1,hq.1.2,hq.2.1,hq.2.2]
 
-lemma sq_le_of_interval {x B : ℝ} (h0 : -B ≤ x) (h1 : x ≤ B) : x^2 ≤ B^2 := by
-  have hh := mul_nonneg (show 0 ≤ x+B by linarith) (show 0 ≤ B-x by linarith)
-  nlinarith
-
-lemma axis_contained {x y B C R : ℝ}
-    (hx0 : -B ≤ x) (hx1 : x+1 ≤ B) (hy0 : -C ≤ y) (hy1 : y+1 ≤ C)
+/-- The square centred at `c` lies in the disk of radius `R` about the origin
+when it lies in the box `[-B,B] × [-C,C]` and `B² + C² ≤ R²`. -/
+lemma axis_contained {c : Point} {B C R : ℝ}
+    (hx0 : -B ≤ c.1-1/2) (hx1 : c.1+1/2 ≤ B) (hy0 : -C ≤ c.2-1/2) (hy1 : c.2+1/2 ≤ C)
     (hR : B^2+C^2 ≤ R^2) :
-    ∀ p, closedSquare (axisSquare x y) p → inDisk (0,0) R p := by
+    ∀ p, closedSquare (axisSquare c) p → inDisk (0,0) R p := by
   intro p hp
-  have hh := (closed_axisSquare_iff x y p).mp hp
-  have hx := sq_le_of_interval (x := p.1) (B := B) (by linarith [hh.1]) (by linarith [hh.2.1])
-  have hy := sq_le_of_interval (x := p.2) (B := C) (by linarith [hh.2.2.1])
-    (by linarith [hh.2.2.2])
+  simp only [closedSquare,(axisSquare_local _ _).1,(axisSquare_local _ _).2,abs_le] at hp
+  have hx := sq_le_sq' (a := p.1) (b := B) (by linarith [hp.1.1]) (by linarith [hp.1.2])
+  have hy := sq_le_sq' (a := p.2) (b := C) (by linarith [hp.2.1]) (by linarith [hp.2.2])
   dsimp [inDisk,normSq,sub]
-  nlinarith
+  linarith
 
 end SquaresInCircles

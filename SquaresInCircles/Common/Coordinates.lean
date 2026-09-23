@@ -1,18 +1,15 @@
 import SquaresInCircles.Common.Charts
+import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
 # Cartesian access to the square charts
 
-The final overlap witness must concern actual square interiors. The lemmas
-here recover Cartesian membership from the existing all-radius chart identity.
+Points in a rotated frame at the disk centre, Cartesian membership recovered
+from the all-radius chart identity, and inscribed disks.
 -/
 noncomputable section
 open Set
 namespace SquaresInCircles
-
-/-- A point with coordinates `(x,y)` in the positively oriented frame at `phase`. -/
-def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
-  (o.1+phase.cos*x-phase.sin*y, o.2+phase.sin*x+phase.cos*y)
 
 lemma pointInDirection_polar (o : Point) (phase : Direction) (r t : ℝ) :
     pointInDirection o phase (r*Real.cos t) (r*Real.sin t) =
@@ -28,32 +25,10 @@ lemma pointInDirection_norm (o : Point) (phase : Direction) (x y : ℝ) :
       dsimp [normSq,sub,pointInDirection]; ring
     _ = _ := by rw [Real.Angle.cos_sq_add_sin_sq]; ring
 
+/-- Polar coordinates, from the polar form of the complex number `x + iy`. -/
 lemma plane_polar (x y : ℝ) :
-    ∃ r t : ℝ, r*Real.cos t=x ∧ r*Real.sin t=y := by
-  by_cases hz : x=0 ∧ y=0
-  · exact ⟨0,0,by simp [hz.1],by simp [hz.2]⟩
-  let r := Real.sqrt (x^2+y^2)
-  have hr : 0 < r := Real.sqrt_pos.mpr (by
-    by_contra hn
-    have hx : x=0 := by nlinarith [sq_nonneg x,sq_nonneg y]
-    have hy : y=0 := by nlinarith [sq_nonneg x,sq_nonneg y]
-    exact hz ⟨hx,hy⟩)
-  have hr2 : r^2=x^2+y^2 := Real.sq_sqrt (by positivity)
-  let F : UnitSquare :=
-    { center := (0,0)
-      cosine := x/r
-      sine := y/r
-      unit := by
-        rw [div_pow,div_pow,← add_div,← hr2]
-        exact div_self (ne_of_gt (sq_pos_of_pos hr)) }
-  obtain ⟨t,htc,hts⟩ := frame_angle F
-  refine ⟨r,t,?_,?_⟩
-  · rw [htc]
-    dsimp [F]
-    field_simp [ne_of_gt hr]
-  · rw [hts]
-    dsimp [F]
-    field_simp [ne_of_gt hr]
+    ∃ r t : ℝ, r*Real.cos t=x ∧ r*Real.sin t=y :=
+  ⟨_,_,Complex.norm_mul_cos_arg ⟨x,y⟩,Complex.norm_mul_sin_arg ⟨x,y⟩⟩
 
 /-- Reversal of a chart changes only the sign of its transverse center coordinate. -/
 def SquareChart.signedB {S : UnitSquare} {o : Point} (C : SquareChart S o) : ℝ :=
@@ -129,27 +104,5 @@ lemma inscribed_disk_mem (S : UnitSquare) (o : Point) {a p : ℝ}
     have hb := abs_add_le (frameY S (sub z o)) (localY S o)
     change |localY S o| ≤ a at hy
     linarith
-
-/-- Build an occupied symmetric cap with its midpoint direction retained. -/
-def symmetricChartArc {S : UnitSquare} {o : Point} (C : SquareChart S o)
-    (r A : ℝ) (hA : 0 < A) (hApi : A ≤ Real.pi)
-    (hm : ∀ t ∈ Ioo (-A) A,
-      |r*Real.cos t-C.a| < 1/2 ∧ |r*Real.sin t-C.b| < 1/2) :
-    OpenArc o r {z | openSquare S z} where
-  center := C.phase
-  halfWidth := A
-  positive := hA
-  atMostPi := hApi
-  inside := by
-    intro θ hθ
-    let t := (θ-C.phase).toReal
-    have ht : |t| < A := by simpa only [direction_dist] using hθ
-    have he : θ=C.phase+(t:Direction) := direction_offset _ _
-    cases hr : C.reversed
-    · have h := (C.membership r t).mpr (hm t (abs_lt.mp ht))
-      simpa only [chartAngle,hr,Bool.false_eq_true,ite_false,he,Set.mem_ofPred_eq] using h
-    · have h := (C.membership r (-t)).mpr (hm (-t)
-        ⟨by linarith [(abs_lt.mp ht).2],by linarith [(abs_lt.mp ht).1]⟩)
-      simpa only [chartAngle,hr,ite_true,neg_neg,he,Set.mem_ofPred_eq] using h
 
 end SquaresInCircles

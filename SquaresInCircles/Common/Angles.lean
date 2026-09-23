@@ -1,16 +1,11 @@
 import SquaresInCircles.Common.NormalForm
 import SquaresInCircles.Common.ArcMetric
+import Mathlib.Data.Fin.Tuple.Sort
 
 /-! Small circular-order lemmas used only for the equality cases. -/
 noncomputable section
 open Set
 namespace SquaresInCircles
-
-lemma cos_sub_distance (φ ψ : Direction) : (ψ-φ).cos=Real.cos (dist φ ψ) := by
-  have h := congrArg Real.Angle.cos (Real.Angle.coe_toReal (ψ-φ))
-  rw [Real.Angle.cos_coe] at h
-  rw [dist_comm,direction_dist,Real.cos_abs]
-  exact h.symm
 
 lemma angle_ext {φ ψ : Direction} (hc : φ.cos=ψ.cos) (hs : φ.sin=ψ.sin) : φ=ψ := by
   have hcφ := congrArg Real.Angle.cos (Real.Angle.coe_toReal φ)
@@ -29,27 +24,6 @@ lemma antipodal_of_distance {φ ψ : Direction} (h : dist φ ψ=Real.pi) :
   have he : ψ-φ=(Real.pi:Direction) := angle_ext
     (by simpa using hc) (by simpa using hs)
   exact sub_eq_iff_eq_add.mp he |>.trans (add_comm _ _)
-
-lemma chart_interval_arc {S : UnitSquare} {o : Point} (C : SquareChart S o)
-    (r l u : ℝ) (hlu : l < u) (hlen : u-l ≤ 2*Real.pi)
-    (hm : ∀ t ∈ Ioo l u, |r*Real.cos t-C.a|<1/2 ∧ |r*Real.sin t-C.b|<1/2) :
-    ∃ A : OpenArc o r {p | openSquare S p},
-      A.halfWidth=(u-l)/2 ∧ A.center=chartAngle C.phase C.reversed ((l+u)/2) := by
-  cases hr : C.reversed
-  · let A := arcOfInterval o r {p | openSquare S p} C.phase l u hlu hlen
-      (fun t ht => by simpa only [chartAngle,hr,Bool.false_eq_true,ite_false,
-        Set.mem_ofPred_eq] using (C.membership r t).mpr (hm t ht))
-    exact ⟨A,rfl,by simp only [A,arcOfInterval,chartAngle,Bool.false_eq_true,ite_false]⟩
-  · let A := arcOfInterval o r {p | openSquare S p} C.phase (-u) (-l)
-      (by linarith) (by linarith)
-      (fun t ht => by
-        have h := (C.membership r (-t)).mpr
-          (hm (-t) ⟨by linarith [ht.2],by linarith [ht.1]⟩)
-        simpa only [chartAngle,hr,ite_true,neg_neg,Set.mem_ofPred_eq] using h)
-    refine ⟨A,by dsimp [A,arcOfInterval]; ring,?_⟩
-    show C.phase+(((-u+-l)/2:ℝ):Direction)=chartAngle C.phase true ((l+u)/2)
-    rw [show (-u+-l)/2=-((l+u)/2) by ring]
-    simp only [chartAngle,ite_true]
 
 def quarterShift : Fin 4 → Direction :=
   ![0,((Real.pi/2:ℝ):Direction),(Real.pi:Direction),((-Real.pi/2:ℝ):Direction)]
@@ -70,22 +44,8 @@ lemma represents_quarter {S : UnitSquare} {o : Point} {φ : Direction} {c : Poin
     obtain ⟨h1a,h1b⟩ := abs_lt.mp h1 <;> obtain ⟨h2a,h2b⟩ := abs_lt.mp h2 <;>
     exact ⟨abs_lt.mpr ⟨by linarith,by linarith⟩,abs_lt.mpr ⟨by linarith,by linarith⟩⟩
 
-lemma sort_three_values (t : Fin 3 → ℝ) :
-    ∃ f : Fin 3 → Fin 3, Function.Injective f ∧ t (f 0) ≤ t (f 1) ∧ t (f 1) ≤ t (f 2) := by
-  rcases le_total (t 0) (t 1) with h01 | h10
-  · rcases le_total (t 1) (t 2) with h12 | h21
-    · exact ⟨![0,1,2],by decide,h01,h12⟩
-    · rcases le_total (t 0) (t 2) with h02 | h20
-      · exact ⟨![0,2,1],by decide,h02,h21⟩
-      · exact ⟨![2,0,1],by decide,h20,h01⟩
-  · rcases le_total (t 0) (t 2) with h02 | h20
-    · exact ⟨![1,0,2],by decide,h10,h02⟩
-    · rcases le_total (t 1) (t 2) with h12 | h21
-      · exact ⟨![1,2,0],by decide,h12,h20⟩
-      · exact ⟨![2,1,0],by decide,h21,h10⟩
-
-lemma sorted_three_grid {P x y z : ℝ} (_hP : 0 < P)
-    (hx : -P < x) (hz : z ≤ P) (_hxy : x ≤ y) (_hyz : y ≤ z)
+lemma sorted_three_grid {P x y z : ℝ}
+    (hx : -P < x) (hz : z ≤ P)
     (hxabs : P/2 ≤ |x|) (hyabs : P/2 ≤ |y|)
     (hgap₁ : P/2 ≤ y-x) (hgap₂ : P/2 ≤ z-y) (hwrap : z-x ≤ 3*P/2) :
     x= -P/2 ∧ y=P/2 ∧ z=P := by
@@ -125,14 +85,17 @@ lemma four_directions_grid (θ : Fin 4 → Direction)
         have hj := (θ j.succ-θ 0).abs_toReal_le_pi
         linarith)
     exact ⟨h.trans h₁,by linarith⟩
-  obtain ⟨f,hf,h01,h12⟩ := sort_three_values t
+  obtain ⟨f,hf,h01,h12⟩ : ∃ f : Fin 3 → Fin 3, Function.Injective f ∧
+      t (f 0) ≤ t (f 1) ∧ t (f 1) ≤ t (f 2) :=
+    ⟨Tuple.sort t,(Tuple.sort t).injective,Tuple.monotone_sort t (by decide),
+      Tuple.monotone_sort t (by decide)⟩
   have h01' := (hpairs (f 0) (f 1) (fun h => (by decide : (0:Fin 3) ≠ 1) (hf h))).1
   have h12' := (hpairs (f 1) (f 2) (fun h => (by decide : (1:Fin 3) ≠ 2) (hf h))).1
   have h02' := (hpairs (f 0) (f 2) (fun h => (by decide : (0:Fin 3) ≠ 2) (hf h))).2
   rw [abs_of_nonpos (sub_nonpos.mpr h01)] at h01'
   rw [abs_of_nonpos (sub_nonpos.mpr h12)] at h12'
   rw [abs_of_nonpos (sub_nonpos.mpr (h01.trans h12))] at h02'
-  have hv := sorted_three_grid Real.pi_pos (ht (f 0)).1 (ht (f 2)).2.1 h01 h12
+  have hv := sorted_three_grid (ht (f 0)).1 (ht (f 2)).2.1
     (ht (f 0)).2.2 (ht (f 1)).2.2 (by linarith) (by linarith) (by linarith)
   have htgrid (i : Fin 3) : t i= -Real.pi/2 ∨ t i=Real.pi/2 ∨ t i=Real.pi := by
     obtain ⟨j,rfl⟩ := Finite.surjective_of_injective hf i
@@ -158,9 +121,5 @@ lemma represents_cardinal {S : UnitSquare} {o : Point} {φ ψ : Direction} {c : 
   have he' : φ=ψ+quarterShift k := by rw [← he]; abel
   rw [he'] at h
   exact represents_quarter k h
-
-lemma cos_two_pi_thirds : Real.cos (2*Real.pi/3)= -(1/2:ℝ) := by
-  rw [show 2*Real.pi/3=2*(Real.pi/3) by ring,Real.cos_two_mul,Real.cos_pi_div_three]
-  norm_num
 
 end SquaresInCircles

@@ -1,8 +1,9 @@
 import SquaresInCircles
 
 /-!
-Regression checks: the radius table, the exact rational margins the proofs rely
-on, the contact points of the polygon relaxations, and the public statements.
+Regression checks: the radius and centre tables, the exact rational margins the
+proofs rely on, the contact points of the polygon relaxations, and the public
+statements.
 -/
 noncomputable section
 open SquaresInCircles
@@ -13,6 +14,13 @@ example : optimalRadius 2 = Real.sqrt 5 / 2 := rfl
 example : optimalRadius 3 = 5 * Real.sqrt 17 / 16 := rfl
 example : optimalRadius 4 = Real.sqrt 2 := rfl
 example : optimalRadius 5 = Real.sqrt (5 / 2) := rfl
+
+-- The centre table.
+example : modelCenters 1 = ![(0,0)] := rfl
+example : modelCenters 2 = ![(-1/2,0),(1/2,0)] := rfl
+example : modelCenters 3 = ![(-1/2,-5/16),(1/2,-5/16),(0,11/16)] := rfl
+example : modelCenters 4 = ![(1/2,1/2),(-1/2,1/2),(-1/2,-1/2),(1/2,-1/2)] := rfl
+example : modelCenters 5 = ![(0,0),(1,0),(0,1),(-1,0),(0,-1)] := rfl
 
 -- Three squares: deficit, radial and transverse margins.
 example : (22:ℝ)/42-13/29 = 46/609 := by norm_num
@@ -45,7 +53,12 @@ example : ((5:ℝ)/6+1/2)^2+(1/2)^2 > 2 := by norm_num
 example : P3 (1/2) (5/16) := by norm_num [P3]
 example : P3 (11/16) 0 := by norm_num [P3]
 example : P4 (1/2) (1/2) := by norm_num [P4]
-example : P8 1 0 := by norm_num [P8]
+example : P5 1 0 := by
+  have h := Real.sq_sqrt (show (0:ℝ) ≤ 5 by norm_num)
+  exact ⟨by norm_num [P8],by nlinarith [Real.sqrt_nonneg 5]⟩
+example : P5 ((Real.sqrt 5-1)/2) ((Real.sqrt 5-1)/2) := by
+  have h := Real.sq_sqrt (show (0:ℝ) ≤ 5 by norm_num)
+  refine ⟨⟨?_,?_⟩,by linarith⟩ <;> nlinarith [Real.sqrt_nonneg 5]
 
 -- Public statements.
 example (S : Fin 3 → UnitSquare) (o : Point) (R : ℝ)
@@ -63,9 +76,9 @@ example : HasNormalForm One.model (0,0) One.centers :=
   One.uniqueness One.model (0,0) One.model_packing
 example : HasNormalForm Two.model (0,0) Two.centers :=
   Two.uniqueness Two.model (0,0) Two.model_packing
-example : HasNormalForm tSquares tCenter Three.centers :=
-  Three.uniqueness tSquares tCenter tSquares_packing
-example : HasNormalForm block (0,0) Four.centers :=
-  Four.uniqueness block (0,0) block_packing
-example : HasNormalForm plus (0,0) Five.centers :=
-  Five.uniqueness plus (0,0) plus_packing
+example : HasNormalForm Three.model (0,0) Three.centers :=
+  Three.uniqueness Three.model (0,0) Three.model_packing
+example : HasNormalForm Four.model (0,0) Four.centers :=
+  Four.uniqueness Four.model (0,0) Four.model_packing
+example : HasNormalForm Five.model (0,0) Five.centers :=
+  Five.uniqueness Five.model (0,0) Five.model_packing

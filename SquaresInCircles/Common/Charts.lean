@@ -76,7 +76,6 @@ structure SquareChart (S : UnitSquare) (o : Point) where
     (sub (circlePoint o r (chartAngle phase reversed t)) (scale m (sub S.center o))) ↔
     |r*Real.cos t-(1+m)*a| < 1/2 ∧ |r*Real.sin t-(1+m)*b| < 1/2
 
-
 lemma SquareChart.membership {S : UnitSquare} {o : Point} (C : SquareChart S o)
     (r t : ℝ) : openSquare S (circlePoint o r (chartAngle C.phase C.reversed t)) ↔
       |r*Real.cos t-C.a| < 1/2 ∧ |r*Real.sin t-C.b| < 1/2 := by
@@ -90,10 +89,23 @@ lemma SquareChart.ray_mem {S : UnitSquare} {o : Point} (C : SquareChart S o)
   refine ⟨m,hm,_,(C.shifted_membership r t m).mpr ⟨hx,hy⟩,?_⟩
   apply Prod.ext <;> dsimp [add,sub,scale] <;> ring
 
+/-- A fact about the absolute centre coordinates that is symmetric in them
+holds for the chart's coordinates. -/
+lemma SquareChart.transfer {S : UnitSquare} {o : Point} (C : SquareChart S o)
+    (P : ℝ → ℝ → Prop) (hsymm : ∀ {a b}, P a b → P b a)
+    (h : P (alpha S o) (beta S o)) : P C.a C.b := by
+  rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩ <;> rw [ha,hb]
+  · exact h
+  · exact hsymm h
+
+lemma chart_phi {S : UnitSquare} {o : Point} (C : SquareChart S o)
+    {K : ℝ} (h : phi (alpha S o) (beta S o) ≤ K) : phi C.a C.b ≤ K :=
+  C.transfer (fun a b => phi a b ≤ K) (fun h => by unfold phi at *; linarith) h
+
 lemma SquareChart.nonneg {S : UnitSquare} {o : Point} (C : SquareChart S o) :
-    0 ≤ C.a ∧ 0 ≤ C.b := by
-  rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩ <;>
-    rw [ha,hb] <;> exact ⟨abs_nonneg _,abs_nonneg _⟩
+    0 ≤ C.a ∧ 0 ≤ C.b :=
+  C.transfer (fun a b => 0 ≤ a ∧ 0 ≤ b) (fun h => ⟨h.2,h.1⟩)
+    ⟨alpha_nonneg S o,beta_nonneg S o⟩
 
 lemma square_chart (S : UnitSquare) (o : Point) : Nonempty (SquareChart S o) := by
   obtain ⟨θ,hcos,hsin⟩ := frame_angle S
@@ -178,38 +190,32 @@ lemma SquareChart.exterior {S : UnitSquare} {o : Point} (C : SquareChart S o)
   by_contra hn
   exact hout (C.origin.mpr ⟨lt_of_not_ge hn,lt_of_le_of_lt hsort (lt_of_not_ge hn)⟩)
 
-/-- Build an arc from a canonical coordinate interval, with either orientation. -/
+/-- Build an arc from a chart-parameter interval, with either orientation. -/
+lemma arcFromChartInterval (o : Point) (r : ℝ) (U : Set Point)
+    (phase : Direction) (rev : Bool) (l u : ℝ) (hlu : l < u) (hlen : u-l ≤ 2*Real.pi)
+    (hmem : ∀ t ∈ Ioo l u, circlePoint o r (chartAngle phase rev t) ∈ U) :
+    ∃ A : OpenArc o r U,
+      A.halfWidth=(u-l)/2 ∧ A.center=chartAngle phase rev ((l+u)/2) := by
+  cases rev
+  · exact ⟨arcOfInterval o r U phase l u hlu hlen
+      (fun t ht => by simpa [chartAngle] using hmem t ht),rfl,by simp [arcOfInterval,chartAngle]⟩
+  · refine ⟨arcOfInterval o r U phase (-u) (-l) (by linarith) (by linarith)
+      (fun t ht => by
+        have hm := hmem (-t) ⟨by linarith [ht.2],by linarith [ht.1]⟩
+        simpa only [chartAngle,ite_true,neg_neg] using hm),
+      by dsimp [arcOfInterval]; ring,?_⟩
+    show phase+(((-u+-l)/2:ℝ):Direction)=chartAngle phase true ((l+u)/2)
+    rw [show (-u+-l)/2=-((l+u)/2) by ring]
+    simp only [chartAngle,ite_true]
+
+/-- An arc of a square from an interval of its chart parameter. -/
 lemma SquareChart.arc {S : UnitSquare} {o : Point} (C : SquareChart S o)
     (r l u : ℝ) (hlu : l < u) (hlen : u-l ≤ 2*Real.pi)
     (hmem : ∀ t ∈ Ioo l u,
       |r*Real.cos t-C.a| < 1/2 ∧ |r*Real.sin t-C.b| < 1/2) :
-    ∃ A : OpenArc o r {p | openSquare S p}, A.halfWidth=(u-l)/2 := by
-  cases hrev : C.reversed
-  · let A := arcOfInterval o r {p | openSquare S p} C.phase l u hlu hlen
-      (fun t ht => by
-        have hm := (C.membership r t).mpr (hmem t ht)
-        simpa only [chartAngle,hrev,Bool.false_eq_true,ite_false,Set.mem_ofPred_eq] using hm)
-    refine ⟨A,rfl⟩
-  · let A := arcOfInterval o r {p | openSquare S p} C.phase (-u) (-l)
-      (by linarith) (by linarith) (fun t ht => by
-        have hm := (C.membership r (-t)).mpr
-          (hmem (-t) ⟨by linarith [ht.2],by linarith [ht.1]⟩)
-        simpa only [chartAngle,hrev,ite_true,neg_neg,Set.mem_ofPred_eq] using hm)
-    refine ⟨A,?_⟩
-    dsimp [A,arcOfInterval]; ring
-
-
-lemma arcFromChartInterval (o : Point) (r : ℝ) (U : Set Point)
-    (phase : Direction) (rev : Bool) (l u : ℝ) (hlu : l < u) (hlen : u-l ≤ 2*Real.pi)
-    (hmem : ∀ t ∈ Ioo l u, circlePoint o r (chartAngle phase rev t) ∈ U) :
-    ∃ A : OpenArc o r U, A.halfWidth=(u-l)/2 := by
-  cases rev
-  · exact ⟨arcOfInterval o r U phase l u hlu hlen
-      (fun t ht => by simpa [chartAngle] using hmem t ht),rfl⟩
-  · let A := arcOfInterval o r U phase (-u) (-l) (by linarith) (by linarith)
-      (fun t ht => by
-        have hm := hmem (-t) ⟨by linarith [ht.2],by linarith [ht.1]⟩
-        simpa only [chartAngle,ite_true,neg_neg] using hm)
-    exact ⟨A,by dsimp [A,arcOfInterval]; ring⟩
+    ∃ A : OpenArc o r {p | openSquare S p},
+      A.halfWidth=(u-l)/2 ∧ A.center=chartAngle C.phase C.reversed ((l+u)/2) :=
+  arcFromChartInterval o r _ C.phase C.reversed l u hlu hlen
+    (fun t ht => (C.membership r t).mpr (hmem t ht))
 
 end SquaresInCircles

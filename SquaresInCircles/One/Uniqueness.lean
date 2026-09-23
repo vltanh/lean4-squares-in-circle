@@ -32,11 +32,4 @@ theorem One.uniqueness (S : Fin 1 → UnitSquare) (o : Point)
   simpa only [hc,sub,sub_self,frameX,frameY,mul_zero,add_zero] using
     self_represents (S 0) o (t:Direction) hcos hsin
 
-theorem One.rigid_uniqueness (S : Fin 1 → UnitSquare) (o : Point)
-    (hp : Packing S o One.radius) :
-    ∃ (e : Point ≃ Point) (σ : Equiv.Perm (Fin 1)), e (0,0)=o ∧
-      (∀ p q, normSq (sub (e p) (e q))=normSq (sub p q)) ∧
-      (∀ i p, closedSquare (S (σ i)) (e p) ↔ ClosedRect (One.centers i) p.1 p.2) :=
-  (One.uniqueness S o hp).rigid_witness
-
 end SquaresInCircles

@@ -20,13 +20,6 @@ theorem One.squared_lower (S : Fin 1 → UnitSquare) (o : Point) (R : ℝ)
 
 theorem One.optimality (S : Fin 1 → UnitSquare) (o : Point) (R : ℝ)
     (hp : Packing S o R) : One.radius ≤ R :=
-  radius_lower_of_squared hp.1
-    (by rw [One.radius_sq]; exact One.squared_lower S o R hp)
-
-theorem One.optimality_and_attainment :
-    (∀ (S : Fin 1 → UnitSquare) (o : Point) (R : ℝ),
-      Packing S o R → One.radius ≤ R) ∧
-    ∃ (S : Fin 1 → UnitSquare) (o : Point), Packing S o One.radius :=
-  ⟨One.optimality,One.attainment⟩
+  le_of_sq_le_sq (by rw [One.radius_sq]; exact One.squared_lower S o R hp) hp.1
 
 end SquaresInCircles

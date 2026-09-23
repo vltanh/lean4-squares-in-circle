@@ -17,11 +17,6 @@ lemma direction_coe_norm_le (t : ℝ) : ‖(t : Direction)‖ ≤ |t| := by
   rw [Real.norm_eq_abs] at h
   exact h
 
-lemma direction_dist_coe_le (a b : ℝ) :
-    dist (a : Direction) (b : Direction) ≤ |a-b| := by
-  rw [dist_eq_norm, ← Real.Angle.coe_sub]
-  exact direction_coe_norm_le _
-
 lemma direction_diameter (a b : Direction) : dist a b ≤ Real.pi := by
   rw [direction_dist]
   exact (a-b).abs_toReal_le_pi
@@ -113,32 +108,6 @@ lemma direction_triangle_perimeter (x y z : Direction) :
     rcases le_total (a-b) 0 with hab | hab <;>
     simp_all only [abs_of_nonneg,abs_of_nonpos] <;> linarith
 
-lemma triple_arc_budget {o : Point} {r : ℝ} {U V W : Set Point}
-    (A : OpenArc o r U) (B : OpenArc o r V) (C : OpenArc o r W)
-    (hUV : Disjoint U V) (hUW : Disjoint U W) (hVW : Disjoint V W) :
-    A.halfWidth+B.halfWidth+C.halfWidth ≤ Real.pi := by
-  let regions : Fin 3 → Set Point := ![U,V,W]
-  let arcs : (i : Fin 3) → OpenArc o r (regions i) := fun i =>
-    match i with
-    | 0 => A
-    | 1 => B
-    | 2 => C
-  have hdisj : Pairwise (fun i j => Disjoint (regions i) (regions j)) := by
-    intro i j hij
-    fin_cases i <;> fin_cases j
-    · exact False.elim (hij rfl)
-    · exact hUV
-    · exact hUW
-    · exact hUV.symm
-    · exact False.elim (hij rfl)
-    · exact hVW
-    · exact hUW.symm
-    · exact hVW.symm
-    · exact False.elim (hij rfl)
-  have h := open_arc_budget arcs hdisj
-  rw [Fin.sum_univ_three] at h
-  exact h
-
 /-- Bounds for the third separation supplied by three disjoint arc witnesses. -/
 lemma OpenArc.third_distance_bounds {o : Point} {r : ℝ} {U V W : Set Point}
     (A : OpenArc o r U) (B : OpenArc o r V) (C : OpenArc o r W)
@@ -152,5 +121,22 @@ lemma OpenArc.third_distance_bounds {o : Point} {r : ℝ} {U V W : Set Point}
   have hp := direction_triangle_perimeter B.center C.center A.center
   rw [dist_comm C.center A.center] at hp
   linarith
+
+lemma triple_arc_budget {o : Point} {r : ℝ} {U V W : Set Point}
+    (A : OpenArc o r U) (B : OpenArc o r V) (C : OpenArc o r W)
+    (hUV : Disjoint U V) (hUW : Disjoint U W) (hVW : Disjoint V W) :
+    A.halfWidth+B.halfWidth+C.halfWidth ≤ Real.pi := by
+  have h := A.third_distance_bounds B C hUV hUW hVW
+  linarith [h.1,h.2]
+
+lemma cos_sub_distance (φ ψ : Direction) : (ψ-φ).cos=Real.cos (dist φ ψ) := by
+  have h := congrArg Real.Angle.cos (Real.Angle.coe_toReal (ψ-φ))
+  rw [Real.Angle.cos_coe] at h
+  rw [dist_comm,direction_dist,Real.cos_abs]
+  exact h.symm
+
+lemma cos_two_pi_thirds : Real.cos (2*Real.pi/3)= -(1/2:ℝ) := by
+  rw [show 2*Real.pi/3=2*(Real.pi/3) by ring,Real.cos_two_mul,Real.cos_pi_div_three]
+  norm_num
 
 end SquaresInCircles

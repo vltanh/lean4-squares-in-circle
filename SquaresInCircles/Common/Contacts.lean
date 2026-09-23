@@ -1,7 +1,8 @@
 import SquaresInCircles.Common.NormalForm
 
-/-! Rigidity of two unit squares at center distance one.  The supporting
-functional comes from the already compiled separation theorem. -/
+/-! Centres of interior-disjoint unit squares are at least 1 apart, and at
+distance exactly 1 the squares are side-neighbours. The supporting functional
+comes from `support_separator`. -/
 noncomputable section
 namespace SquaresInCircles
 
@@ -69,16 +70,14 @@ lemma same_axes_represents (S T : UnitSquare) (o : Point) (φ : Direction)
     have hu := S.unit
     dsimp [localX,pointInDirection,relativeC,relativeS,frameX,frameY,sub]
     rw [hc,hs]
-    nlinarith only [congrArg (fun z : ℝ => z*T.cosine*(T.center.1-o.1)) hu,
-      congrArg (fun z : ℝ => z*T.sine*(T.center.2-o.2)) hu]
+    linear_combination (T.cosine*(T.center.1-o.1)+T.sine*(T.center.2-o.2))*hu
   have heY : localY T (pointInDirection o φ x y)=
       -relativeS S T*(x-frameX S (sub T.center o))+
       relativeC S T*(y-frameY S (sub T.center o)) := by
     have hu := S.unit
     dsimp [localY,pointInDirection,relativeC,relativeS,frameX,frameY,sub]
     rw [hc,hs]
-    nlinarith only [congrArg (fun z : ℝ => z*T.sine*(T.center.1-o.1)) hu,
-      congrArg (fun z : ℝ => z*T.cosine*(T.center.2-o.2)) hu]
+    linear_combination (T.cosine*(T.center.2-o.2)-T.sine*(T.center.1-o.1))*hu
   simp only [openSquare,heX,heY]
   exact cardinal_box (relative_unit S T) haxes
 
@@ -104,7 +103,7 @@ lemma centers_distance_sq_ge_one (S T : UnitSquare)
 lemma cauchy_sq (u v : Point) : (dot u v)^2 ≤ normSq u*normSq v := by
   have h := sq_nonneg (u.1*v.2-u.2*v.1)
   dsimp [dot,normSq]
-  nlinarith
+  linarith
 
 lemma width_lower (S : UnitSquare) (n : Point) :
     Real.sqrt (normSq n) ≤ |frameX S n|+|frameY S n| := by
@@ -124,7 +123,7 @@ lemma unit_contact (S T : UnitSquare)
        (frameX S (sub T.center S.center)=0 ∧ frameY S (sub T.center S.center)=1) ∨
        (frameX S (sub T.center S.center)= -1 ∧ frameY S (sub T.center S.center)=0) ∨
        (frameX S (sub T.center S.center)=0 ∧ frameY S (sub T.center S.center)= -1)) := by
-  obtain ⟨e⟩ := separation_exists S T hd
+  obtain ⟨e⟩ := support_separator S T hd
   let n := e.normal
   let d := sub T.center S.center
   let r := Real.sqrt (normSq n)
@@ -145,20 +144,22 @@ lemma unit_contact (S T : UnitSquare)
   have hprodS : frameX S n*frameY S n=0 := by
     have hu := frame_norm S n
     have ha : |frameX S n| * |frameY S n|=0 := by
-      nlinarith [sq_abs (frameX S n),sq_abs (frameY S n)]
+      linear_combination (1/2*(|frameX S n|+|frameY S n|+r))*hSumS+1/2*hr2-1/2*hu-
+        1/2*sq_abs (frameX S n)-1/2*sq_abs (frameY S n)
     exact abs_eq_zero.mp (by simpa only [abs_mul] using ha)
   have hprodT : frameX T n*frameY T n=0 := by
     have hu := frame_norm T n
     have ha : |frameX T n| * |frameY T n|=0 := by
-      nlinarith [sq_abs (frameX T n),sq_abs (frameY T n)]
+      linear_combination (1/2*(|frameX T n|+|frameY T n|+r))*hSumT+1/2*hr2-1/2*hu-
+        1/2*sq_abs (frameX T n)-1/2*sq_abs (frameY T n)
     exact abs_eq_zero.mp (by simpa only [abs_mul] using ha)
   have hnd : n=scale r d := by
     have hh : (n.1-r*d.1)^2+(n.2-r*d.2)^2=0 := by
       dsimp [normSq,dot] at hr2 hunit hDot
-      nlinarith [congrArg (fun z : ℝ => r*z) hDot,
-        congrArg (fun z : ℝ => r^2*z) hunit]
-    apply Prod.ext <;> dsimp [scale] <;>
-      nlinarith [sq_nonneg (n.1-r*d.1),sq_nonneg (n.2-r*d.2)]
+      linear_combination (-1)*hr2-2*r*hDot+r^2*hunit
+    obtain ⟨h1,h2⟩ := (add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)).mp hh
+    exact Prod.ext (sub_eq_zero.mp (pow_eq_zero_iff two_ne_zero |>.mp h1))
+      (sub_eq_zero.mp (pow_eq_zero_iff two_ne_zero |>.mp h2))
   have hx : frameX S n=r*frameX S d := by rw [hnd]; dsimp [frameX,scale]; ring
   have hy : frameY S n=r*frameY S d := by rw [hnd]; dsimp [frameY,scale]; ring
   have hdprod : frameX S d=0 ∨ frameY S d=0 := by

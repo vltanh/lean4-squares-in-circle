@@ -1,11 +1,17 @@
 import SquaresInCircles.Four.Exterior
 
 /-! An origin-containing square swept along its center ray contains a
-quarter-circle on every auxiliary circle with `0 < r < 1/sqrt(2)`.
-The proof below uses strict half-planes and constructs the ray parameter. -/
+quarter-circle on every auxiliary circle with `0 < r < 1/sqrt(2)`, in
+particular on the circle of radius `1/2`. The proof below uses strict
+half-planes and constructs the ray parameter. -/
 noncomputable section
 open Set
 namespace SquaresInCircles
+
+lemma abs_center_sum_pos (S : UnitSquare) (o : Point) (hne : S.center ≠ o) :
+    0 < alpha S o+beta S o := by
+  simpa only [abs_frame_centerX,abs_frame_centerY] using
+    frame_abs_sum_pos S (sub_ne_origin hne)
 
 lemma ray_parameter {a b X Y : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
     (hX : a-1/2 < X) (hY : b-1/2 < Y)
@@ -17,7 +23,7 @@ lemma ray_parameter {a b X Y : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
       rw [zero_mul,zero_sub,abs_neg,abs_mul,abs_of_pos ha] at hstrip
       nlinarith
     by_cases hx : X ≤ a
-    · exact ⟨0,le_rfl,abs_lt.mpr ⟨by nlinarith,by nlinarith⟩,by simpa using hYs⟩
+    · exact ⟨0,le_rfl,abs_lt.mpr ⟨by linarith,by linarith⟩,by simpa using hYs⟩
     · refine ⟨X/a-1,?_,?_,by simpa using hYs⟩
       · have hh := (lt_div_iff₀ ha).mpr (show 1*a < X by linarith)
         linarith
@@ -31,9 +37,9 @@ lemma ray_parameter {a b X Y : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
     have hXX : (X-1/2)/a < (X+1/2)/a := (div_lt_div_iff_of_pos_right ha).mpr (by linarith)
     have hYY : (Y-1/2)/b < (Y+1/2)/b := (div_lt_div_iff_of_pos_right hbpos).mpr (by linarith)
     have hXY : (X-1/2)/a < (Y+1/2)/b :=
-      (div_lt_div_iff₀ ha hbpos).mpr (by nlinarith)
+      (div_lt_div_iff₀ ha hbpos).mpr (by linarith)
     have hYX : (Y-1/2)/b < (X+1/2)/a :=
-      (div_lt_div_iff₀ hbpos ha).mpr (by nlinarith)
+      (div_lt_div_iff₀ hbpos ha).mpr (by linarith)
     have hLU : L < U := by
       dsimp [L,U]
       exact max_lt (lt_min h1X h1Y) (max_lt (lt_min hXX hXY) (lt_min hYX hYY))
@@ -47,8 +53,8 @@ lemma ray_parameter {a b X Y : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
     have hy0 := (div_lt_iff₀ hbpos).mp hzY
     have hx1 := (lt_div_iff₀ ha).mp hzX'
     have hy1 := (lt_div_iff₀ hbpos).mp hzY'
-    exact ⟨z-1,by linarith,abs_lt.mpr ⟨by nlinarith,by nlinarith⟩,
-      abs_lt.mpr ⟨by nlinarith,by nlinarith⟩⟩
+    exact ⟨z-1,by linarith,abs_lt.mpr ⟨by linarith,by linarith⟩,
+      abs_lt.mpr ⟨by linarith,by linarith⟩⟩
 
 lemma first_octant_direction {a b : ℝ} (ha : 0 < a) (hb : 0 ≤ b) (hba : b ≤ a) :
     ∃ l δ : ℝ, 0 < l ∧ a ≤ l ∧ l ≤ a+b ∧
@@ -94,7 +100,7 @@ lemma canonical_quarter_ray {a b r : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
   have hd := halfDiagonal_pos
   have hrd : r*halfDiagonal < 1/2 := by
     have hh := mul_lt_mul_of_pos_right hr1 hd
-    nlinarith [halfDiagonal_sq]
+    linarith [halfDiagonal_sq]
   refine ⟨δ,?_⟩
   intro t ht
   have htDom : t ∈ Ioo (-(Real.pi/2)) (Real.pi/2) := by
@@ -122,7 +128,7 @@ lemma canonical_quarter_ray {a b r : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
     have h₃ := mul_nonneg hb (show 0 ≤ 1/2-a by linarith)
     by_contra hn
     have h₄ := mul_nonneg hl.le (sub_nonneg.mpr (le_of_not_gt hn))
-    nlinarith
+    linarith
   have hs0 := Real.strictMonoOn_sin
     (show -(Real.pi/4) ∈ Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [Real.pi_pos])
     (show t-δ ∈ Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [ht.1,ht.2,Real.pi_pos])
@@ -141,7 +147,7 @@ lemma canonical_quarter_ray {a b r : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
     rw [he,abs_mul,abs_mul,abs_neg,abs_of_pos hr,abs_of_pos hl]
     have h₁ := mul_lt_mul_of_pos_left habs (mul_pos hr hl)
     have h₂ := mul_lt_mul_of_pos_right hrd hl
-    nlinarith
+    linarith
   exact ray_parameter ha hb hX hY hstrip
 
 /-- A quarter-circle is available from the containing square's radial sweep. -/
@@ -152,7 +158,7 @@ theorem four_containing_arc {S : UnitSquare} {o : Point} (C : SquareChart S o)
   have hinside := C.origin.mp ho
   have ha : 0 < C.a := by linarith [C.nonneg.2]
   obtain ⟨δ,hδ⟩ := canonical_quarter_ray ha C.nonneg.2 hsort hinside.1 hr hr1
-  obtain ⟨A,hA⟩ := arcFromChartInterval o r (openRay S o) C.phase C.reversed
+  obtain ⟨A,hA,-⟩ := arcFromChartInterval o r (openRay S o) C.phase C.reversed
     (δ-Real.pi/4) (δ+Real.pi/4)
     (by linarith [Real.pi_pos]) (by linarith [Real.pi_pos])
     (fun t ht => C.ray_mem (hδ t ht))

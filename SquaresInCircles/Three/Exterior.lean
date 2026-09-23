@@ -4,11 +4,13 @@ import SquaresInCircles.Three.Tangents
 /-!
 # Three-square exterior arcs
 
-If the tested point lies in none of the three open squares, each square
-supplies an occupied arc longer than 120 degrees on the circle of radius `3/8`,
-which exceeds the angular budget. So a strict contact-polygon configuration
-must have the tested point inside one square; `Three/Containing.lean` refutes
-that alternative.
+On the circle of radius `3/8`, a square that does not contain the tested point
+holds a cap of length `min (2A) (A+V)`. Under the closed contact 16-gon the cap
+is at least 120 degrees, with equality only at the two contact types; under the
+strict 16-gon it is longer. If the tested point lies in none of the three open
+squares, the strict caps exceed the angular budget, so a strict contact-polygon
+configuration must have the tested point inside one square;
+`Three/Containing.lean` refutes that alternative.
 -/
 noncomputable section
 open Set
@@ -16,102 +18,117 @@ namespace SquaresInCircles
 
 def auxThree : ℝ := 3/8
 
-lemma arcsin_lt_sixth {u : ℝ} (hu0 : 0 ≤ u) (hu1 : u < 1/2) :
-    Real.arcsin u < Real.pi/6 := by
-  apply (Real.arcsin_lt_iff_lt_sin
-    (show u ∈ Icc (-1:ℝ) 1 by constructor <;> linarith)
-    (show Real.pi/6 ∈ Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [Real.pi_pos])).mpr
+def threeCapA (a : ℝ) : ℝ := Real.arccos ((a-1/2)/auxThree)
+def threeCapV (b : ℝ) : ℝ := Real.arcsin ((1/2-b)/auxThree)
+def threeCapLength (a b : ℝ) : ℝ :=
+  min (2*threeCapA a) (threeCapA a+threeCapV b)
+
+lemma arcsin_le_sixth {u : ℝ} (hu0 : 0 ≤ u) (hu1 : u ≤ 1/2) :
+    Real.arcsin u ≤ Real.pi/6 := by
+  apply (Real.arcsin_le_iff_le_sin ⟨by linarith,by linarith⟩
+    ⟨by linarith [Real.pi_pos],by linarith [Real.pi_pos]⟩).mpr
   simpa only [Real.sin_pi_div_six] using hu1
 
-lemma three_truncated_gap {u v : ℝ} (hu0 : 0 ≤ u) (hu1 : u < 1/2)
-    (hv : 1/2+u < v) :
-    2*Real.pi/3 < Real.arccos u+Real.arcsin v := by
-  have hA := arcsin_lt_sixth hu0 hu1
+/-- The clipped cap is at least 120 degrees, with equality only at `u = 0`,
+`v = 1/2`. -/
+lemma three_truncated_gap {u v : ℝ} (hu0 : 0 ≤ u) (hu1 : u ≤ 1/2)
+    (hv : 1/2+(16/13)*u ≤ v) :
+    2*Real.pi/3 ≤ Real.arccos u+Real.arcsin v ∧
+      (Real.arccos u+Real.arcsin v ≤ 2*Real.pi/3 → u=0 ∧ v=1/2) := by
+  have hA := arcsin_le_sixth hu0 hu1
   have hA0 := Real.arcsin_nonneg.mpr hu0
-  have hsin : Real.sin (Real.arcsin u+Real.pi/6) < v := by
+  have hsin : Real.sin (Real.arcsin u+Real.pi/6) ≤ 1/2+u := by
     rw [Real.sin_add,Real.sin_arcsin (by linarith) (by linarith),Real.sin_pi_div_six]
     have hp := mul_nonneg hu0 (sub_nonneg.mpr (Real.cos_le_one (Real.pi/6)))
-    nlinarith [Real.cos_le_one (Real.arcsin u)]
-  have hh := (Real.lt_arcsin_iff_sin_lt'
-    (show Real.arcsin u+Real.pi/6 ∈ Ico (-(Real.pi/2)) (Real.pi/2) by
-      constructor <;> linarith [Real.pi_pos])).mpr hsin
-  dsimp [Real.arccos]
-  linarith
-
-lemma three_cap_interval {a b : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b)
-    (hpoly : P3Strict a b) :
-    ∃ l u : ℝ, 2*Real.pi/3 < u-l ∧ u-l ≤ 2*Real.pi ∧
-      ∀ t ∈ Ioo l u, |auxThree*Real.cos t-a| < 1/2 ∧
-        |auxThree*Real.sin t-b| < 1/2 := by
-  let x := (a-1/2)/auxThree
-  let v := (1/2-b)/auxThree
-  have hx0 : 0 ≤ x := by dsimp [x,auxThree]; linarith
-  have hx1 : x < 1/2 := by dsimp [x,auxThree]; linarith [hpoly.2.2.1]
-  have hv : 1/2+x < v := by dsimp [x,v,auxThree]; linarith [hpoly.1]
-  let A := Real.arccos x
-  let l := max (-A) (-Real.arcsin v)
-  have hA : Real.pi/3 < A := by
-    have hh := arcsin_lt_sixth hx0 hx1
-    dsimp [A,Real.arccos]; linarith
-  have hAp : A ≤ Real.pi/2 := by
-    have hh := Real.arcsin_nonneg.mpr hx0
-    dsimp [A,Real.arccos]; linarith
-  have hB := three_truncated_gap hx0 hx1 hv
-  have hgap : 2*Real.pi/3 < A-l := by
-    have hh : l < A-2*Real.pi/3 := by
-      dsimp [l]
-      exact max_lt (by linarith) (by dsimp [A] at *; linarith)
+    linarith [Real.cos_le_one (Real.arcsin u)]
+  have hdom : Real.arcsin u+Real.pi/6 ∈ Ioc (-(Real.pi/2)) (Real.pi/2) := by
+    constructor <;> linarith [Real.pi_pos]
+  have hle := (Real.le_arcsin_iff_sin_le' (y := v) hdom).mpr (hsin.trans (by linarith))
+  refine ⟨by dsimp [Real.arccos]; linarith,?_⟩
+  intro hbudget
+  have hu : u=0 := by
+    by_contra hn
+    have hu' : 0 < u := lt_of_le_of_ne hu0 (Ne.symm hn)
+    have hlt : Real.sin (Real.arcsin u+Real.pi/6) < v := hsin.trans_lt (by linarith)
+    have hh := (Real.lt_arcsin_iff_sin_lt'
+      ⟨hdom.1.le,by linarith [Real.pi_pos]⟩).mpr hlt
+    dsimp [Real.arccos] at hbudget
     linarith
-  refine ⟨l,A,hgap,?_,?_⟩
-  · have hh : -A ≤ l := le_max_left _ _
-    linarith [Real.pi_pos]
-  · intro t ht
-    have ht0 : -A < t := (le_max_left _ _).trans_lt ht.1
-    have ht1 : t < A := ht.2
-    have htdom : t ∈ Ioo (-(Real.pi/2)) (Real.pi/2) :=
-      ⟨by linarith,by linarith⟩
-    have hcos : x < Real.cos t := by
-      have hh := Real.cos_lt_cos_of_nonneg_of_le_pi (abs_nonneg t)
-        (show A ≤ Real.pi by linarith [Real.pi_pos]) (abs_lt.mpr ⟨ht0,ht1⟩)
-      rw [Real.cos_arccos (by linarith [hx0]) (by linarith [hx1])] at hh
-      simpa only [Real.cos_abs] using hh
-    have hts : Real.arcsin (-v) < t := by
-      rw [Real.arcsin_neg]
-      exact (le_max_right _ _).trans_lt ht.1
-    have hsin : -v < Real.sin t :=
-      (Real.arcsin_lt_iff_lt_sin' ⟨htdom.1,htdom.2.le⟩).mp hts
-    have hcos1 := Real.cos_le_one t
-    have hsin1 := Real.sin_le_one t
-    dsimp [x,v,auxThree] at hcos hsin ⊢
-    exact ⟨abs_lt.mpr ⟨by linarith,by linarith⟩,
-      abs_lt.mpr ⟨by linarith,by linarith⟩⟩
+  subst u
+  have he : Real.arcsin v=Real.pi/6 := by
+    simp only [Real.arccos_zero,Real.arcsin_zero] at hbudget hle
+    linarith
+  have hv' := (Real.arcsin_eq_iff_eq_sin
+    (show Real.pi/6 ∈ Ioo (-(Real.pi/2)) (Real.pi/2) by
+      constructor <;> linarith [Real.pi_pos])).mp he
+  exact ⟨rfl,by simpa only [Real.sin_pi_div_six] using hv'⟩
+
+lemma three_cap_data {a b : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b) (hp : P3 a b) :
+    0 ≤ (a-1/2)/auxThree ∧ (a-1/2)/auxThree ≤ 1/2 ∧
+    1/2+(16/13)*((a-1/2)/auxThree) ≤ (1/2-b)/auxThree ∧
+    Real.pi/3 ≤ threeCapA a ∧ threeCapA a ≤ Real.pi/2 ∧
+    2*Real.pi/3 ≤ threeCapLength a b := by
+  have hx0 : 0 ≤ (a-1/2)/auxThree := by dsimp [auxThree]; linarith
+  have hx1 : (a-1/2)/auxThree ≤ 1/2 := by dsimp [auxThree]; linarith [hp.2.2.1]
+  have hv : 1/2+(16/13)*((a-1/2)/auxThree) ≤ (1/2-b)/auxThree := by
+    dsimp [auxThree]; linarith [hp.1]
+  have hAsmall := arcsin_le_sixth hx0 hx1
+  have hA0 := Real.arcsin_nonneg.mpr hx0
+  have hA : Real.pi/3 ≤ threeCapA a := by dsimp [threeCapA,Real.arccos]; linarith
+  have hAp : threeCapA a ≤ Real.pi/2 := by dsimp [threeCapA,Real.arccos]; linarith
+  exact ⟨hx0,hx1,hv,hA,hAp,le_min (by linarith) (three_truncated_gap hx0 hx1 hv).1⟩
+
+/-- Equality in the exterior arc bound identifies exactly the two contact types. -/
+lemma three_cap_contact_types {a b : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b)
+    (hp : P3 a b) (hlen : threeCapLength a b ≤ 2*Real.pi/3) :
+    (a=11/16 ∧ b=0) ∨ (a=1/2 ∧ b=5/16) := by
+  obtain ⟨hx0,hx1,hv,hA,hAp,hgap⟩ := three_cap_data ha hb hp
+  by_cases h : 2*threeCapA a ≤ threeCapA a+threeCapV b
+  · have he : threeCapA a=Real.pi/3 := by
+      rw [threeCapLength,min_eq_left h] at hlen
+      linarith
+    have hu := Real.cos_arccos (show -1 ≤ (a-1/2)/auxThree by linarith)
+      (show (a-1/2)/auxThree ≤ 1 by linarith)
+    change Real.cos (threeCapA a)=(a-1/2)/auxThree at hu
+    rw [he,Real.cos_pi_div_three] at hu
+    have ha' : a=11/16 := by dsimp [auxThree] at hu; linarith
+    exact Or.inl ⟨ha',by linarith [hp.2.2.1]⟩
+  · rw [threeCapLength,min_eq_right (by linarith)] at hlen
+    obtain ⟨hu,hv'⟩ := (three_truncated_gap hx0 hx1 hv).2 hlen
+    dsimp [auxThree] at hu hv'
+    exact Or.inr ⟨by linarith,by linarith⟩
+
+lemma three_cap_arc_formula {S : UnitSquare} {o : Point} (C : SquareChart S o)
+    (ha : 1/2 ≤ C.a) (hp : P3 C.a C.b) :
+    ∃ B : OpenArc o auxThree {z | openSquare S z},
+      2*B.halfWidth=threeCapLength C.a C.b ∧
+      (threeCapA C.a ≤ threeCapV C.b → B.center=C.phase) :=
+  C.cap_arc (by norm_num [auxThree]) (by norm_num [auxThree]) ha
+    (by dsimp [auxThree]; linarith [hp.2.2.1,C.nonneg.2]) (by linarith [hp.1])
 
 lemma three_exterior_arc (S : UnitSquare) (o : Point)
     (hp : P3Strict (alpha S o) (beta S o)) (hout : ¬ openSquare S o) :
     ∃ A : OpenArc o auxThree {p | openSquare S p}, Real.pi/3 < A.halfWidth := by
   obtain ⟨C,hsort⟩ := sorted_square_chart S o
-  have hC : P3Strict C.a C.b := by
-    rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩
-    · simpa only [ha,hb] using hp
-    · rw [ha,hb]
-      exact ⟨by linarith [hp.2.1],by linarith [hp.1],
-        by linarith [hp.2.2.2],by linarith [hp.2.2.1]⟩
-  obtain ⟨l,u,hlen,hwide,hmem⟩ := three_cap_interval (C.exterior hsort hout) C.nonneg.2 hC
-  obtain ⟨A,hA⟩ := C.arc auxThree l u (by linarith [Real.pi_pos]) hwide hmem
-  exact ⟨A,by rw [hA]; linarith⟩
+  have hC := C.transfer P3Strict p3Strict_swap hp
+  have ha := C.exterior hsort hout
+  obtain ⟨A,hA,-⟩ := three_cap_arc_formula C ha (p3Strict_to_p3 hC)
+  refine ⟨A,?_⟩
+  rcases lt_or_eq_of_le (three_cap_data ha C.nonneg.2 (p3Strict_to_p3 hC)).2.2.2.2.2
+    with h | h
+  · linarith
+  · rcases three_cap_contact_types ha C.nonneg.2 (p3Strict_to_p3 hC) h.ge
+      with ⟨h1,h2⟩ | ⟨h1,h2⟩
+    · have h := hC.2.2.1; rw [h1,h2] at h; norm_num at h
+    · have h := hC.1; rw [h1,h2] at h; norm_num at h
 
-/-- The exterior-only case of the three-square polygon theorem is complete. -/
+/-- The exterior-only case of the three-square polygon theorem. -/
 theorem three_exterior_reduction (S : Fin 3 → UnitSquare) (o : Point)
     (hd : InteriorDisjoint S) (hp : ∀ i, P3Strict (alpha (S i) o) (beta (S i) o)) :
     ∃ i, openSquare (S i) o := by
-  classical
   by_contra hn
   push Not at hn
   choose A hA using (fun i => three_exterior_arc (S i) o (hp i) (hn i))
-  have hregions : Pairwise (fun i j => Disjoint {p | openSquare (S i) p} {p | openSquare (S j) p}) := by
-    intro i j hij
-    rw [Set.disjoint_left]
-    exact fun p hpi hpj => hd i j hij p ⟨hpi,hpj⟩
-  exact uniform_arc_excess (n := 3) (by decide) A hregions (fun i => (hA i).le) ⟨0,hA 0⟩
+  exact uniform_arc_excess (n := 3) (by decide) A hd.pairwise (fun i => (hA i).le) ⟨0,hA 0⟩
 
 end SquaresInCircles

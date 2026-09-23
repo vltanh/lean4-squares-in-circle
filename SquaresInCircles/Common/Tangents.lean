@@ -20,12 +20,12 @@ theorem tangent_identity (a b u v : ℝ) :
 theorem tangent_le {a b u v R2 : ℝ} (h : phi a b ≤ R2) (hc : phi u v = R2) :
     2*(u+1/2)*(a-u) + 2*(v+1/2)*(b-v) ≤ 0 := by
   have hid := tangent_identity a b u v
-  nlinarith [sq_nonneg (a-u), sq_nonneg (b-v)]
+  linarith [sq_nonneg (a-u), sq_nonneg (b-v)]
 
 theorem tangent_lt {a b u v R2 : ℝ} (h : phi a b < R2) (hc : phi u v = R2) :
     2*(u+1/2)*(a-u) + 2*(v+1/2)*(b-v) < 0 := by
   have hid := tangent_identity a b u v
-  nlinarith [sq_nonneg (a-u), sq_nonneg (b-v)]
+  linarith [sq_nonneg (a-u), sq_nonneg (b-v)]
 
 def P8 (a b : ℝ) : Prop := 3*a+b ≤ 3 ∧ a+3*b ≤ 3
 def P8Strict (a b : ℝ) : Prop := 3*a+b < 3 ∧ a+3*b < 3

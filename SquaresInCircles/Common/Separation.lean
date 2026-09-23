@@ -1,4 +1,5 @@
-import SquaresInCircles.Geometry
+import SquaresInCircles.Common.Basic
+import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # A supporting functional for two squares with disjoint interiors
@@ -6,9 +7,9 @@ import SquaresInCircles.Geometry
 Open squares are convex and open, so the geometric Hahn--Banach theorem
 separates two squares with disjoint interiors by a nonzero linear functional
 `dot n`. `support_separator` sharpens this to the exact support bound
-`supportRadius S n + supportRadius T n ≤ dot n (sub T.center S.center)` by
-testing the functional on shrunk support vertices, which lie in the open
-squares. No separating-axis enumeration is assumed.
+`width S n + width T n ≤ dot n (sub T.center S.center)` by testing the
+functional on shrunk support vertices, which lie in the open squares. No
+separating-axis enumeration is assumed.
 -/
 
 noncomputable section
@@ -21,10 +22,10 @@ lemma weighted_strict {a b u v H : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
   have h₂ := mul_nonneg hb (sub_nonneg.mpr hv.le)
   by_cases hapos : 0 < a
   · have h := mul_pos hapos (sub_pos.mpr hu)
-    nlinarith
+    linarith
   · have hbpos : 0 < b := by linarith
     have h := mul_pos hbpos (sub_pos.mpr hv)
-    nlinarith
+    linarith
 
 lemma abs_affine_lt {a b u v r : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (hab : a+b=1) (hu : |u| < r) (hv : |v| < r) : |a*u+b*v| < r := by
@@ -62,17 +63,15 @@ lemma openSquare_isOpen (S : UnitSquare) : IsOpen {p | openSquare S p} := by
 lemma center_in_openSquare (S : UnitSquare) : openSquare S S.center := by
   norm_num [openSquare,localX,localY]
 
-def supportRadius (S : UnitSquare) (n : Point) : ℝ :=
-  (|S.cosine*n.1+S.sine*n.2|+|-S.sine*n.1+S.cosine*n.2|)/2
+/-- Half the width of a square in the direction `n`, in units of `|n|`. -/
+def width (S : UnitSquare) (n : Point) : ℝ :=
+  (|frameX S n|+|frameY S n|)/2
 
-lemma supportRadius_nonneg (S : UnitSquare) (n : Point) : 0 ≤ supportRadius S n := by
-  unfold supportRadius; positivity
-
-lemma supportRadius_neg (S : UnitSquare) (n : Point) :
-    supportRadius S (scale (-1) n) = supportRadius S n := by
-  have h₁ : S.cosine*(-n.1)+S.sine*(-n.2) = -(S.cosine*n.1+S.sine*n.2) := by ring
-  have h₂ : -S.sine*(-n.1)+S.cosine*(-n.2) = -(-S.sine*n.1+S.cosine*n.2) := by ring
-  simp only [supportRadius,scale,neg_one_mul,h₁,h₂,abs_neg]
+lemma width_neg (S : UnitSquare) (n : Point) :
+    width S (scale (-1) n) = width S n := by
+  have h₁ : frameX S (scale (-1) n) = -frameX S n := by dsimp [frameX,scale]; ring
+  have h₂ : frameY S (scale (-1) n) = -frameY S n := by dsimp [frameY,scale]; ring
+  simp only [width,h₁,h₂,abs_neg]
 
 lemma signed_half_product (X t : ℝ) :
     X*(if 0 ≤ X then t/2 else -t/2) = t*|X|/2 := by
@@ -84,9 +83,9 @@ lemma signed_half_product (X t : ℝ) :
 lemma support_point (S : UnitSquare) (n : Point) {t : ℝ}
     (ht0 : 0 ≤ t) (ht1 : t < 1) :
     ∃ p : Point, openSquare S p ∧
-      dot n p = dot n S.center+t*supportRadius S n := by
-  let X := S.cosine*n.1+S.sine*n.2
-  let Y := -S.sine*n.1+S.cosine*n.2
+      dot n p = dot n S.center+t*width S n := by
+  let X := frameX S n
+  let Y := frameY S n
   let q : Point := (if 0 ≤ X then t/2 else -t/2,
                     if 0 ≤ Y then t/2 else -t/2)
   refine ⟨add S.center (rotate S q), ?_, ?_⟩
@@ -100,14 +99,14 @@ lemma support_point (S : UnitSquare) (n : Point) {t : ℝ}
   · calc
       dot n (add S.center (rotate S q)) =
           dot n S.center+X*q.1+Y*q.2 := by
-        dsimp [dot,add,rotate,X,Y]; ring
+        dsimp [dot,add,rotate,X,Y,frameX,frameY]; ring
       _ = dot n S.center+t*|X|/2+t*|Y|/2 := by
         dsimp [q]
         rw [signed_half_product,signed_half_product]
-      _ = dot n S.center+t*supportRadius S n := by
-        dsimp [supportRadius,X,Y]; ring
+      _ = dot n S.center+t*width S n := by
+        dsimp [width,X,Y]; ring
 
-lemma bound_from_shrinks {H D : ℝ} (_hH : 0 ≤ H)
+lemma bound_from_shrinks {H D : ℝ}
     (h : ∀ t : ℝ, 0 ≤ t → t < 1 → t*H ≤ D) : H ≤ D := by
   have hD : 0 ≤ D := by simpa using h 0 (by norm_num) (by norm_num)
   by_contra hn
@@ -125,11 +124,16 @@ lemma bound_from_shrinks {H D : ℝ} (_hH : 0 ≤ H)
   rw [htH] at hh
   linarith
 
+/-- A nonzero functional that separates two squares by their full widths. -/
+structure Separation (S T : UnitSquare) where
+  normal : Point
+  nonzero : normal ≠ (0,0)
+  separates : width S normal+width T normal ≤ dot normal (sub T.center S.center)
+
 /-- A nonzero supporting functional for two squares with disjoint open interiors. -/
-lemma support_separator (S T : UnitSquare)
+theorem support_separator (S T : UnitSquare)
     (hdisj : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) :
-    ∃ n : Point, n ≠ (0,0) ∧
-      supportRadius S n+supportRadius T n ≤ dot n (sub T.center S.center) := by
+    Nonempty (Separation S T) := by
   have hd : Disjoint {p | openSquare S p} {p | openSquare T p} := by
     rw [Set.disjoint_left]
     exact fun p hp hq => hdisj p ⟨hp,hq⟩
@@ -149,16 +153,15 @@ lemma support_separator (S T : UnitSquare)
       (hT _ (center_in_openSquare T))
     rw [hf,hf,hn] at hh
     norm_num [dot] at hh
-  refine ⟨n,hn,bound_from_shrinks
-    (add_nonneg (supportRadius_nonneg S n) (supportRadius_nonneg T n)) ?_⟩
+  refine ⟨⟨n,hn,bound_from_shrinks ?_⟩⟩
   intro t ht0 ht1
   obtain ⟨p,hp,hpval⟩ := support_point S n ht0 ht1
   obtain ⟨q,hq,hqval⟩ := support_point T (scale (-1) n) ht0 ht1
   have hsep := lt_trans (hS p hp) (hT q hq)
   rw [hf,hf,hpval] at hsep
-  rw [supportRadius_neg] at hqval
+  rw [width_neg] at hqval
   simp only [dot,scale,neg_one_mul] at hqval
   dsimp [dot,sub] at hsep ⊢
-  nlinarith
+  linarith
 
 end SquaresInCircles

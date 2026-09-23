@@ -1,5 +1,6 @@
 import SquaresInCircles.Common.RectangleArcs
 import SquaresInCircles.Five.Tangents
+import SquaresInCircles.Common.ElementaryTrig
 
 /-! Five squares: on the circle of radius `5/6` every exterior square holds an
 arc longer than 72 degrees. The radius is rational, and a cubic arcsine bound
@@ -27,18 +28,16 @@ lemma five_arcsin_sum {x y : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1/2)
     by_cases hy : 0 ≤ y
     · have hFy := arcsin_le_cubic (x := 6/5*y) (by positivity) (by linarith)
       have hcross := mul_nonneg (mul_nonneg hx0 hy) (add_nonneg hx0 hy)
-      have hcubes : x^3+y^3 ≤ (x+y)^3 := by nlinarith
       have hsumcube : (x+y)^3 ≤ (237/1000:ℝ)^3 := by gcongr
-      nlinarith
+      linarith
     · have hFy := arcsin_le_self_of_nonpos (x := 6/5*y) (by linarith) (by linarith)
       by_cases hxq : x ≤ 23/60
       · have hc : x^3 ≤ (23/60:ℝ)^3 := by gcongr
-        nlinarith
+        linarith
       · have hq : 23/60 ≤ x := (lt_of_not_ge hxq).le
         have hxsq : x^2+x*(23/60)+(23/60:ℝ)^2 ≤ 3/4 := by nlinarith
         have hprod := mul_nonneg (sub_nonneg.mpr hq) (sub_nonneg.mpr hxsq)
-        have hc : x^3 ≤ (23/60:ℝ)^3+(3/4)*(x-23/60) := by nlinarith
-        nlinarith
+        linarith
   have hp : (313:ℝ)/1000 < Real.pi/10 := by linarith [Real.pi_gt_d2]
   exact hrat.trans hp
 
@@ -46,7 +45,6 @@ lemma five_rectangle_length {a b : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b)
     (hsort : b ≤ a) (h : P5 a b) :
     2*Real.pi/5 < rectangleHi a b auxFive-rectangleLo b auxFive := by
   have ha1 : a ≤ 1 := by linarith [h.1.1]
-  have hb1 : b ≤ 1 := by linarith
   have hs : (a-1/2)+(b-1/2) ≤ 237/1000 := by
     linarith [h.2,sqrt_five_lt_2237]
   have hf := five_arcsin_sum (x := a-1/2) (y := b-1/2)
@@ -75,7 +73,7 @@ lemma five_rectangle_length {a b : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b)
         dsimp [auxFive]; constructor <;> linarith
       have hh := arcsin_sum_gt_of_sin_lt hu hv
         (show Real.pi/5 ∈ Icc (0:ℝ) (Real.pi/2) by constructor <;> linarith [Real.pi_pos])
-        (by norm_num [auxFive]; nlinarith [sin_pi_fifth_lt_three_fifths])
+        (by norm_num [auxFive]; linarith [sin_pi_fifth_lt_three_fifths])
       have he : (b-1/2)/auxFive = -((1/2-b)/auxFive) := by ring
       rw [he,Real.arcsin_neg]
       linarith
@@ -90,14 +88,10 @@ theorem five_exterior_arc (S : UnitSquare) (o : Point)
     (h : P5 (alpha S o) (beta S o)) (hout : ¬ openSquare S o) :
     ∃ A : OpenArc o auxFive {p | openSquare S p}, Real.pi/5 < A.halfWidth := by
   obtain ⟨C,hsort⟩ := sorted_square_chart S o
-  have hC : P5 C.a C.b := by
-    rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩
-    · simpa only [ha,hb] using h
-    · simpa only [ha,hb] using p5_swap h
+  have hC := C.transfer P5 p5_swap h
   have ha := C.exterior hsort hout
   have hb := C.nonneg.2
   have ha1 : C.a ≤ 1 := by linarith [hC.1.1]
-  have hb1 : C.b ≤ 1 := by linarith
   have hx : (C.a-1/2)/auxFive ∈ Ico (0:ℝ) 1 := by
     dsimp [auxFive]; constructor <;> linarith
   have hy : (C.b-1/2)/auxFive ∈ Icc (-1:ℝ) 1 := by
@@ -106,7 +100,7 @@ theorem five_exterior_arc (S : UnitSquare) (o : Point)
     have hx2 : (C.a-1/2)^2 ≤ 1/4 := by nlinarith
     have hy2 : (C.b-1/2)^2 ≤ 1/4 := by nlinarith
     norm_num [auxFive,div_eq_mul_inv]
-    nlinarith
+    linarith
   obtain ⟨A,hA⟩ := exterior_arc_from_length C (by norm_num [auxFive])
     (by dsimp [auxFive]; linarith) hx hy hcorner
     (show 0 < 2*Real.pi/5 by positivity) (five_rectangle_length ha hb hsort hC)

@@ -1,6 +1,5 @@
 import SquaresInCircles.Common.Support
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
 
 /-!
 # Angular budget on the genuine circle
@@ -20,16 +19,8 @@ namespace SquaresInCircles
 
 local instance : Fact (0 < (2*Real.pi : ℝ)) := ⟨by positivity⟩
 
-abbrev Direction := Real.Angle
-
 def circlePoint (o : Point) (r : ℝ) (θ : Direction) : Point :=
   (o.1+r*θ.cos, o.2+r*θ.sin)
-
-lemma circlePoint_norm (o : Point) (r : ℝ) (θ : Direction) :
-    normSq (sub (circlePoint o r θ) o) = r^2 := by
-  calc
-    _ = r^2*(θ.cos^2+θ.sin^2) := by dsimp [normSq,sub,circlePoint]; ring
-    _ = r^2 := by rw [Real.Angle.cos_sq_add_sin_sq]; ring
 
 lemma direction_norm (θ : Direction) : ‖θ‖ = |θ.toReal| := by
   conv_lhs => rw [← Real.Angle.coe_toReal θ]
@@ -81,7 +72,7 @@ theorem closed_arc_budget {n : ℕ} (c : Fin n → AddCircle (2*Real.pi)) (w : F
   have hreal := ENNReal.toReal_mono ENNReal.ofReal_ne_top hmu
   rw [ENNReal.toReal_sum (fun _ _ => ENNReal.ofReal_ne_top)] at hreal
   have he (i : Fin n) : (ENNReal.ofReal (2*w i)).toReal=2*w i :=
-    ENNReal.toReal_ofReal (by nlinarith [(hw i).1])
+    ENNReal.toReal_ofReal (by linarith [(hw i).1])
   simp only [he, ENNReal.toReal_ofReal (show 0 ≤ 2*Real.pi by positivity)] at hreal
   rw [← Finset.mul_sum] at hreal
   linarith
@@ -90,13 +81,13 @@ theorem closed_arc_budget {n : ℕ} (c : Fin n → AddCircle (2*Real.pi)) (w : F
 theorem open_arc_budget {n : ℕ} {o : Point} {r : ℝ} {U : Fin n → Set Point}
     (A : ∀ i, OpenArc o r (U i)) (hd : Pairwise (fun i j => Disjoint (U i) (U j))) :
     ∑ i, (A i).halfWidth ≤ Real.pi := by
-  apply bound_from_shrinks (Finset.sum_nonneg (fun i _ => (A i).positive.le))
+  apply bound_from_shrinks
   intro t ht0 ht1
   have hw (i : Fin n) : 0 ≤ t*(A i).halfWidth ∧ t*(A i).halfWidth ≤ Real.pi := by
     constructor
     · exact mul_nonneg ht0 (A i).positive.le
     · have hh := mul_lt_mul_of_pos_right ht1 (A i).positive
-      nlinarith [(A i).atMostPi]
+      linarith [(A i).atMostPi]
   let c : Fin n → AddCircle (2*Real.pi) := fun i => (A i).center
   have hdisj : Pairwise (fun i j => Disjoint
       (Metric.closedBall (c i) (t*(A i).halfWidth))

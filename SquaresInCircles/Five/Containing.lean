@@ -8,34 +8,21 @@ namespace SquaresInCircles
 
 lemma containing_center_norm (S : UnitSquare) {o : Point} (ho : openSquare S o) :
     normSq (sub S.center o) < 1/2 := by
-  have hu := frame_norm S (sub S.center o)
-  rw [frame_centerX,frame_centerY] at hu
-  rcases abs_lt.mp ho.1 with ⟨hx0,hx1⟩
-  rcases abs_lt.mp ho.2 with ⟨hy0,hy1⟩
-  have hx : (localX S o)^2 < 1/4 := by nlinarith
-  have hy : (localY S o)^2 < 1/4 := by nlinarith
-  nlinarith
+  have ha : alpha S o < 1/2 := ho.1
+  have hb : beta S o < 1/2 := ho.2
+  rw [local_center_norm]
+  nlinarith [alpha_nonneg S o,beta_nonneg S o]
 
+/-- Polar form of a nonzero vector, from the complex number `v.1 + i v.2`. -/
 lemma vector_direction {v : Point} (hv : v ≠ (0,0)) :
     ∃ (θ : Direction) (l : ℝ), 0 < l ∧ l^2=normSq v ∧
       v=(l*θ.cos,l*θ.sin) := by
-  let l := Real.sqrt (normSq v)
-  have hl0 : 0 < l := Real.sqrt_pos.mpr (normSq_pos_of_ne hv)
-  have hl2 : l^2=normSq v := Real.sq_sqrt (normSq_nonneg v)
-  let F : UnitSquare :=
-    { center := (0,0)
-      cosine := v.1/l
-      sine := v.2/l
-      unit := by
-        field_simp [ne_of_gt hl0]
-        simpa only [normSq] using hl2.symm }
-  obtain ⟨t,htc,hts⟩ := frame_angle F
-  refine ⟨(t:Direction),l,hl0,hl2,?_⟩
-  apply Prod.ext
-  · simp only [Real.Angle.cos_coe,htc,F]
-    field_simp [ne_of_gt hl0]
-  · simp only [Real.Angle.sin_coe,hts,F]
-    field_simp [ne_of_gt hl0]
+  let z : ℂ := ⟨v.1,v.2⟩
+  have hz : z ≠ 0 := fun h => hv (Prod.ext (congrArg Complex.re h) (congrArg Complex.im h))
+  refine ⟨(Complex.arg z:Direction),‖z‖,norm_pos_iff.mpr hz,?_,?_⟩
+  · rw [Complex.sq_norm,Complex.normSq_apply]; simp only [normSq,z]; ring
+  · simp only [Real.Angle.cos_coe,Real.Angle.sin_coe,Complex.norm_mul_cos_arg,
+      Complex.norm_mul_sin_arg,z]
 
 lemma circle_distance_formula (o : Point) (r s : ℝ) (θ : Direction) (t : ℝ) :
     normSq (sub (circlePoint o r (θ+(t:Direction))) (circlePoint o s θ)) =
@@ -47,8 +34,7 @@ lemma circle_distance_formula (o : Point) (r s : ℝ) (θ : Direction) (t : ℝ)
     simp only [Real.Angle.cos_add,Real.Angle.sin_add,Real.Angle.cos_coe,Real.Angle.sin_coe]
     ring
   rw [hid,Real.Angle.cos_sq_add_sin_sq]
-  have ht : Real.cos t^2+Real.sin t^2=1 := by nlinarith [Real.sin_sq_add_cos_sq t]
-  rw [ht]
+  rw [Real.cos_sq_add_sin_sq]
   ring
 
 /-- The ray sweep contains a radius-1/2 disk at distance `1/sqrt(2)` from `o`. -/
@@ -56,13 +42,7 @@ lemma containing_ray_disk (S : UnitSquare) (o : Point)
     (ho : openSquare S o) (hne : S.center ≠ o) :
     ∃ θ : Direction, ∀ p : Point,
       normSq (sub p (circlePoint o halfDiagonal θ)) < 1/4 → p ∈ openRay S o := by
-  have hv : sub S.center o ≠ (0,0) := by
-    intro hh
-    apply hne
-    have h₁ := congrArg Prod.fst hh
-    have h₂ := congrArg Prod.snd hh
-    apply Prod.ext <;> dsimp [sub] at * <;> linarith
-  obtain ⟨θ,l,hl0,hl2,hvθ⟩ := vector_direction hv
+  obtain ⟨θ,l,hl0,hl2,hvθ⟩ := vector_direction (sub_ne_origin hne)
   have hl : l < halfDiagonal := by
     nlinarith [containing_center_norm S ho,halfDiagonal_sq,halfDiagonal_pos]
   let t := halfDiagonal/l-1
@@ -98,7 +78,7 @@ lemma five_arc_in_radial_disk (o : Point) (θ : Direction) {φ : Direction}
   have ha := halfDiagonal_gt_707
   have ha2 := halfDiagonal_sq
   dsimp [auxFive]
-  nlinarith
+  linarith
 
 /-- A containing square with nonzero center supplies the missing 72-degree arc. -/
 theorem five_containing_arc (S : UnitSquare) (o : Point)

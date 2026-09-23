@@ -12,11 +12,6 @@ noncomputable section
 open Set
 namespace SquaresInCircles
 
-abbrev OpenRect (c : Point) (x y : ℝ) : Prop :=
-  |x-c.1| < 1/2 ∧ |y-c.2| < 1/2
-abbrev ClosedRect (c : Point) (x y : ℝ) : Prop :=
-  |x-c.1| ≤ 1/2 ∧ |y-c.2| ≤ 1/2
-
 /-- The actual square, expressed in one common positively oriented frame. -/
 def Represents (S : UnitSquare) (o : Point) (φ : Direction) (c : Point) : Prop :=
   ∀ x y, openSquare S (pointInDirection o φ x y) ↔ OpenRect c x y
@@ -29,15 +24,15 @@ def frameEquiv (o : Point) (φ : Direction) : Point ≃ Point where
   left_inv := by
     intro p
     have hu := Real.Angle.cos_sq_add_sin_sq φ
-    apply Prod.ext <;> dsimp [pointInDirection] <;>
-      nlinarith only [congrArg (fun t : ℝ => t*p.1) hu,
-        congrArg (fun t : ℝ => t*p.2) hu]
+    apply Prod.ext <;> dsimp [pointInDirection]
+    · linear_combination p.1*hu
+    · linear_combination p.2*hu
   right_inv := by
     intro p
     have hu := Real.Angle.cos_sq_add_sin_sq φ
-    apply Prod.ext <;> dsimp [pointInDirection] <;>
-      nlinarith only [congrArg (fun t : ℝ => t*(p.1-o.1)) hu,
-        congrArg (fun t : ℝ => t*(p.2-o.2)) hu]
+    apply Prod.ext <;> dsimp [pointInDirection]
+    · linear_combination (p.1-o.1)*hu
+    · linear_combination (p.2-o.2)*hu
 
 @[simp] lemma frameEquiv_apply (o : Point) (φ : Direction) (p : Point) :
     frameEquiv o φ p = pointInDirection o φ p.1 p.2 := rfl
@@ -57,16 +52,8 @@ lemma frameEquiv_distance (o : Point) (φ : Direction) (p q : Point) :
 lemma affine_endpoint_le {A B D : ℝ}
     (h : ∀ t : ℝ, 0 ≤ t → t < 1 → (1-t)*A+t*B ≤ D) : B ≤ D := by
   have hA : A ≤ D := by simpa using h 0 (by norm_num) (by norm_num)
-  by_contra hn
-  have hB : D < B := lt_of_not_ge hn
-  have hBA : 0 < B-A := by linarith
-  let u := (D-A)/(B-A)
-  have hu0 : 0 ≤ u := div_nonneg (by linarith) hBA.le
-  have hu1 : u < 1 := (div_lt_one hBA).mpr (by linarith)
-  have hh := h ((u+1)/2) (by linarith) (by linarith)
-  have he : (1-(u+1)/2)*A+((u+1)/2)*B=(D+B)/2 := by
-    dsimp [u]; field_simp; ring
-  rw [he] at hh
+  have hh := bound_from_shrinks (H := B-A) (D := D-A) fun t ht0 ht1 => by
+    linarith [h t ht0 ht1]
   linarith
 
 lemma local_affine (S : UnitSquare) (p q : Point) (t : ℝ) :
@@ -136,9 +123,9 @@ lemma modelSquare_local (o : Point) (φ : Direction) (c : Point) (x y : ℝ) :
     localX (modelSquare o φ c) (pointInDirection o φ x y)=x-c.1 ∧
     localY (modelSquare o φ c) (pointInDirection o φ x y)=y-c.2 := by
   have hu := Real.Angle.cos_sq_add_sin_sq φ
-  constructor <;> dsimp [localX,localY,modelSquare,pointInDirection] <;>
-    nlinarith only [congrArg (fun t : ℝ => t*(x-c.1)) hu,
-      congrArg (fun t : ℝ => t*(y-c.2)) hu]
+  constructor <;> dsimp [localX,localY,modelSquare,pointInDirection]
+  · linear_combination (x-c.1)*hu
+  · linear_combination (y-c.2)*hu
 
 lemma Represents.closed {S : UnitSquare} {o : Point} {φ : Direction} {c : Point}
     (h : Represents S o φ c) (x y : ℝ) :
@@ -153,13 +140,6 @@ lemma Represents.closed {S : UnitSquare} {o : Point} {φ : Direction} {c : Point
   have hc := same_open_same_closed S (modelSquare o φ c) hopen
   simpa only [closedSquare,(modelSquare_local o φ c x y).1,
     (modelSquare_local o φ c x y).2] using hc (pointInDirection o φ x y)
-
-/-- Normal form in one Euclidean frame, including the input disk center. -/
-def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
-    (centers : Fin n → Point) : Prop :=
-  ∃ (φ : Direction) (σ : Equiv.Perm (Fin n)), ∀ i x y,
-    (openSquare (S (σ i)) (pointInDirection o φ x y) ↔ OpenRect (centers i) x y) ∧
-    (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔ ClosedRect (centers i) x y)
 
 /-- Non-overlap turns any assignment to the model's slots into a permutation. -/
 lemma normal_form_of_slots {n : ℕ} {S : Fin n → UnitSquare} {o : Point}
@@ -181,23 +161,18 @@ lemma normal_form_of_slots {n : ℕ} {S : Fin n → UnitSquare} {o : Point}
     simpa only [show f (e.symm i)=i from e.apply_symm_apply i] using hf (e.symm i)
   exact ⟨hh x y,hh.closed x y⟩
 
-/-- The normal form supplies an explicit Euclidean rigid equivalence. -/
+/-- The normal form, with its frame replaced by an explicit isometry of the plane. -/
 lemma HasNormalForm.rigid_witness {n : ℕ} {S : Fin n → UnitSquare} {o : Point}
     {c : Fin n → Point} (h : HasNormalForm S o c) :
     ∃ (e : Point ≃ Point) (σ : Equiv.Perm (Fin n)), e (0,0)=o ∧
       (∀ p q, normSq (sub (e p) (e q))=normSq (sub p q)) ∧
-      (∀ i p, closedSquare (S (σ i)) (e p) ↔ ClosedRect (c i) p.1 p.2) := by
+      (∀ i p, (openSquare (S (σ i)) (e p) ↔ OpenRect (c i) p.1 p.2) ∧
+        (closedSquare (S (σ i)) (e p) ↔ ClosedRect (c i) p.1 p.2)) := by
   obtain ⟨φ,σ,hφ⟩ := h
   exact ⟨frameEquiv o φ,σ,frameEquiv_zero o φ,frameEquiv_distance o φ,
-    fun i p => (hφ i p.1 p.2).2⟩
+    fun i p => hφ i p.1 p.2⟩
 
 lemma chart_represents {S : UnitSquare} {o : Point} (C : SquareChart S o) :
     Represents S o C.phase (C.a,C.signedB) := C.cartesian
-
-lemma chart_phi {S : UnitSquare} {o : Point} (C : SquareChart S o)
-    {K : ℝ} (h : phi (alpha S o) (beta S o) ≤ K) : phi C.a C.b ≤ K := by
-  rcases C.coordinates with ⟨ha,hb⟩ | ⟨ha,hb⟩
-  · simpa only [ha,hb] using h
-  · simpa only [ha,hb,phi,add_comm] using h
 
 end SquaresInCircles

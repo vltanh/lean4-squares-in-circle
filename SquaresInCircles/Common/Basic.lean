@@ -1,14 +1,50 @@
 import SquaresInCircles.Geometry
 
 /-!
-# A size-independent packing model
+# Frames, interior-disjointness and the farthest-vertex bound
 
-`Packing` generalizes `Packing` from `Fin 3` to `Fin n` without adding any
-hypothesis. Distances always use `normSq`, not the product-space norm on
-`ℝ × ℝ` (which is the maximum norm).
+Vector operations, a square's frame and vertices, and the squared distance
+`phi` from a point to the farthest vertex of a square. Distances always use
+`normSq`, not the product-space norm on `ℝ × ℝ` (which is the maximum norm).
 -/
 noncomputable section
 namespace SquaresInCircles
+
+def dot (p q : Point) : ℝ := p.1 * q.1 + p.2 * q.2
+def add (p q : Point) : Point := (p.1 + q.1, p.2 + q.2)
+def scale (t : ℝ) (p : Point) : Point := (t * p.1, t * p.2)
+
+lemma normSq_nonneg (p : Point) : 0 ≤ normSq p :=
+  add_nonneg (sq_nonneg _) (sq_nonneg _)
+
+def rotate (S : UnitSquare) (p : Point) : Point :=
+  (S.cosine * p.1 - S.sine * p.2,
+   S.sine * p.1 + S.cosine * p.2)
+
+lemma localX_rotated (S : UnitSquare) (p : Point) :
+    localX S (add S.center (rotate S p)) = p.1 := by
+  calc
+    _ = p.1 * (S.cosine ^ 2 + S.sine ^ 2) := by
+      simp only [localX, add, rotate]
+      ring
+    _ = p.1 := by rw [S.unit]; ring
+
+lemma localY_rotated (S : UnitSquare) (p : Point) :
+    localY S (add S.center (rotate S p)) = p.2 := by
+  calc
+    _ = p.2 * (S.cosine ^ 2 + S.sine ^ 2) := by
+      simp only [localY, add, rotate]
+      ring
+    _ = p.2 := by rw [S.unit]; ring
+
+def localVertex : Fin 4 → Point :=
+  ![(-1 / 2, -1 / 2), (-1 / 2, 1 / 2), (1 / 2, -1 / 2), (1 / 2, 1 / 2)]
+
+lemma vertex_mem (S : UnitSquare) (j : Fin 4) :
+    closedSquare S (add S.center (rotate S (localVertex j))) := by
+  unfold closedSquare
+  rw [localX_rotated, localY_rotated]
+  fin_cases j <;> norm_num [localVertex]
 
 /-- Non-overlap, without a containing disk or any lower-bound assumption. -/
 def InteriorDisjoint {ι : Type*} (S : ι → UnitSquare) : Prop :=
@@ -17,18 +53,10 @@ def InteriorDisjoint {ι : Type*} (S : ι → UnitSquare) : Prop :=
 lemma Packing.disjoint {n : ℕ} {S : Fin n → UnitSquare} {o : Point} {R : ℝ}
     (hp : Packing S o R) : InteriorDisjoint S := hp.2.2
 
-lemma containing_index_unique {ι : Type*} {S : ι → UnitSquare}
-    (hd : InteriorDisjoint S) {i j : ι} {o : Point}
-    (hi : openSquare (S i) o) (hj : openSquare (S j) o) : i = j := by
-  by_contra hij
-  exact hd i j hij o ⟨hi, hj⟩
-
-lemma Packing.reindex {m n : ℕ} {S : Fin n → UnitSquare} {o : Point} {R : ℝ}
-    (hp : Packing S o R) (e : Fin m ↪ Fin n) :
-    Packing (fun i => S (e i)) o R := by
-  refine ⟨hp.1, fun i => hp.2.1 (e i), ?_⟩
-  intro i j hij
-  exact hp.2.2 (e i) (e j) (fun h => hij (e.injective h))
+lemma InteriorDisjoint.pairwise {ι : Type*} {S : ι → UnitSquare}
+    (hd : InteriorDisjoint S) :
+    Pairwise (fun i j => Disjoint {p | openSquare (S i) p} {p | openSquare (S j) p}) :=
+  fun i j hij => Set.disjoint_left.mpr fun p hi hj => hd i j hij p ⟨hi,hj⟩
 
 /-- Nonnegative absolute coordinates of the tested point in a square's frame. -/
 def alpha (S : UnitSquare) (o : Point) : ℝ := |localX S o|
@@ -59,27 +87,14 @@ lemma phi_le_of_contained (S : UnitSquare) (o : Point) (R : ℝ)
     have hh := h _ (vertex_mem S j)
     rw [inDisk, ← frame_distance S, localX_rotated, localY_rotated] at hh
     exact hh
-  by_cases hx : 0 ≤ localX S o <;> by_cases hy : 0 ≤ localY S o
-  · have hh := hv 0
-    norm_num [localVertex] at hh
-    dsimp [phi, alpha, beta]
-    rw [abs_of_nonneg hx, abs_of_nonneg hy]
-    nlinarith only [hh]
-  · have hh := hv 1
-    norm_num [localVertex] at hh
-    dsimp [phi, alpha, beta]
-    rw [abs_of_nonneg hx, abs_of_neg (lt_of_not_ge hy)]
-    nlinarith only [hh]
-  · have hh := hv 2
-    norm_num [localVertex] at hh
-    dsimp [phi, alpha, beta]
-    rw [abs_of_neg (lt_of_not_ge hx), abs_of_nonneg hy]
-    nlinarith only [hh]
-  · have hh := hv 3
-    norm_num [localVertex] at hh
-    dsimp [phi, alpha, beta]
-    rw [abs_of_neg (lt_of_not_ge hx), abs_of_neg (lt_of_not_ge hy)]
-    nlinarith only [hh]
+  have h0 := hv 0
+  have h1 := hv 1
+  have h2 := hv 2
+  have h3 := hv 3
+  norm_num [localVertex] at h0 h1 h2 h3
+  dsimp [phi,alpha,beta]
+  rcases abs_cases (localX S o) with ⟨hx,-⟩ | ⟨hx,-⟩ <;>
+    rcases abs_cases (localY S o) with ⟨hy,-⟩ | ⟨hy,-⟩ <;> rw [hx,hy] <;> linarith
 
 lemma Packing.phi_le {n : ℕ} {S : Fin n → UnitSquare} {o : Point} {R : ℝ}
     (hp : Packing S o R) (i : Fin n) :
@@ -127,24 +142,19 @@ lemma dot_sub_right (v p q : Point) : dot v (sub p q) = dot v p - dot v q := by
 lemma dot_scale_right (v : Point) (t : ℝ) (p : Point) :
     dot v (scale t p) = t * dot v p := by dsimp [dot, scale]; ring
 
-lemma sub_add_cancel_coord (p q : Point) : add (sub p q) q = p := by
-  ext <;> dsimp [add, sub] <;> ring
-
-lemma localX_continuous (S : UnitSquare) : Continuous (localX S) := by
-  unfold localX; fun_prop
-lemma localY_continuous (S : UnitSquare) : Continuous (localY S) := by
-  unfold localY; fun_prop
-lemma alpha_continuous (S : UnitSquare) : Continuous (alpha S) :=
-  (localX_continuous S).abs
-lemma beta_continuous (S : UnitSquare) : Continuous (beta S) :=
-  (localY_continuous S).abs
-
 lemma normSq_pos_of_ne {v : Point} (hv : v ≠ (0,0)) : 0 < normSq v := by
   have hn := normSq_nonneg v
   by_contra hh
   apply hv
   apply Prod.ext <;> dsimp [normSq] at * <;>
     nlinarith [sq_nonneg v.1,sq_nonneg v.2]
+
+lemma sub_ne_origin {p q : Point} (h : p ≠ q) : sub p q ≠ (0,0) := by
+  intro hh
+  apply h
+  have hx := congrArg Prod.fst hh
+  have hy := congrArg Prod.snd hh
+  apply Prod.ext <;> dsimp [sub] at * <;> linarith
 
 lemma small_disk_in_openSquare (S : UnitSquare) {p : Point}
     (hp : normSq (sub p S.center) < 1/4) : openSquare S p := by
@@ -161,22 +171,14 @@ lemma halfDiagonal_pos : 0 < halfDiagonal := by unfold halfDiagonal; positivity
 lemma halfDiagonal_sq : halfDiagonal^2=1/2 := by
   have hh := Real.sq_sqrt (show (0:ℝ) ≤ 2 by norm_num)
   dsimp [halfDiagonal]
-  nlinarith
+  linarith
 lemma halfDiagonal_gt_707 : (707:ℝ)/1000 < halfDiagonal := by
   nlinarith [halfDiagonal_sq,halfDiagonal_pos]
-
 
 lemma local_center_norm (S : UnitSquare) (o : Point) :
     normSq (sub S.center o)=(alpha S o)^2+(beta S o)^2 := by
   have h := frame_norm S (sub S.center o)
   rw [frame_centerX,frame_centerY] at h
   simpa only [alpha,beta,sq_abs,neg_sq] using h.symm
-
-/-- A lower bound on a squared radius gives the radius bound. -/
-lemma radius_lower_of_squared {r R : ℝ} (hR : 0 ≤ R) (h : r ^ 2 ≤ R ^ 2) :
-    r ≤ R := by
-  by_contra hle
-  have hlt : R < r := lt_of_not_ge hle
-  nlinarith
 
 end SquaresInCircles

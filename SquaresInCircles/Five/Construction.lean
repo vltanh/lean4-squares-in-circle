@@ -16,36 +16,29 @@ lemma Five.radius_sq : Five.radius ^ 2 = 5 / 2 := by
   unfold Five.radius
   exact Real.sq_sqrt (by norm_num)
 
-def plusCorners : Fin 5 → Point :=
-  ![(-1/2,-1/2),(1/2,-1/2),(-3/2,-1/2),(-1/2,1/2),(-1/2,-3/2)]
-def plus : Fin 5 → UnitSquare := fun i => axisSquare (plusCorners i).1 (plusCorners i).2
+/-- The plus in the frame of its disk centre. -/
+def Five.centers : Fin 5 → Point := ![(0,0),(1,0),(0,1),(-1,0),(0,-1)]
 
-lemma plus_disjoint : InteriorDisjoint plus := by
+/-- The plus, centred at the origin. -/
+def Five.model : Fin 5 → UnitSquare := fun i => axisSquare (Five.centers i)
+
+lemma Five.model_disjoint : InteriorDisjoint Five.model := by
   intro i j hij
   apply axis_disjoint
-  fin_cases i <;> fin_cases j <;> norm_num [plusCorners,AxisSeparated] at *
+  fin_cases i <;> fin_cases j <;> norm_num [Five.centers,AxisSeparated] at *
 
-lemma plus_packing : Packing plus (0,0) (Real.sqrt ((5:ℝ)/2)) := by
-  refine ⟨Real.sqrt_nonneg _,?_,plus_disjoint⟩
+theorem Five.model_packing : Packing Five.model (0,0) Five.radius := by
+  refine ⟨Five.radius_nonneg,?_,Five.model_disjoint⟩
   intro i
-  have hR : Real.sqrt ((5:ℝ)/2) ^ 2 = 5/2 := Real.sq_sqrt (by norm_num)
-  fin_cases i
-  · apply axis_contained (B := 1/2) (C := 1/2)
-    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
-  · apply axis_contained (B := 3/2) (C := 1/2)
-    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
-  · apply axis_contained (B := 3/2) (C := 1/2)
-    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
-  · apply axis_contained (B := 1/2) (C := 3/2)
-    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
-  · apply axis_contained (B := 1/2) (C := 3/2)
-    all_goals first | (rw [hR]; norm_num) | norm_num [plus,plusCorners]
+  fin_cases i <;>
+    first
+    | (apply axis_contained (B := 1/2) (C := 3/2) <;>
+        norm_num [Five.model,Five.centers,Five.radius_sq]; done)
+    | (apply axis_contained (B := 3/2) (C := 1/2) <;>
+        norm_num [Five.model,Five.centers,Five.radius_sq])
 
 theorem Five.attainment :
     ∃ (S : Fin 5 → UnitSquare) (o : Point), Packing S o Five.radius :=
-  ⟨plus,(0,0),plus_packing⟩
-
-/-- The plus in the frame of its disk centre. -/
-def Five.centers : Fin 5 → Point := ![(0,0),(1,0),(0,1),(-1,0),(0,-1)]
+  ⟨Five.model,(0,0),Five.model_packing⟩
 
 end SquaresInCircles
