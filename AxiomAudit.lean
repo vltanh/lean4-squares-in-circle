@@ -1,4 +1,4 @@
-import ThreeUnitSquaresInCircle
+import SquaresInCircles
 
 /-!
 Dependency audit. Every line below must report exactly
@@ -9,56 +9,48 @@ Any appearance of `sorryAx` would mean an unproved lemma; any appearance of
 used in this development.
 -/
 
--- The three-square result.
-#print axioms ThreeUnitSquaresInCircle.ThreeArc.optimality
-#print axioms ThreeUnitSquaresInCircle.ThreeArc.optimality_and_attainment
+-- All five cases in one statement.
+#print axioms SquaresInCircles.optimality
+#print axioms SquaresInCircles.attainment
+#print axioms SquaresInCircles.uniqueness
+#print axioms SquaresInCircles.optimality_attainment_uniqueness
 
--- Four and five squares, and the combined interface.
-#print axioms ThreeUnitSquaresInCircle.Unified.four_optimality
-#print axioms ThreeUnitSquaresInCircle.Unified.five_optimality
-#print axioms ThreeUnitSquaresInCircle.Unified.optimality_and_attainment_345
+-- Each case: lower bound with attainment, and rigid uniqueness.
+#print axioms SquaresInCircles.One.optimality_and_attainment
+#print axioms SquaresInCircles.One.rigid_uniqueness
+#print axioms SquaresInCircles.Two.optimality_and_attainment
+#print axioms SquaresInCircles.Two.rigid_uniqueness
+#print axioms SquaresInCircles.Three.optimality_and_attainment
+#print axioms SquaresInCircles.Three.rigid_uniqueness
+#print axioms SquaresInCircles.Four.optimality_and_attainment
+#print axioms SquaresInCircles.Four.rigid_uniqueness
+#print axioms SquaresInCircles.Five.optimality_and_attainment
+#print axioms SquaresInCircles.Five.rigid_uniqueness
+#print axioms SquaresInCircles.Five.polygon_uniqueness
 
 -- The strict polygon relaxations, and the two three-square alternatives.
-#print axioms ThreeUnitSquaresInCircle.Unified.three_polygon_strict_impossible
-#print axioms ThreeUnitSquaresInCircle.Unified.three_exterior_reduction
-#print axioms ThreeUnitSquaresInCircle.Unified.three_containing_impossible
-#print axioms ThreeUnitSquaresInCircle.Unified.four_polygon_strict_impossible
-#print axioms ThreeUnitSquaresInCircle.Unified.five_polygon_strict_impossible
+#print axioms SquaresInCircles.three_polygon_strict_impossible
+#print axioms SquaresInCircles.three_exterior_reduction
+#print axioms SquaresInCircles.three_containing_impossible
+#print axioms SquaresInCircles.four_polygon_strict_impossible
+#print axioms SquaresInCircles.five_polygon_strict_impossible
 
 -- The shared framework.
-#print axioms ThreeUnitSquaresInCircle.support_separator
-#print axioms ThreeUnitSquaresInCircle.Unified.safe_openRay_of_disjoint
-#print axioms ThreeUnitSquaresInCircle.Unified.open_arc_budget
-#print axioms ThreeUnitSquaresInCircle.Unified.OpenArc.third_distance_bounds
-#print axioms ThreeUnitSquaresInCircle.Unified.three_compensation
-#print axioms ThreeUnitSquaresInCircle.Unified.near_axis_square_overlap
-
--- Uniqueness of the optimal packings.
-#print axioms ThreeUnitSquaresInCircle.ThreeUniqueness.uniqueness
-#print axioms ThreeUnitSquaresInCircle.ThreeUniqueness.rigid_uniqueness
-#print axioms ThreeUnitSquaresInCircle.FourUniqueness.uniqueness
-#print axioms ThreeUnitSquaresInCircle.FourUniqueness.rigid_uniqueness
-#print axioms ThreeUnitSquaresInCircle.FiveUniqueness.uniqueness
-#print axioms ThreeUnitSquaresInCircle.FiveUniqueness.polygon_uniqueness
-#print axioms ThreeUnitSquaresInCircle.FiveUniqueness.rigid_uniqueness
-
--- Attaining configurations.
-#print axioms ThreeUnitSquaresInCircle.exists_packing_at_optimum
-#print axioms ThreeUnitSquaresInCircle.Unified.block_packing
-#print axioms ThreeUnitSquaresInCircle.Unified.plus_packing
+#print axioms SquaresInCircles.support_separator
+#print axioms SquaresInCircles.safe_openRay_of_disjoint
+#print axioms SquaresInCircles.open_arc_budget
+#print axioms SquaresInCircles.OpenArc.third_distance_bounds
+#print axioms SquaresInCircles.centers_distance_sq_ge_one
+#print axioms SquaresInCircles.unit_contact
+#print axioms SquaresInCircles.three_compensation
+#print axioms SquaresInCircles.near_axis_square_overlap
 
 -- The statements being proved, for inspection.
-#print ThreeUnitSquaresInCircle.Packing
-#print ThreeUnitSquaresInCircle.Unified.PackingN
-#check @ThreeUnitSquaresInCircle.ThreeArc.optimality
-#check @ThreeUnitSquaresInCircle.ThreeArc.optimality_and_attainment
-#check @ThreeUnitSquaresInCircle.Unified.four_optimality
-#check @ThreeUnitSquaresInCircle.Unified.five_optimality
-#check @ThreeUnitSquaresInCircle.Unified.optimality_and_attainment_345
-#print ThreeUnitSquaresInCircle.Uniqueness.HasNormalForm
-#print ThreeUnitSquaresInCircle.Uniqueness.threeCenters
-#check @ThreeUnitSquaresInCircle.ThreeUniqueness.uniqueness
-#check @ThreeUnitSquaresInCircle.ThreeUniqueness.rigid_uniqueness
-#check @ThreeUnitSquaresInCircle.FourUniqueness.uniqueness
-#check @ThreeUnitSquaresInCircle.FiveUniqueness.uniqueness
-#check @ThreeUnitSquaresInCircle.FiveUniqueness.polygon_uniqueness
+#print SquaresInCircles.Packing
+#print SquaresInCircles.optimalRadius
+#print SquaresInCircles.HasNormalForm
+#print SquaresInCircles.modelCenters
+#check @SquaresInCircles.optimality
+#check @SquaresInCircles.attainment
+#check @SquaresInCircles.uniqueness
+#check @SquaresInCircles.Five.polygon_uniqueness

@@ -91,6 +91,6 @@
    "inputRev": "v4.34.0",
    "inherited": true,
    "configFile": "lakefile.toml"}],
- "name": "«three-unit-squares-in-circle»",
+ "name": "«squares-in-circles»",
  "lakeDir": ".lake",
  "fixedToolchain": false}

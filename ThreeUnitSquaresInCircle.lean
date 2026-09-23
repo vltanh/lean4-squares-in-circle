@@ -1,4 +1,0 @@
-import ThreeUnitSquaresInCircle.Unified
-import ThreeUnitSquaresInCircle.ThreeUniqueness
-import ThreeUnitSquaresInCircle.FourUniqueness
-import ThreeUnitSquaresInCircle.FiveUniqueness

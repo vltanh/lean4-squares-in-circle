@@ -1,93 +1,73 @@
-# Lean 4 formalization of packing three unit squares in a disk
+# Lean 4 formalization of packing unit squares in a disk
 
-A machine-checked proof that the smallest disk containing three
-non-overlapping unit squares has radius `5 * Real.sqrt 17 / 16 ≈ 1.2884705`,
-and that the T arrangement is the only packing attaining it, up to rotation and
-relabelling. The same occupied-arc framework settles four squares (radius `√2`,
-only the 2×2 block) and five squares (radius `√(5/2)`, only the plus).
+Machine-checked proofs, for `n = 1, …, 5`, of the smallest radius of a disk
+that holds `n` non-overlapping unit squares, and that exactly one packing
+attains it, up to rotation about the disk centre and relabelling of the squares.
+
+| n | optimal radius | ≈ | the unique optimal packing |
+| --- | --- | --- | --- |
+| 1 | `√2 / 2` | 0.7071 | the square |
+| 2 | `√5 / 2` | 1.1180 | a 2×1 rectangle |
+| 3 | `5√17 / 16` | 1.2885 | the T |
+| 4 | `√2` | 1.4142 | the 2×2 block |
+| 5 | `√(5/2)` | 1.5811 | the plus |
 
 - **Toolchain:** Lean `4.34.0`, mathlib `v4.34.0`
 - **Axioms:** `propext`, `Classical.choice`, `Quot.sound` only
 - **Admissions:** none — no `sorry`, no `axiom`, no `native_decide`
-- **Source:** 39 modules, ~5,100 lines
+- **Source:** 41 modules, ~5,400 lines
 
-The earlier certificate-based proof of the three-square result is preserved on
-the [`legacy`](https://github.com/vltanh/three-unit-squares-in-circle/tree/legacy)
+The earlier certificate-based proof of the three-square case is preserved on
+the [`legacy`](https://github.com/vltanh/lean4-squares-in-circles/tree/legacy)
 branch; see [Legacy proof](#legacy-proof).
 
 ## Results
 
-**Three squares.** `optimality` and `optimality_and_attainment` are in
-`ThreeUnitSquaresInCircle/ThreeArc.lean`, namespace
-`ThreeUnitSquaresInCircle.ThreeArc`. Every packing of three unit squares in a
-disk of radius `R` satisfies `optimalRadius ≤ R`:
+The results for all five cases are in the root file `SquaresInCircles.lean`,
+namespace `SquaresInCircles`:
 
 ```lean
-theorem optimality (S : Fin 3 → UnitSquare) (o : Point) (R : ℝ)
-    (hp : Packing S o R) : optimalRadius ≤ R
+theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
+    (S : Fin n → UnitSquare) (o : Point) (R : ℝ) (hp : Packing S o R) :
+    optimalRadius n ≤ R
+
+theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5) :
+    ∃ (S : Fin n → UnitSquare) (o : Point), Packing S o (optimalRadius n)
+
+theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
+    (S : Fin n → UnitSquare) (o : Point) (hp : Packing S o (optimalRadius n)) :
+    HasNormalForm S o (modelCenters n)
 ```
 
-An explicit T-shaped arrangement realizes the bound
-(`ThreeUnitSquaresInCircle/Construction.lean`, namespace
-`ThreeUnitSquaresInCircle`):
+`optimality_attainment_uniqueness` conjoins the three. Each theorem states its
+content directly; there is no intermediate abbreviation to unfold.
 
-```lean
-theorem exists_packing_at_optimum :
-    ∃ (S : Fin 3 → UnitSquare) (o : Point), Packing S o optimalRadius
-```
+Each case also stands alone, in namespaces `SquaresInCircles.One`, …,
+`SquaresInCircles.Five` (folders `One/`, …, `Five/`), with the same theorems:
 
-`optimality_and_attainment` conjoins the two. Each theorem states its content
-directly; there is no intermediate abbreviation to unfold.
+| theorem | statement, for `n = 3` |
+| --- | --- |
+| `Three.optimality` | `Packing S o R → Three.radius ≤ R` |
+| `Three.attainment` | `∃ S o, Packing S o Three.radius` |
+| `Three.optimality_and_attainment` | both of the above |
+| `Three.uniqueness` | `Packing S o Three.radius → HasNormalForm S o Three.centers` |
+| `Three.rigid_uniqueness` | the same, with an explicit isometry of the plane |
 
-**Four and five squares.** In namespace `ThreeUnitSquaresInCircle.Unified`
-(`Unified/Four.lean`, `Unified/Five.lean`):
+`rigid_uniqueness` gives a bijection of the plane that preserves Euclidean
+distance and takes the origin to `o`, under which the closed squares are exactly
+the model squares. `Five.polygon_uniqueness` needs only interior-disjointness
+and the closed 12-gon of Step 1, not the disk.
 
-```lean
-theorem four_optimality (S : Fin 4 → UnitSquare) (o : Point) (R : ℝ)
-    (hp : PackingN S o R) : Real.sqrt 2 ≤ R
-
-theorem five_optimality (S : Fin 5 → UnitSquare) (o : Point) (R : ℝ)
-    (hp : PackingN S o R) : Real.sqrt ((5:ℝ)/2) ≤ R
-```
-
-The 2×2 block and the plus arrangement attain these (`block_packing`,
-`plus_packing` in `Unified/Constructions.lean`).
-`optimality_and_attainment_345` (`Unified/Main.lean`) states lower bound and
-attainment together for `n = 3, 4, 5`.
-
-**Uniqueness.** Each optimum is attained by one packing only, up to a rotation
-about the disk centre and a relabelling of the squares. The theorems are in
-namespaces `ThreeUniqueness`, `FourUniqueness` and `FiveUniqueness`
-(`ThreeUniqueness.lean`, `FourUniqueness.lean`, `FiveUniqueness.lean`), under
-`ThreeUnitSquaresInCircle`:
-
-```lean
-theorem ThreeUniqueness.uniqueness (S : Fin 3 → UnitSquare) (o : Point)
-    (hp : Packing S o optimalRadius) : HasNormalForm S o threeCenters
-
-theorem FourUniqueness.uniqueness (S : Fin 4 → UnitSquare) (o : Point)
-    (hp : PackingN S o (Real.sqrt 2)) : HasNormalForm S o fourCenters
-
-theorem FiveUniqueness.uniqueness (S : Fin 5 → UnitSquare) (o : Point)
-    (hp : PackingN S o (Real.sqrt ((5:ℝ)/2))) : HasNormalForm S o fiveCenters
-```
-
-Each namespace also has `rigid_uniqueness`. It gives an explicit bijection of
-the plane that preserves Euclidean distance and takes the origin to `o`, under
-which the closed squares are exactly the model squares.
-`FiveUniqueness.polygon_uniqueness` needs only interior-disjointness and the
-closed 12-gon of Step 1, not the disk.
-
-**Polygon relaxations.** The proofs go through stronger statements that
-mention no disk at all: `three_polygon_strict_impossible`,
-`four_polygon_strict_impossible` and `five_polygon_strict_impossible` rule out
-`n` interior-disjoint squares whose centres all satisfy the strict contact
-polygon of the next section.
+**Polygon relaxations.** For three, four and five squares the proofs go through
+stronger statements that mention no disk at all:
+`three_polygon_strict_impossible`, `four_polygon_strict_impossible` and
+`five_polygon_strict_impossible` rule out `n` interior-disjoint squares whose
+centres all satisfy the strict contact polygon of Step 1.
 
 ## Definitions
 
-These definitions carry the entire meaning of the result. All except
-`PackingN` are in `ThreeUnitSquaresInCircle/Geometry.lean`.
+These definitions carry the entire meaning of the results. All except the radii
+and the normal forms are in `SquaresInCircles/Geometry.lean`.
 
 ### The plane
 
@@ -124,7 +104,7 @@ A square is a centre plus an orientation. The orientation is stored as the pair
   need `cos θ` and `sin θ`, never `θ` itself, so this avoids branch cuts and
   the ambiguity of `θ` modulo `2π`. Every `θ` gives such a pair, and every such
   pair comes from some `θ`, so nothing is lost.
-- The fields are per-square, so the three squares rotate **independently**.
+- The fields are per-square, so the squares rotate **independently**.
 
 ```lean
 def localX (S : UnitSquare) (p : Point) : ℝ :=
@@ -152,8 +132,8 @@ In local coordinates the square is the box `[-1/2, 1/2]²`, whose side is
 `1/2 - (-1/2) = 1` — genuinely a **unit** square. The two versions differ only
 in strictness: `closedSquare` includes the boundary, `openSquare` is the
 interior. Non-overlap is stated with `openSquare`, so squares may touch along
-edges or at corners but may not share interior area. The T arrangement relies
-on this.
+edges or at corners but may not share interior area. Every optimal packing
+but the single square relies on this.
 
 ### The disk
 
@@ -168,26 +148,10 @@ non-strict, this is the **closed** disk. Note the squaring makes `inDisk o R p`
 and `inDisk o (-R) p` agree, so the definition is only meaningful given
 `0 ≤ R`, which `Packing` supplies.
 
-### The optimal radius
-
-```lean
-def optimalRadius : ℝ := 5 * Real.sqrt 17 / 16
-def targetSq : ℝ := 425 / 256
-```
-
-`optimalRadius ≈ 1.2884705` is the value the theorems establish, and `targetSq`
-is its square: `(5√17/16)² = 25·17/256 = 425/256`, proved as `optimalRadius_sq`.
-
-Both exist because `optimalRadius` is irrational while `targetSq` is rational.
-The proof works with squared lengths so the contact inequalities stay
-polynomial, which is what `nlinarith` needs. `Real.sqrt` enters only at the
-last step, where `radius_lower_of_squared` turns `targetSq ≤ R²` into
-`optimalRadius ≤ R`.
-
 ### Packing
 
 ```lean
-def Packing (S : Fin 3 → UnitSquare) (o : Point) (R : ℝ) : Prop :=
+def Packing {n : ℕ} (S : Fin n → UnitSquare) (o : Point) (R : ℝ) : Prop :=
   0 ≤ R ∧
   (∀ i p, closedSquare (S i) p → inDisk o R p) ∧
   (∀ i j, i ≠ j → ∀ p, ¬ (openSquare (S i) p ∧ openSquare (S j) p))
@@ -202,32 +166,47 @@ Three conditions, and nothing else:
 
 What the encoding does and does not assume:
 
-- `S : Fin 3 → UnitSquare` is an arbitrary triple, each with its own frame, so
-  the squares are independently placed and independently rotated.
-- `o` and `R` are universally quantified in the theorem, so the disk centre
+- `S : Fin n → UnitSquare` is an arbitrary family, each square with its own
+  frame, so the squares are independently placed and independently rotated.
+- `o` and `R` are universally quantified in the theorems, so the disk centre
   ranges over the whole plane and no relationship between centre and squares is
   presupposed.
 - No orientation, separating-axis, arc, tangent, or lower-bound assumption
   appears anywhere in the hypothesis. Those are derived in the proof, not
   assumed in the statement.
 
-For four and five squares the same predicate is stated for any family size
-(`ThreeUnitSquaresInCircle/Unified/Basic.lean`):
+### The optimal radii
+
+Each case defines its radius next to its optimal packing, and the root file
+`SquaresInCircles.lean` collects them:
 
 ```lean
-def PackingN {n : ℕ} (S : Fin n → UnitSquare) (o : Point) (R : ℝ) : Prop :=
-  0 ≤ R ∧
-  (∀ i p, closedSquare (S i) p → inDisk o R p) ∧
-  (∀ i j, i ≠ j → ∀ p, ¬ (openSquare (S i) p ∧ openSquare (S j) p))
+def One.radius : ℝ := Real.sqrt 2 / 2          -- One/Construction.lean
+def Two.radius : ℝ := Real.sqrt 5 / 2          -- Two/Construction.lean
+def Three.radius : ℝ := 5 * Real.sqrt 17 / 16  -- Three/Construction.lean
+def Four.radius : ℝ := Real.sqrt 2             -- Four/Construction.lean
+def Five.radius : ℝ := Real.sqrt (5 / 2)       -- Five/Construction.lean
+
+def optimalRadius : ℕ → ℝ                      -- SquaresInCircles.lean
+  | 1 => One.radius
+  | 2 => Two.radius
+  | 3 => Three.radius
+  | 4 => Four.radius
+  | 5 => Five.radius
+  | _ => 0
 ```
 
-`PackingN S o R ↔ Packing S o R` holds by `Iff.rfl` for `S : Fin 3 → UnitSquare`.
+Each value is the distance from the disk centre to the outermost corners of the
+optimal packing. Their squares `1/2`, `5/4`, `425/256`, `2` and `5/2` are
+rational (`One.radius_sq`, …, `Five.radius_sq`). The proofs work with squared
+lengths so the contact inequalities stay polynomial, which is what `nlinarith`
+needs. `Real.sqrt` enters only at the last step, where
+`radius_lower_of_squared` (`Common/Basic.lean`) turns `r² ≤ R²` into `r ≤ R`.
 
 ### Normal forms
 
-Uniqueness is stated about point sets
-(`ThreeUnitSquaresInCircle/Uniqueness/Basic.lean`,
-`Unified/ThreeCoordinates.lean`):
+Uniqueness is stated about point sets (`Common/NormalForm.lean`,
+`Common/Coordinates.lean`):
 
 ```lean
 def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
@@ -251,11 +230,16 @@ sets rather than `UnitSquare` records, because a quarter-turn of a frame
 describes the same square. No reflection is needed, since each model is
 symmetric under one. With the disk centre at the origin, the models are:
 
-| n | `centers` | configuration |
+| n | `centers` | packing |
 | --- | --- | --- |
+| 1 | `(0, 0)` | the square |
+| 2 | `(-1/2, 0)`, `(1/2, 0)` | the 2×1 rectangle |
 | 3 | `(-1/2, -5/16)`, `(1/2, -5/16)`, `(0, 11/16)` | the T |
 | 4 | `(±1/2, ±1/2)` | the 2×2 block |
 | 5 | `(0, 0)`, `(±1, 0)`, `(0, ±1)` | the plus |
+
+These are `One.centers`, …, `Five.centers`; `modelCenters n` selects the one for
+`n` (`SquaresInCircles.lean`).
 
 Read these definitions before trusting the result. A kernel check establishes
 that the proofs are valid; it cannot establish that the statements mean what
@@ -263,15 +247,32 @@ you intend.
 
 ## Proof outline
 
+### One and two squares
+
+- **One square** (`One/`). Write `a = |localX S o|`, `b = |localY S o|` for
+  the disk centre `o` in the square's frame. The farthest vertex is at squared
+  distance `phi a b = (a + 1/2)² + (b + 1/2)² ≥ 1/2`, with equality only for
+  `a = b = 0`, that is, for the square centred at `o`.
+- **Two squares** (`Two/`). `phi a b ≤ 5/4` forces `a² + b² ≤ 1/4`, so each
+  centre lies within `1/2` of `o`. By the parallelogram law the two centres are
+  then at most 1 apart, while centres of interior-disjoint unit squares are at
+  least 1 apart (`centers_distance_sq_ge_one`). A smaller disk is therefore
+  impossible. At equality `o` is the midpoint of the two centres, and the
+  equality case of the distance bound (`unit_contact`) puts the squares edge to
+  edge: the rectangle.
+
+### Three to five squares
+
 Each lower bound is a proof by contradiction. Assume a packing with `R²` below
 the target, relax the curved containment constraint to a strict polygon, then
 show that `n` disjoint squares cannot all satisfy that polygon: each square
 claims an arc of a small auxiliary circle around the disk centre, and the arcs
 together would need more than the whole circle.
 
-### Step 1 — Contact tangents
+#### Step 1 — Contact tangents
 
-`phi_le_of_contained`, `tangent_lt` (`Unified/Basic.lean`, `Unified/Tangents.lean`)
+`phi_le_of_contained`, `tangent_lt` (`Common/Basic.lean`, `Common/Tangents.lean`,
+and `Tangents.lean` in the folders for three to five squares)
 
 Write `a = |localX S o|`, `b = |localY S o|` for the disk centre `o` in a
 square's own frame. The farthest vertex of the square is at squared distance
@@ -294,9 +295,9 @@ configuration give linear constraints on every square:
 (`p3_of_phi_lt`, `p4_of_phi_lt`, `p5_of_phi_lt`.) From here on the disk plays
 no role.
 
-### Step 2 — The angular budget
+#### Step 2 — The angular budget
 
-`OpenArc`, `open_arc_budget`, `uniform_arc_excess` (`Unified/AngularBudget.lean`)
+`OpenArc`, `open_arc_budget`, `uniform_arc_excess` (`Common/AngularBudget.lean`)
 
 An `OpenArc o r U` is an angular interval, a centre direction and a half-width
 in `(0, π]`, such that every point of the circle of radius `r` around `o` in
@@ -313,10 +314,10 @@ shrinking every half-width by a common factor, so no boundary-measure argument
 is needed. Consequently, if every one of `n` disjoint regions has half-width at
 least `π/n` and one exceeds it, there is a contradiction.
 
-### Step 3 — Exterior squares
+#### Step 3 — Exterior squares
 
-`SquareChart`, `RectangleArcs.lean`, `three_exterior_arc`, `four_exterior_arc`,
-`five_exterior_arc`
+`SquareChart`, `Common/RectangleArcs.lean`, `three_exterior_arc`,
+`four_exterior_arc`, `five_exterior_arc`
 
 A `SquareChart` reads a square's membership predicate in its own phase, with a
 possible reversal of orientation and the two centre coordinates sorted so that
@@ -334,7 +335,7 @@ arc is longer than `2π/n`:
 If no square contains `o`, the budget is exceeded. Disjointness allows at most
 one square to contain `o`.
 
-### Step 4 — The containing square, four and five squares
+#### Step 4 — The containing square, four and five squares
 
 `support_separator`, `safe_openRay_of_disjoint`, `four_containing_arc`,
 `five_containing_arc`
@@ -342,7 +343,7 @@ one square to contain `o`.
 The square containing `o` is replaced by its *radial sweep* `openRay`: the union
 of its translates along the ray from `o` through its centre, away from `o`. A
 Hahn–Banach separating functional for each pair of squares
-(`support_separator`, `Separation.lean`), together with an octagon support
+(`support_separator`, `Common/Separation.lean`), together with an octagon support
 estimate valid for every normal, shows that the sweep stays disjoint from the
 other squares. No separating-axis enumeration is needed. The strict octagon
 also forces the containing square's centre to differ from `o`.
@@ -354,9 +355,9 @@ also forces the containing square's centre to differ from `o`.
   distance `1/√2` from `o`. That disk covers a `72°` arc of the circle of radius
   `5/6`, and with four exterior arcs longer than `72°`, the budget fails.
 
-### Step 5 — The containing square, three squares
+#### Step 5 — The containing square, three squares
 
-`three_containing_impossible` (`Unified/ThreeContaining.lean`)
+`three_containing_impossible` (`Three/Containing.lean`)
 
 For three squares the sweep is too weak, and the argument measures the
 containing square itself. Let square `S` contain `o`, with sorted chart
@@ -388,41 +389,39 @@ coordinates `b ≤ a < 1/2`, and let the other two be exterior.
 Together with Step 3 this proves `three_polygon_strict_impossible`, for every
 choice of which square contains `o`.
 
-### Step 6 — Conclude
+#### Step 6 — Conclude
 
-`ThreeArc.squared_lower`, `four_squared_lower`, `five_squared_lower`
+`Three.squared_lower`, `four_squared_lower`, `five_squared_lower`
 
-`R²` below the target puts every square in the strict polygon, which is
-impossible. So `targetSq ≤ R²`, and `radius_lower_of_squared` gives
-`optimalRadius ≤ R`. The four- and five-square bounds conclude the same way with
-`Real.sqrt`.
+`R²` below the squared radius puts every square in the strict polygon, which is
+impossible. So the squared radius is at most `R²`, and `radius_lower_of_squared`
+gives `Three.radius ≤ R`, and likewise for four and five squares.
 
-### Step 7 — Uniqueness
+#### Step 7 — Uniqueness
 
-`ThreeUniqueness.uniqueness`, `FourUniqueness.uniqueness`,
-`FiveUniqueness.uniqueness`
+`Three.uniqueness`, `Four.uniqueness`, `Five.uniqueness`
 
 At the optimal radius the lower-bound arguments run again with equality
 allowed. Every inequality in the chain must then be tight, and the tight cases
 are reconstructed exactly.
 
-- **Five squares** (`Uniqueness/Five.lean`, `Uniqueness/Contacts.lean`). The
+- **Five squares** (`Five/Uniqueness.lean`, `Common/Contacts.lean`). The
   closed 12-gon puts every centre within distance 1 of `o`. If no square were
   centred at `o`, the exterior arcs (still longer than `72°`) and the sweep of a
   containing square (`72°`) would overfill the circle, so one square is centred
   exactly at `o`. Centres of interior-disjoint unit squares are at least 1
   apart, with equality only for parallel axes and a unit offset along an axis.
   The other four squares are therefore the four side-neighbours of the centred
-  one: the plus. This uses only the closed 12-gon, not the disk.
-- **Four squares** (`Uniqueness/Four.lean`). The closed diamond alone is not
+  one: the plus. This uses only the closed 12-gon, not the disk
+  (`Five.polygon_uniqueness`).
+- **Four squares** (`Four/Uniqueness.lean`). The closed diamond alone is not
   rigid, so this case uses the disk. The strict Diamond Lemma leaves a square
   with `a + b ≥ 1`, and `phi a b ≤ 2` then forces `a = b = 1/2`: `o` is a vertex
   of that square and lies in no open square. On the circle of radius `1/2` each
   square holds an arc of at least `90°`, strictly more unless `a + b = 1`, so
   the budget makes `o` a vertex of all four squares. Their quarter-circle arcs
   have midpoints a quarter turn apart, which is the block.
-- **Three squares** (`Uniqueness/ThreeClosed.lean`,
-  `Uniqueness/ThreeReconstruction.lean`, `Uniqueness/Three.lean`). A square
+- **Three squares** (`Three/Uniqueness.lean`). A square
   containing `o` keeps strict contact tangents even at the optimum, and the
   Step 5 argument still refutes it when the other two squares satisfy only the
   closed 16-gon. So no square contains `o`, and the three exterior arcs of at
@@ -435,70 +434,61 @@ are reconstructed exactly.
   the midpoints equally spaced. Solving these angle equations puts the squares
   in the T slots, for every labelling and chart orientation.
 
-## Modules
+## Layout
 
-### Problem statement and shared tools
+```text
+SquaresInCircles.lean      optimalRadius, and all five cases in one statement
+SquaresInCircles/
+├── Geometry.lean          points, squares, disks, Packing
+├── Common/                tools shared by several cases
+├── One/                   n = 1
+├── Two/                   n = 2
+├── Three/                 n = 3
+├── Four/                  n = 4
+└── Five/                  n = 5
+```
+
+Every case folder has the same three core files: `Construction.lean` (the
+radius, the optimal packing and its centres), `Optimality.lean` (the lower
+bound) and `Uniqueness.lean`. Three, four and five squares add the same three
+helper files for the arc argument: `Tangents.lean` (the contact polygon),
+`Exterior.lean` (arcs of the squares that do not contain the disk centre) and
+`Containing.lean` (the square that does). No case imports another: each
+imports only `Common/` and its own folder.
+
+### `Common/`
 
 | File | Contents |
 | --- | --- |
-| `Geometry.lean` | Unit squares, disk containment, interior non-overlap, `optimalRadius` |
+| `Basic.lean` | Square frames, the farthest-vertex bound `phi`, centre distances, `radius_lower_of_squared` |
+| `Tangents.lean` | Tangent identity; the octagon shared by four and five squares |
 | `Separation.lean` | Hahn–Banach supporting functional for two squares with disjoint interiors |
-| `Construction.lean` | The T arrangement: containment, disjointness, attainment |
-
-### Arc framework (`Unified/`)
-
-| File | Contents |
-| --- | --- |
-| `Basic.lean` | `PackingN`, square frames, farthest-vertex bound |
-| `Tangents.lean` | Tangent identity; the 16-gon, diamond, octagon and 12-gon |
-| `Support.lean` | Octagon support for every normal; the sweep stays disjoint |
+| `Support.lean` | Octagon support for every normal; the radial sweep stays disjoint |
 | `AngularBudget.lean` | `OpenArc` witnesses and the Haar-measure budget |
 | `ArcMetric.lean` | Midpoint separation of disjoint arcs; circle perimeter inequality |
 | `Charts.lean` | `SquareChart`: membership in a square's own phase, sorted coordinates |
+| `Coordinates.lean` | Points in a rotated frame; inscribed disks; symmetric caps |
 | `Regions.lean` | Disjoint regions, with the containing square replaced by its sweep |
 | `ElementaryTrig.lean` | Arcsine and cosine estimates with exact rational constants |
 | `RectangleArcs.lean` | The occupied arc of an exterior square |
+| `Constructions.lean` | Disjointness and containment of axis-parallel squares |
+| `NormalForm.lean` | `HasNormalForm`, the rigid-motion witness, slots to a permutation |
+| `Angles.lean` | Quarter turns of a frame; four directions a quarter turn apart |
+| `Contacts.lean` | Disjoint squares have centres at least 1 apart; equality means side-neighbours |
 
-### Four and five squares
+### The cases
 
-| File | Contents |
-| --- | --- |
-| `FourScalar.lean` | Common auxiliary radius; exterior arcs longer than `90°` |
-| `FourRay.lean` | The sweep of the containing square covers a quarter circle |
-| `Four.lean` | Strict diamond infeasibility; `four_optimality` |
-| `FiveScalar.lean` | Radius `5/6`; exterior arcs longer than `72°` |
-| `RadialDisk.lean` | The sweep of the containing square covers a `72°` arc |
-| `Five.lean` | Strict 12-gon infeasibility; `five_optimality` |
-| `Constructions.lean` | The block and plus packings |
+| File | One | Two | Three | Four | Five |
+| --- | --- | --- | --- | --- | --- |
+| `Construction.lean` | the centred square | the 2×1 rectangle | the T | the 2×2 block | the plus |
+| `Tangents.lean` | | | the 16-gon | the diamond | the 12-gon |
+| `Exterior.lean` | | | arcs over `120°`; some square contains `o` | arcs over `90°`, common radius | arcs over `72°` |
+| `Containing.lean` | | | deficit, compensation, overlap point | the sweep covers a quarter circle | the sweep covers a `72°` arc |
+| `Optimality.lean` | half-diagonal bound | centre-distance bound | strict 16-gon infeasibility | strict diamond infeasibility | strict 12-gon infeasibility |
+| `Uniqueness.lean` | centred at `o` | edge to edge, `o` the midpoint | closed caps, contact types, the T | `o` a vertex of every square | a square centred at `o`, closed 12-gon rigidity |
 
-### Three squares
-
-| File | Contents |
-| --- | --- |
-| `ThreeExterior.lean` | Exterior arcs longer than `120°`; some square contains `o` |
-| `ThreeCoordinates.lean` | Cartesian membership from charts; the explicit overlap point |
-| `ThreeScalar.lean` | Deficit bound and compensation inequality |
-| `ThreeCaps.lean` | Arc witnesses for the containing square and the exterior caps |
-| `ThreeContaining.lean` | The containing case; `three_polygon_strict_impossible` |
-| `ThreeArc.lean` | End-to-end assembly: `optimality`, `optimality_and_attainment` |
-| `Unified/Main.lean` | `optimality_and_attainment_345` for `n = 3, 4, 5` |
-
-`ThreeUnitSquaresInCircle/ThreeArc.lean` does not import the four- or
-five-square modules.
-
-### Uniqueness
-
-| File | Contents |
-| --- | --- |
-| `Uniqueness/Basic.lean` | `HasNormalForm`, the rigid-motion witness, slots to a permutation |
-| `Uniqueness/Angles.lean` | Quarter turns of a frame; four directions a quarter turn apart |
-| `Uniqueness/Contacts.lean` | Two squares at centre distance 1 are side-neighbours |
-| `Uniqueness/Five.lean` | A square centred at `o`; rigidity of the closed 12-gon |
-| `Uniqueness/Four.lean` | Radius-`1/2` arcs; `o` is a vertex of every square; the block |
-| `Uniqueness/ThreeClosed.lean` | Closed caps; no square contains `o`; the two contact types |
-| `Uniqueness/ThreeReconstruction.lean` | One A-square and two B-squares; the T |
-| `Uniqueness/Three.lean` | Assembly over all labellings |
-| `ThreeUniqueness.lean`, `FourUniqueness.lean`, `FiveUniqueness.lean` | `uniqueness` and `rigid_uniqueness` |
+Each `Construction.lean` also defines the case's `radius` and its `centers`, the
+optimal packing in the frame of its disk centre.
 
 ## Verification
 
@@ -516,11 +506,12 @@ Requires Elan/Lake and network access for mathlib.
   `[propext, Classical.choice, Quot.sound]`.
 - `sorryAx` in that output would indicate an unproved lemma;
   `Lean.ofReduceBool` would indicate `native_decide` and compiler trust.
-- The audit also prints `Packing`, `PackingN`, `HasNormalForm`, the T model
-  and the theorem signatures for inspection.
-- `SanityChecks.lean` re-proves the exact rational margins the proof relies on,
-  restates the public theorems, and checks the T, the block and the plus
-  against their normal forms; it must elaborate without errors.
+- The audit also prints `Packing`, `optimalRadius`, `HasNormalForm`,
+  `modelCenters` and the theorem signatures for inspection.
+- `SanityChecks.lean` checks the radius table, re-proves the exact rational
+  margins the proofs rely on, restates the public theorems, and checks all five
+  optimal packings against their normal forms; it must elaborate without
+  errors.
 
 Build from the committed `lake-manifest.json`, which pins every dependency by
 hash. Avoid `lake update`: seven transitive packages track `main` or `master`
@@ -533,14 +524,14 @@ machine-generated certificates.
 
 ## Legacy proof
 
-The first formalization of the three-square result is on the
-[`legacy`](https://github.com/vltanh/three-unit-squares-in-circle/tree/legacy)
+The first formalization of the three-square case is on the
+[`legacy`](https://github.com/vltanh/lean4-squares-in-circles/tree/legacy)
 branch, with its own README and axiom audit. It normalizes a packing into a
 fixed angle triangle, extracts separating axes, eliminates directed-chain
 patterns to leave 48 branches, and bounds a trigonometric polynomial on each
 branch with 53 rational certificates checked by `decide +kernel`. Its
-`Cert.optimality` proves the same statement as `ThreeArc.optimality`, over the
-same `Geometry.lean`.
+`Cert.optimality` proves the lower bound of `Three.optimality`, stated with that
+branch's `Packing` for `Fin 3` and its constant `optimalRadius`.
 
 The occupied-arc proof replaced it as the main proof because a single framework
 covers three, four and five squares and extends to uniqueness, and it needs no
@@ -564,7 +555,7 @@ verifier and three Lean drafts are preserved verbatim in `reference/` on the
 **Occupied-arc proof.** Following an idea from Claude Opus 5 Max, ChatGPT 6
 Pro wrote the proof for three, four and five squares and the draft Lean
 development, submitted uncompiled as
-[PR #2](https://github.com/vltanh/three-unit-squares-in-circle/pull/2).
+[PR #2](https://github.com/vltanh/lean4-squares-in-circles/pull/2).
 Claude Opus 5.5 Max cleaned it up. It compiled the draft against Lean
 `4.34.0` / mathlib `v4.34.0`, with repairs covering library renames, tactic
 normal forms and the missing measure instance on `Real.Angle`; no theorem
@@ -573,11 +564,14 @@ and made it the main proof.
 
 **Uniqueness.** ChatGPT 6 Pro wrote the uniqueness proofs for three, four and
 five squares and the draft Lean development, submitted uncompiled as
-[PR #3](https://github.com/vltanh/three-unit-squares-in-circle/pull/3).
+[PR #3](https://github.com/vltanh/lean4-squares-in-circles/pull/3).
 Claude Opus 5.5 Max compiled it against Lean `4.34.0` / mathlib `v4.34.0`, with
 repairs covering library interfaces, tactic normal forms and the reduction of
 vector literals; no public statement changed. It then integrated the uniqueness
 theorems into the main proof.
+
+**One and two squares.** Claude Opus 5.5 Max added the cases `n = 1` and
+`n = 2`, and reorganized the library by `n` as `SquaresInCircles`.
 
 Direction, review and the decisions about scope and naming were the
 repository owner's.
