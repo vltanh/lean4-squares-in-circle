@@ -83,14 +83,16 @@ relabelled. It compares point sets, not frames, since a quarter turn of a frame
 describes the same square. `pointInDirection o φ x y` is the point with
 coordinates `(x, y)` in the frame at `o` rotated by the angle `φ` (a
 `Direction`, that is, a `Real.Angle`). `OpenRect c` and `ClosedRect c` are the
-axis-parallel unit square centred at `c`:
+axis-parallel unit square centred at `c`. These are in `Geometry.lean` too:
 
 ```lean
 def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
-  (o.1+phase.cos*x-phase.sin*y, o.2+phase.sin*x+phase.cos*y)
+  (o.1 + phase.cos * x - phase.sin * y, o.2 + phase.sin * x + phase.cos * y)
 
-abbrev OpenRect (c : Point) (x y : ℝ) : Prop := |x-c.1| < 1/2 ∧ |y-c.2| < 1/2
-abbrev ClosedRect (c : Point) (x y : ℝ) : Prop := |x-c.1| ≤ 1/2 ∧ |y-c.2| ≤ 1/2
+abbrev OpenRect (c : Point) (x y : ℝ) : Prop :=
+  |x - c.1| < 1 / 2 ∧ |y - c.2| < 1 / 2
+abbrev ClosedRect (c : Point) (x y : ℝ) : Prop :=
+  |x - c.1| ≤ 1 / 2 ∧ |y - c.2| ≤ 1 / 2
 
 def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
     (centers : Fin n → Point) : Prop :=
@@ -132,7 +134,8 @@ in Lean are:
 | 5 | `Real.sqrt (5 / 2)` | `![(0,0),(1,0),(0,1),(-1,0),(0,-1)]` |
 
 Each case also stands alone, in namespaces `One` to `Five`, with the same
-theorems and an explicit isometry version of uniqueness.
+three theorems. `rigid_uniqueness` restates uniqueness with an explicit
+isometry of the plane.
 
 ## Proof outline
 
@@ -179,7 +182,7 @@ More on each file: [docs/layout.md](docs/layout.md).
 ```text
 SquaresInCircles.lean      optimalRadius, and all five cases in one statement
 SquaresInCircles/
-├── Geometry.lean          points, squares, disks, Packing
+├── Geometry.lean          the statement: squares, disks, Packing, normal forms
 ├── Common/                tools shared by several cases
 ├── One/  Two/             Construction, Optimality, Uniqueness
 └── Three/ Four/ Five/     Construction, Tangents, Exterior, Containing,
@@ -239,6 +242,12 @@ theorems into the main proof.
 
 **One and two squares.** Claude Opus 5.5 Max added the cases `n = 1` and
 `n = 2`, and reorganized the library by `n` as `SquaresInCircles`.
+
+**Simplification.** Claude Opus 5.5 Max reviewed the whole library and
+simplified it: one containing-square argument for three squares instead of a
+strict and a closed copy, one auxiliary circle for four squares, shared lemmas
+for caps, chart arcs and the radial budget, every definition of the statements
+in `Geometry.lean`, and imports of only the parts of mathlib in use.
 
 Direction, review and the decisions about scope and naming were the
 repository owner's.

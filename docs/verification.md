@@ -20,10 +20,10 @@ and no `native_decide`.
   `Lean.ofReduceBool` would indicate `native_decide` and compiler trust.
 - The audit also prints `Packing`, `optimalRadius`, `HasNormalForm`,
   `modelCenters` and the theorem signatures for inspection.
-- `SanityChecks.lean` checks the radius table, re-proves the exact rational
-  margins the proofs rely on, restates the public theorems, and checks all five
-  optimal packings against their normal forms; it must elaborate without
-  errors.
+- `SanityChecks.lean` checks the radius and centre tables, re-proves the exact
+  rational margins the proofs rely on, restates the public theorems, and checks
+  all five optimal packings against their normal forms; it must elaborate
+  without errors.
 
 Build from the committed `lake-manifest.json`, which pins every dependency by
 hash. Avoid `lake update`: seven transitive packages track `main` or `master`

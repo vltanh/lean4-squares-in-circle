@@ -3,22 +3,22 @@
 [Back to the README](../README.md)
 
 These definitions carry the entire meaning of the results. All except the radii
-and the normal forms are in `SquaresInCircles/Geometry.lean`.
+and the model centres are in `SquaresInCircles/Geometry.lean`.
 
 ## The plane
 
 ```lean
 abbrev Point := ℝ × ℝ
 
-def dot (p q : Point) : ℝ := p.1 * q.1 + p.2 * q.2
 def normSq (p : Point) : ℝ := p.1 ^ 2 + p.2 ^ 2
 def sub (p q : Point) : Point := (p.1 - q.1, p.2 - q.2)
 ```
 
-A point is a pair of reals — the Euclidean plane in coordinates, with no
-additional structure. `normSq p` is the **squared** length of `p`; working with
-squares throughout avoids `Real.sqrt` in the geometry, and the square root
-appears only where the radius itself is stated.
+A point is a pair of reals — the Euclidean plane in coordinates. `normSq p` is
+the **squared** Euclidean length of `p`, and the statements measure distances
+only with it, so `Real.sqrt` appears in them only in the radii. They never use
+mathlib's `dist` on `ℝ × ℝ`, which is the maximum metric, not the Euclidean
+one.
 
 ## Squares
 
@@ -36,10 +36,11 @@ A square is a centre plus an orientation. The orientation is stored as the pair
 - `unit` forces `cosine² + sine² = 1`, so the vectors `(cosine, sine)` and
   `(-sine, cosine)` are unit length and perpendicular. They are the square's own
   axes — an **orthonormal frame**.
-- Storing the pair rather than an angle keeps everything algebraic. The proofs
-  need `cos θ` and `sin θ`, never `θ` itself, so this avoids branch cuts and
-  the ambiguity of `θ` modulo `2π`. Every `θ` gives such a pair, and every such
-  pair comes from some `θ`, so nothing is lost.
+- Storing the pair rather than an angle keeps the statement algebraic, with no
+  branch cut and no ambiguity of `θ` modulo `2π`. Every `θ` gives such a
+  pair, and every such pair comes from some `θ` (`frame_angle`), so nothing is
+  lost. The proofs do use angles, as elements of `Real.Angle`, to parametrize
+  circles.
 - The fields are per-square, so the squares rotate **independently**.
 
 ```lean
@@ -134,23 +135,26 @@ def optimalRadius : ℕ → ℝ                      -- SquaresInCircles.lean
 
 Each value is the distance from the disk centre to the outermost corners of the
 optimal packing. Their squares `1/2`, `5/4`, `425/256`, `2` and `5/2` are
-rational (`One.radius_sq`, …, `Five.radius_sq`). The proofs work with squared
-lengths so the contact inequalities stay polynomial, which is what `nlinarith`
-needs. `Real.sqrt` enters only at the last step, where
-`radius_lower_of_squared` (`Common/Basic.lean`) turns `r² ≤ R²` into `r ≤ R`.
+rational (`One.radius_sq`, …, `Five.radius_sq`). The proofs bound the squared
+radius, so the contact inequalities stay polynomial, which is what `nlinarith`
+needs; mathlib's `le_of_sq_le_sq` turns `r² ≤ R²` into `r ≤ R` at the end.
 
 ## Normal forms
 
 Uniqueness says that every packing at the optimal radius is the optimal packing,
 moved by one rotation about the disk centre, with the squares relabelled. It is
-stated about point sets (`Common/NormalForm.lean`, `Common/Coordinates.lean`):
+stated about point sets:
 
 ```lean
-def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
-  (o.1+phase.cos*x-phase.sin*y, o.2+phase.sin*x+phase.cos*y)
+abbrev Direction := Real.Angle
 
-abbrev OpenRect (c : Point) (x y : ℝ) : Prop := |x-c.1| < 1/2 ∧ |y-c.2| < 1/2
-abbrev ClosedRect (c : Point) (x y : ℝ) : Prop := |x-c.1| ≤ 1/2 ∧ |y-c.2| ≤ 1/2
+def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
+  (o.1 + phase.cos * x - phase.sin * y, o.2 + phase.sin * x + phase.cos * y)
+
+abbrev OpenRect (c : Point) (x y : ℝ) : Prop :=
+  |x - c.1| < 1 / 2 ∧ |y - c.2| < 1 / 2
+abbrev ClosedRect (c : Point) (x y : ℝ) : Prop :=
+  |x - c.1| ≤ 1 / 2 ∧ |y - c.2| ≤ 1 / 2
 
 def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
     (centers : Fin n → Point) : Prop :=
@@ -176,7 +180,9 @@ symmetric under one. With the disk centre at the origin, the models are:
 | 5 | `(0, 0)`, `(±1, 0)`, `(0, ±1)` | the plus |
 
 These are `One.centers`, …, `Five.centers`; `modelCenters n` selects the one for
-`n` (`SquaresInCircles.lean`).
+`n` (`SquaresInCircles.lean`). Each case builds its optimal packing as
+`model i = axisSquare (centers i)`, the axis-parallel square centred at
+`centers i`.
 
 Read these definitions before trusting the result. A kernel check establishes
 that the proofs are valid; it cannot establish that the statements mean what
