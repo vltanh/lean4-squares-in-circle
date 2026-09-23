@@ -1,0 +1,31 @@
+name: Doc links
+
+# The proof docs link Lean names to their declarations by line number
+# (scripts/link_lean.py). Fail when a link is stale or names no declaration;
+# refresh the links locally with `python3 scripts/link_lean.py`.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'SquaresInCircles.lean'
+      - 'SquaresInCircles/**'
+      - 'docs/**'
+      - 'scripts/link_lean.py'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'SquaresInCircles.lean'
+      - 'SquaresInCircles/**'
+      - 'docs/**'
+      - 'scripts/link_lean.py'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+jobs:
+  links:
+    name: Check Lean links in the docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 scripts/link_lean.py --check

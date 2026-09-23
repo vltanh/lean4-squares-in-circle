@@ -30,6 +30,20 @@ on every push to `main` and on pull requests, using `leanprover/lean-action`.
 Its axiom audit covers every declaration under `SquaresInCircles`, not only the
 ones printed by `AxiomAudit.lean`.
 
+The proof pages in [`docs/proof/`](proof/README.md) link every Lean name they
+cite to its declaration, by file and line.
+[`scripts/link_lean.py`](../scripts/link_lean.py) regenerates these links, and
+fails on a name that matches no declaration or more than one.
+[`.github/workflows/docs.yml`](../.github/workflows/docs.yml) runs
+`python3 scripts/link_lean.py --check` on every push to `main` and every pull
+request that touches the Lean sources or the docs, and fails if a link is
+stale. To refresh the links after changing a Lean file, run
+`python3 scripts/link_lean.py` and commit the result. To have this done before
+every commit, run `pre-commit install` once:
+[`.pre-commit-config.yaml`](../.pre-commit-config.yaml) then refreshes the links
+whenever a commit touches the Lean sources or the docs, and stops the commit if
+any link moved, so that the refreshed pages can be staged.
+
 Build from the committed `lake-manifest.json`, which pins every dependency by
 hash. Avoid `lake update`: seven transitive packages track `main` or `master`
 and would be re-resolved.

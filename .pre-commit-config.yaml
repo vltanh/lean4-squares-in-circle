@@ -1,0 +1,12 @@
+# Install once per clone with `pre-commit install`.
+repos:
+  - repo: local
+    hooks:
+      # Refresh the links from the proof docs to the Lean declarations. If a
+      # link moves, the commit stops so the refreshed docs can be staged.
+      - id: lean-doc-links
+        name: Refresh the Lean links in the proof docs
+        entry: python3 scripts/link_lean.py
+        language: system
+        pass_filenames: false
+        files: ^(SquaresInCircles\.lean|SquaresInCircles/.*\.lean|docs/.*\.md|scripts/link_lean\.py)$

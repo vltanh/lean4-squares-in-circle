@@ -1,6 +1,7 @@
 # Formalization of "Squares in Circles" in Lean 4
 
 [![Lean build](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/lean.yml/badge.svg)](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/lean.yml)
+[![Doc links](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/docs.yml/badge.svg)](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/docs.yml)
 
 Machine-checked proofs, for `n = 1, …, 5`, of the smallest radius of a disk
 that holds `n` non-overlapping unit squares, and that exactly one packing
@@ -213,7 +214,9 @@ and `lake-manifest.json`. `lake build` must report no `sorry`, and every
 `#print axioms` line must read exactly `[propext, Classical.choice, Quot.sound]`.
 The trusted base is Lean, Lake and mathlib. On every push, GitHub Actions runs
 the build, audits the axioms of every declaration, and runs both check files;
-the badge at the top shows the result.
+the badge at the top shows the result. A second workflow, with its own badge,
+checks that the links from the proof pages to the Lean declarations are
+current.
 
 ## License
 
