@@ -85,23 +85,24 @@ of the table, moved by one rotation about the disk centre, with the squares
 relabelled. It compares point sets, not frames, since a quarter turn of a frame
 describes the same square. `pointInDirection o φ x y` is the point with
 coordinates `(x, y)` in the frame at `o` rotated by the angle `φ` (a
-`Direction`, that is, a `Real.Angle`). `OpenRect c` and `ClosedRect c` are the
+`Direction`, that is, a `Real.Angle`). `openAxisSquare c x y` and
+`closedAxisSquare c x y` say that `(x, y)` lies in the open or the closed
 axis-parallel unit square centred at `c`. These are in `Geometry.lean` too:
 
 ```lean
 def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
   (o.1 + phase.cos * x - phase.sin * y, o.2 + phase.sin * x + phase.cos * y)
 
-abbrev OpenRect (c : Point) (x y : ℝ) : Prop :=
+abbrev openAxisSquare (c : Point) (x y : ℝ) : Prop :=
   |x - c.1| < 1 / 2 ∧ |y - c.2| < 1 / 2
-abbrev ClosedRect (c : Point) (x y : ℝ) : Prop :=
+abbrev closedAxisSquare (c : Point) (x y : ℝ) : Prop :=
   |x - c.1| ≤ 1 / 2 ∧ |y - c.2| ≤ 1 / 2
 
 def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
     (centers : Fin n → Point) : Prop :=
   ∃ (φ : Direction) (σ : Equiv.Perm (Fin n)), ∀ i x y,
-    (openSquare (S (σ i)) (pointInDirection o φ x y) ↔ OpenRect (centers i) x y) ∧
-    (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔ ClosedRect (centers i) x y)
+    (openSquare (S (σ i)) (pointInDirection o φ x y) ↔ openAxisSquare (centers i) x y) ∧
+    (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔ closedAxisSquare (centers i) x y)
 ```
 
 ## Results

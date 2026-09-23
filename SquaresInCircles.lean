@@ -72,8 +72,8 @@ theorem rigid_uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
     (S : Fin n → UnitSquare) (o : Point) (hp : Packing S o (optimalRadius n)) :
     ∃ (e : Point ≃ Point) (σ : Equiv.Perm (Fin n)), e (0,0)=o ∧
       (∀ p q, normSq (sub (e p) (e q))=normSq (sub p q)) ∧
-      (∀ i p, (openSquare (S (σ i)) (e p) ↔ OpenRect (modelCenters n i) p.1 p.2) ∧
-        (closedSquare (S (σ i)) (e p) ↔ ClosedRect (modelCenters n i) p.1 p.2)) :=
+      (∀ i p, (openSquare (S (σ i)) (e p) ↔ openAxisSquare (modelCenters n i) p.1 p.2) ∧
+        (closedSquare (S (σ i)) (e p) ↔ closedAxisSquare (modelCenters n i) p.1 p.2)) :=
   (uniqueness n hn S o hp).rigid_witness
 
 /-- The optimum for `n ≤ 5` unit squares: lower bound, attainment, uniqueness. -/

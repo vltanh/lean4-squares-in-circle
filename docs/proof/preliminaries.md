@@ -104,9 +104,9 @@ The optimal packings are made of such squares.
 *The square $Q(c)$ spans $c_1 \pm \frac12$ across and $c_2 \pm \frac12$ up.*
 
 *Lean: [`axisSquare`](../../SquaresInCircles/Common/Constructions.lean#L9) for
-$Q(c)$; [`OpenRect`](../../SquaresInCircles/Geometry.lean#L62) and
-[`ClosedRect`](../../SquaresInCircles/Geometry.lean#L64) for the two conditions
-above.*
+$Q(c)$; [`openAxisSquare`](../../SquaresInCircles/Geometry.lean#L62) and
+[`closedAxisSquare`](../../SquaresInCircles/Geometry.lean#L64) for the two
+conditions above.*
 
 ## Packings and their normal forms
 

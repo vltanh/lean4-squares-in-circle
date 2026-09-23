@@ -58,10 +58,10 @@ abbrev Direction := Real.Angle
 def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
   (o.1 + phase.cos * x - phase.sin * y, o.2 + phase.sin * x + phase.cos * y)
 
-/-- The open and closed axis-parallel unit squares centred at `c`. -/
-abbrev OpenRect (c : Point) (x y : ℝ) : Prop :=
+/-- `(x, y)` lies in the open, or the closed, axis-parallel unit square at `c`. -/
+abbrev openAxisSquare (c : Point) (x y : ℝ) : Prop :=
   |x - c.1| < 1 / 2 ∧ |y - c.2| < 1 / 2
-abbrev ClosedRect (c : Point) (x y : ℝ) : Prop :=
+abbrev closedAxisSquare (c : Point) (x y : ℝ) : Prop :=
   |x - c.1| ≤ 1 / 2 ∧ |y - c.2| ≤ 1 / 2
 
 /--
@@ -72,7 +72,7 @@ and as a closed set.
 def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
     (centers : Fin n → Point) : Prop :=
   ∃ (φ : Direction) (σ : Equiv.Perm (Fin n)), ∀ i x y,
-    (openSquare (S (σ i)) (pointInDirection o φ x y) ↔ OpenRect (centers i) x y) ∧
-    (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔ ClosedRect (centers i) x y)
+    (openSquare (S (σ i)) (pointInDirection o φ x y) ↔ openAxisSquare (centers i) x y) ∧
+    (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔ closedAxisSquare (centers i) x y)
 
 end SquaresInCircles

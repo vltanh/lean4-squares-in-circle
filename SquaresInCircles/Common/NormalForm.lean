@@ -14,7 +14,7 @@ namespace SquaresInCircles
 
 /-- The actual square, expressed in one common positively oriented frame. -/
 def Represents (S : UnitSquare) (o : Point) (φ : Direction) (c : Point) : Prop :=
-  ∀ x y, openSquare S (pointInDirection o φ x y) ↔ OpenRect c x y
+  ∀ x y, openSquare S (pointInDirection o φ x y) ↔ openAxisSquare c x y
 
 /-- A rigid motion with its inverse written in coordinates. -/
 def frameEquiv (o : Point) (φ : Direction) : Point ≃ Point where
@@ -129,7 +129,7 @@ lemma modelSquare_local (o : Point) (φ : Direction) (c : Point) (x y : ℝ) :
 
 lemma Represents.closed {S : UnitSquare} {o : Point} {φ : Direction} {c : Point}
     (h : Represents S o φ c) (x y : ℝ) :
-    closedSquare S (pointInDirection o φ x y) ↔ ClosedRect c x y := by
+    closedSquare S (pointInDirection o φ x y) ↔ closedAxisSquare c x y := by
   have hopen : ∀ p, openSquare S p ↔ openSquare (modelSquare o φ c) p := by
     intro p
     obtain ⟨q,rfl⟩ := (frameEquiv o φ).surjective p
@@ -151,8 +151,8 @@ lemma normal_form_of_slots {n : ℕ} {S : Fin n → UnitSquare} {o : Point}
     intro i j hij
     by_contra hne
     let z := pointInDirection o φ (c (f i)).1 (c (f i)).2
-    have hz₁ : openSquare (S i) z := (hf i _ _).mpr (by simp [OpenRect])
-    have hz₂ : openSquare (S j) z := (hf j _ _).mpr (by rw [← hij]; simp [OpenRect])
+    have hz₁ : openSquare (S i) z := (hf i _ _).mpr (by simp [openAxisSquare])
+    have hz₂ : openSquare (S j) z := (hf j _ _).mpr (by rw [← hij]; simp [openAxisSquare])
     exact hd i j hne z ⟨hz₁,hz₂⟩
   let e := Equiv.ofBijective f hi.bijective_of_finite
   refine ⟨φ,e.symm,?_⟩
@@ -166,8 +166,8 @@ lemma HasNormalForm.rigid_witness {n : ℕ} {S : Fin n → UnitSquare} {o : Poin
     {c : Fin n → Point} (h : HasNormalForm S o c) :
     ∃ (e : Point ≃ Point) (σ : Equiv.Perm (Fin n)), e (0,0)=o ∧
       (∀ p q, normSq (sub (e p) (e q))=normSq (sub p q)) ∧
-      (∀ i p, (openSquare (S (σ i)) (e p) ↔ OpenRect (c i) p.1 p.2) ∧
-        (closedSquare (S (σ i)) (e p) ↔ ClosedRect (c i) p.1 p.2)) := by
+      (∀ i p, (openSquare (S (σ i)) (e p) ↔ openAxisSquare (c i) p.1 p.2) ∧
+        (closedSquare (S (σ i)) (e p) ↔ closedAxisSquare (c i) p.1 p.2)) := by
   obtain ⟨φ,σ,hφ⟩ := h
   exact ⟨frameEquiv o φ,σ,frameEquiv_zero o φ,frameEquiv_distance o φ,
     fun i p => hφ i p.1 p.2⟩

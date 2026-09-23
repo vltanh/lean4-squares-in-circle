@@ -39,7 +39,7 @@ lemma represents_quarter {S : UnitSquare} {o : Point} {φ : Direction} {c : Poin
   have he : φ+quarterShift k-φ=quarterShift k := by abel
   rw [he]
   fin_cases k <;>
-    simp [quarterShift,turnPoint,OpenRect,neg_div,Real.Angle.cos_coe,Real.Angle.sin_coe] <;>
+    simp [quarterShift,turnPoint,openAxisSquare,neg_div,Real.Angle.cos_coe,Real.Angle.sin_coe] <;>
     constructor <;> rintro ⟨h1,h2⟩ <;>
     obtain ⟨h1a,h1b⟩ := abs_lt.mp h1 <;> obtain ⟨h2a,h2b⟩ := abs_lt.mp h2 <;>
     exact ⟨abs_lt.mpr ⟨by linarith,by linarith⟩,abs_lt.mpr ⟨by linarith,by linarith⟩⟩
