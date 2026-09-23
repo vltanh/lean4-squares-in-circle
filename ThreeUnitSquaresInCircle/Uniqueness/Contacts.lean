@@ -146,12 +146,12 @@ lemma unit_contact (S T : UnitSquare)
   have hDot : dot n d=r := by linarith
   have hprodS : frameX S n*frameY S n=0 := by
     have hu := frame_norm S n
-    have ha : |frameX S n|*|frameY S n|=0 := by
+    have ha : |frameX S n| * |frameY S n|=0 := by
       nlinarith [sq_abs (frameX S n),sq_abs (frameY S n)]
     exact abs_eq_zero.mp (by simpa only [abs_mul] using ha)
   have hprodT : frameX T n*frameY T n=0 := by
     have hu := frame_norm T n
-    have ha : |frameX T n|*|frameY T n|=0 := by
+    have ha : |frameX T n| * |frameY T n|=0 := by
       nlinarith [sq_abs (frameX T n),sq_abs (frameY T n)]
     exact abs_eq_zero.mp (by simpa only [abs_mul] using ha)
   have hnd : n=scale r d := by
@@ -175,11 +175,13 @@ lemma unit_contact (S T : UnitSquare)
   have hu := frame_norm S d
   rw [hunit] at hu
   rcases hdprod with hx0 | hy0
-  · rcases le_total 0 (frameY S d) with hy0 | hy0
-    · exact Or.inr (Or.inl ⟨hx0,by nlinarith⟩)
-    · exact Or.inr (Or.inr (Or.inr ⟨hx0,by nlinarith⟩))
-  · rcases le_total 0 (frameX S d) with hx0 | hx0
-    · exact Or.inl ⟨by nlinarith,hy0⟩
-    · exact Or.inr (Or.inr (Or.inl ⟨by nlinarith,hy0⟩))
+  · have h1 : frameY S d^2=1 := by rw [hx0] at hu; linarith
+    rcases le_total 0 (frameY S d) with hy0 | hy0
+    · exact Or.inr (Or.inl ⟨hx0,by nlinarith only [h1,hy0]⟩)
+    · exact Or.inr (Or.inr (Or.inr ⟨hx0,by nlinarith only [h1,hy0]⟩))
+  · have h1 : frameX S d^2=1 := by rw [hy0] at hu; linarith
+    rcases le_total 0 (frameX S d) with hx0 | hx0
+    · exact Or.inl ⟨by nlinarith only [h1,hx0],hy0⟩
+    · exact Or.inr (Or.inr (Or.inl ⟨by nlinarith only [h1,hx0],hy0⟩))
 
 end ThreeUnitSquaresInCircle.Uniqueness

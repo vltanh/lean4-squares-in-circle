@@ -37,21 +37,19 @@ lemma chart_interval_arc {S : UnitSquare} {o : Point} (C : SquareChart S o)
       A.halfWidth=(u-l)/2 ∧ A.center=chartAngle C.phase C.reversed ((l+u)/2) := by
   cases hr : C.reversed
   · let A := arcOfInterval o r {p | openSquare S p} C.phase l u hlu hlen
-      (fun t ht => by simpa only [chartAngle,hr,Bool.false_eq_true,ite_false] using
-        (C.membership r t).mpr (hm t ht))
-    exact ⟨A,rfl,by simp only [A,arcOfInterval,chartAngle,hr,Bool.false_eq_true,ite_false]⟩
+      (fun t ht => by simpa only [chartAngle,hr,Bool.false_eq_true,ite_false,
+        Set.mem_ofPred_eq] using (C.membership r t).mpr (hm t ht))
+    exact ⟨A,rfl,by simp only [A,arcOfInterval,chartAngle,Bool.false_eq_true,ite_false]⟩
   · let A := arcOfInterval o r {p | openSquare S p} C.phase (-u) (-l)
       (by linarith) (by linarith)
       (fun t ht => by
         have h := (C.membership r (-t)).mpr
           (hm (-t) ⟨by linarith [ht.2],by linarith [ht.1]⟩)
-        simpa only [chartAngle,hr,ite_true,neg_neg] using h)
+        simpa only [chartAngle,hr,ite_true,neg_neg,Set.mem_ofPred_eq] using h)
     refine ⟨A,by dsimp [A,arcOfInterval]; ring,?_⟩
-    dsimp [A,arcOfInterval,chartAngle]
-    rw [hr]
-    simp only [ite_true]
-    congr 2
-    ring
+    show C.phase+(((-u+-l)/2:ℝ):Direction)=chartAngle C.phase true ((l+u)/2)
+    rw [show (-u+-l)/2=-((l+u)/2) by ring]
+    simp only [chartAngle,ite_true]
 
 def quarterShift : Fin 4 → Direction :=
   ![0,((Real.pi/2:ℝ):Direction),(Real.pi:Direction),((-Real.pi/2:ℝ):Direction)]
@@ -67,14 +65,10 @@ lemma represents_quarter {S : UnitSquare} {o : Point} {φ : Direction} {c : Poin
   have he : φ+quarterShift k-φ=quarterShift k := by abel
   rw [he]
   fin_cases k <;>
-    simp only [quarterShift,turnPoint,Real.Angle.cos_zero,Real.Angle.sin_zero,
-      Real.Angle.cos_coe,Real.Angle.sin_coe,Real.cos_pi_div_two,Real.sin_pi_div_two,
-      Real.cos_pi,Real.sin_pi,Real.cos_neg,Real.sin_neg,neg_div,one_mul,zero_mul,
-      zero_add,add_zero,neg_zero,neg_one_mul,neg_neg] <;>
-    constructor <;> rintro ⟨hx,hy⟩ <;>
-    rcases abs_lt.mp hx with ⟨hx0,hx1⟩ <;>
-    rcases abs_lt.mp hy with ⟨hy0,hy1⟩ <;>
-    constructor <;> apply abs_lt.mpr <;> constructor <;> linarith
+    simp [quarterShift,turnPoint,OpenRect,neg_div,Real.Angle.cos_coe,Real.Angle.sin_coe] <;>
+    constructor <;> rintro ⟨h1,h2⟩ <;>
+    obtain ⟨h1a,h1b⟩ := abs_lt.mp h1 <;> obtain ⟨h2a,h2b⟩ := abs_lt.mp h2 <;>
+    exact ⟨abs_lt.mpr ⟨by linarith,by linarith⟩,abs_lt.mpr ⟨by linarith,by linarith⟩⟩
 
 lemma sort_three_values (t : Fin 3 → ℝ) :
     ∃ f : Fin 3 → Fin 3, Function.Injective f ∧ t (f 0) ≤ t (f 1) ∧ t (f 1) ≤ t (f 2) := by
@@ -90,8 +84,8 @@ lemma sort_three_values (t : Fin 3 → ℝ) :
       · exact ⟨![1,2,0],by decide,h12,h20⟩
       · exact ⟨![2,1,0],by decide,h21,h10⟩
 
-lemma sorted_three_grid {P x y z : ℝ} (hP : 0 < P)
-    (hx : -P < x) (hz : z ≤ P) (hxy : x ≤ y) (hyz : y ≤ z)
+lemma sorted_three_grid {P x y z : ℝ} (_hP : 0 < P)
+    (hx : -P < x) (hz : z ≤ P) (_hxy : x ≤ y) (_hyz : y ≤ z)
     (hxabs : P/2 ≤ |x|) (hyabs : P/2 ≤ |y|)
     (hgap₁ : P/2 ≤ y-x) (hgap₂ : P/2 ≤ z-y) (hwrap : z-x ≤ 3*P/2) :
     x= -P/2 ∧ y=P/2 ∧ z=P := by
@@ -113,7 +107,7 @@ lemma four_directions_grid (θ : Fin 4 → Direction)
   let t : Fin 3 → ℝ := fun i => (θ i.succ-θ 0).toReal
   have ht (i : Fin 3) : -Real.pi < t i ∧ t i ≤ Real.pi ∧ Real.pi/2 ≤ |t i| := by
     refine ⟨(θ i.succ-θ 0).neg_pi_lt_toReal,(θ i.succ-θ 0).toReal_le_pi,?_⟩
-    simpa only [t,direction_dist] using hsep i.succ 0 (by omega)
+    simpa only [t,direction_dist] using hsep i.succ 0 (Fin.succ_ne_zero i)
   have hpairs (i j : Fin 3) (hij : i ≠ j) :
       Real.pi/2 ≤ |t i-t j| ∧ |t i-t j| ≤ 3*Real.pi/2 := by
     have he : θ i.succ-θ j.succ=((t i-t j:ℝ):Direction) := by
@@ -151,9 +145,9 @@ lemma four_directions_grid (θ : Fin 4 → Direction)
   · exact ⟨0,by simp [quarterShift]⟩
   · have he : θ j.succ=θ 0+((t j:ℝ):Direction) := direction_offset _ _
     rcases htgrid j with h | h | h
-    · exact ⟨3,by simpa only [h,quarterShift] using he⟩
-    · exact ⟨1,by simpa only [h,quarterShift] using he⟩
-    · exact ⟨2,by simpa only [h,quarterShift] using he⟩
+    · exact ⟨3,by rw [he,h]; simp [quarterShift]⟩
+    · exact ⟨1,by rw [he,h]; simp [quarterShift]⟩
+    · exact ⟨2,by rw [he,h]; simp [quarterShift]⟩
 
 lemma represents_cardinal {S : UnitSquare} {o : Point} {φ ψ : Direction} {c : Point}
     (h : Represents S o φ c) (k : Fin 4)

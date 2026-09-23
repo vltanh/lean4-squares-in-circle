@@ -37,7 +37,7 @@ lemma five_centered_square (S : Fin 5 → UnitSquare) (o : Point)
     ∃ i, (S i).center=o := by
   classical
   by_contra hn
-  push_neg at hn
+  push Not at hn
   have harcs : ∀ i : Fin 5, ∃ A : OpenArc o auxFive (rayRegions S o i),
       Real.pi/5 ≤ A.halfWidth ∧
       (¬ openSquare (S i) o → Real.pi/5 < A.halfWidth) := by
@@ -52,7 +52,7 @@ lemma five_centered_square (S : Fin 5 → UnitSquare) (o : Point)
   choose A hA hstrict using harcs
   have hext : ∃ i : Fin 5, ¬ openSquare (S i) o := by
     by_contra h
-    push_neg at h
+    push Not at h
     exact hd 0 1 (by decide) o ⟨h 0,h 1⟩
   obtain ⟨i,hi⟩ := hext
   exact uniform_arc_excess (n := 5) (by decide) A
@@ -74,20 +74,29 @@ theorem five_polygon_uniqueness (S : Fin 5 → UnitSquare) (o : Point)
   · subst i
     refine ⟨0,?_⟩
     have hh := self_represents (S k) o φ hc hs
-    simpa only [hk,sub,sub_self,frameX,frameY,mul_zero,add_zero,fiveCenters] using hh
-  · have hlow := centers_distance_sq_ge_one (S k) (S i) (hd k i hi.symm)
+    rw [show fiveCenters 0=(0,0) by simp [fiveCenters]]
+    simpa only [hk,sub,sub_self,frameX,frameY,mul_zero,add_zero] using hh
+  · have hlow := centers_distance_sq_ge_one (S k) (S i) (hd k i (Ne.symm hi))
     have hupp : normSq (sub (S i).center o) ≤ 1 := by
       rw [local_center_norm]
       exact dodecagon_norm_le (alpha_nonneg _ _) (beta_nonneg _ _) (hp i)
     have hone : normSq (sub (S i).center (S k).center)=1 := by rw [hk] at *; linarith
-    obtain ⟨haxes,hslots⟩ := unit_contact (S k) (S i) (hd k i hi.symm) hone
+    obtain ⟨haxes,hslots⟩ := unit_contact (S k) (S i) (hd k i (Ne.symm hi)) hone
     have hrep := same_axes_represents (S k) (S i) o φ hc hs haxes
     rw [hk] at hslots
     rcases hslots with ⟨hx,hy⟩ | ⟨hx,hy⟩ | ⟨hx,hy⟩ | ⟨hx,hy⟩
-    · exact ⟨1,by simpa only [hx,hy,fiveCenters] using hrep⟩
-    · exact ⟨2,by simpa only [hx,hy,fiveCenters] using hrep⟩
-    · exact ⟨3,by simpa only [hx,hy,fiveCenters] using hrep⟩
-    · exact ⟨4,by simpa only [hx,hy,fiveCenters] using hrep⟩
+    · refine ⟨1,?_⟩
+      rw [show fiveCenters 1=(1,0) by simp [fiveCenters]]
+      simpa only [hx,hy] using hrep
+    · refine ⟨2,?_⟩
+      rw [show fiveCenters 2=(0,1) by simp [fiveCenters]]
+      simpa only [hx,hy] using hrep
+    · refine ⟨3,?_⟩
+      rw [show fiveCenters 3=(-1,0) by simp [fiveCenters]]
+      simpa only [hx,hy] using hrep
+    · refine ⟨4,?_⟩
+      rw [show fiveCenters 4=(0,-1) by simp [fiveCenters]]
+      simpa only [hx,hy] using hrep
 
 /-- Geometric uniqueness of the radius-sqrt(5/2) disk packing. -/
 theorem five_uniqueness (S : Fin 5 → UnitSquare) (o : Point)

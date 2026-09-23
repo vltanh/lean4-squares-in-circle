@@ -74,7 +74,8 @@ theorem three_uniqueness (S : Fin 3 → UnitSquare) (o : Point)
   have hbudget := open_arc_budget A (fun i j hij => hpair i j hij)
   rw [Fin.sum_univ_three] at hbudget
   have hup (i : Fin 3) : threeCapLength (C i).a (C i).b ≤ 2*Real.pi/3 := by
-    fin_cases i <;> linarith [hlo 0,hlo 1,hlo 2,hlen 0,hlen 1,hlen 2]
+    have key : i=0 ∨ i=1 ∨ i=2 := by revert i; decide
+    rcases key with rfl | rfl | rfl <;> linarith [hlo 0,hlo 1,hlo 2,hlen 0,hlen 1,hlen 2]
   have htype (i : Fin 3) : ((C i).a=11/16 ∧ (C i).b=0) ∨
       ((C i).a=1/2 ∧ (C i).b=5/16) :=
     three_cap_contact_types (haC i) (C i).nonneg.2 (hpC i) (hup i)
@@ -89,7 +90,7 @@ theorem three_uniqueness (S : Fin 3 → UnitSquare) (o : Point)
       (hpair i j hij) (hpair i k hik) (hpair j k hjk)
   have hex : ∃ k : Fin 3, (C k).a=11/16 ∧ (C k).b=0 := by
     by_contra hn
-    push_neg at hn
+    push Not at hn
     have hb (i : Fin 3) : (C i).a=1/2 ∧ (C i).b=5/16 :=
       (htype i).resolve_left (by intro h; exact hn i h.1 h.2)
     exact three_b_contacts_impossible (C 0) (C 1) (C 2) (hb 0) (hb 1) (hb 2)

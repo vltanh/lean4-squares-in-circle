@@ -56,7 +56,7 @@ lemma b_contact_arc {S : UnitSquare} {o : Point} (C : SquareChart S o)
       dsimp [auxThree]
       exact ⟨abs_lt.mpr ⟨by linarith,by linarith [Real.cos_le_one t]⟩,
         abs_lt.mpr ⟨by linarith,by linarith [Real.sin_le_one t]⟩⟩)
-  exact ⟨A,by rw [hA]; ring,by convert hc using 2 <;> ring⟩
+  exact ⟨A,by rw [hA]; ring,by convert hc using 2; ring⟩
 
 lemma equilateral_arc_centers {o : Point} {r : ℝ} {U V W : Set Point}
     (A : OpenArc o r U) (B : OpenArc o r V) (G : OpenArc o r W)
@@ -109,9 +109,9 @@ lemma three_b_contacts_impossible {S T U : UnitSquare} {o : Point}
 /-- Trigonometric reconstruction of the radial phase of the remaining A-square. -/
 lemma apex_phase {φ ψ χ : Direction} (r s : Bool)
     (hanti : ψ=φ+(Real.pi:Direction))
-    (h01 : (chartAngle ψ s (Real.pi/6)-chartAngle φ r (Real.pi/6)).cos= -1/2)
-    (h02 : (χ-chartAngle φ r (Real.pi/6)).cos= -1/2)
-    (h12 : (χ-chartAngle ψ s (Real.pi/6)).cos= -1/2) :
+    (h01 : (chartAngle ψ s (Real.pi/6)-chartAngle φ r (Real.pi/6)).cos= -(1/2))
+    (h02 : (χ-chartAngle φ r (Real.pi/6)).cos= -(1/2))
+    (h12 : (χ-chartAngle ψ s (Real.pi/6)).cos= -(1/2)) :
     s= !r ∧ (χ-φ).cos=0 ∧ (χ-φ).sin=(if r then 1 else -1) := by
   let δ := χ-φ
   let p : Direction := ((Real.pi/6:ℝ):Direction)
@@ -123,26 +123,26 @@ lemma apex_phase {φ ψ χ : Direction} (r s : Bool)
     rw [he,Real.Angle.cos_coe,Real.cos_pi] at h01
     norm_num at h01
   · have he₀ : χ-chartAngle φ false (Real.pi/6)=δ-p := by
-      dsimp [δ,p,chartAngle]; simp only [Bool.false_eq_true,ite_false]; abel
+      simp only [δ,p,chartAngle,Bool.false_eq_true,ite_false]; abel
     have he₁ : χ-chartAngle ψ true (Real.pi/6)=δ-(Real.pi:Direction)+p := by
-      rw [hanti]; dsimp [δ,p,chartAngle]; simp only [ite_true,Real.Angle.coe_neg]; abel
+      rw [hanti]; simp only [δ,p,chartAngle,ite_true,Real.Angle.coe_neg]; abel
     rw [he₀] at h02
     rw [he₁] at h12
     simp only [sub_eq_add_neg,Real.Angle.cos_add,Real.Angle.sin_add,Real.Angle.cos_neg,
       Real.Angle.sin_neg,Real.Angle.cos_coe,Real.Angle.sin_coe,Real.cos_pi,Real.sin_pi,
-      Real.cos_pi_div_six,Real.sin_pi_div_six,hcp,hsp] at h02 h12
+      hcp,hsp] at h02 h12
     have hs : δ.sin= -1 := by nlinarith
     have hc : δ.cos=0 := by nlinarith [Real.Angle.cos_sq_add_sin_sq δ]
     exact ⟨rfl,hc,hs⟩
   · have he₀ : χ-chartAngle φ true (Real.pi/6)=δ+p := by
-      dsimp [δ,p,chartAngle]; simp only [ite_true,Real.Angle.coe_neg]; abel
+      simp only [δ,p,chartAngle,ite_true,Real.Angle.coe_neg]; abel
     have he₁ : χ-chartAngle ψ false (Real.pi/6)=δ-(Real.pi:Direction)-p := by
-      rw [hanti]; dsimp [δ,p,chartAngle]; simp only [Bool.false_eq_true,ite_false]; abel
+      rw [hanti]; simp only [δ,p,chartAngle,Bool.false_eq_true,ite_false]; abel
     rw [he₀] at h02
     rw [he₁] at h12
     simp only [sub_eq_add_neg,Real.Angle.cos_add,Real.Angle.sin_add,Real.Angle.cos_neg,
       Real.Angle.sin_neg,Real.Angle.cos_coe,Real.Angle.sin_coe,Real.cos_pi,Real.sin_pi,
-      Real.cos_pi_div_six,Real.sin_pi_div_six,hcp,hsp] at h02 h12
+      hcp,hsp] at h02 h12
     have hs : δ.sin=1 := by nlinarith
     have hc : δ.cos=0 := by nlinarith [Real.Angle.cos_sq_add_sin_sq δ]
     exact ⟨rfl,hc,hs⟩
@@ -210,20 +210,20 @@ lemma t_contact_reconstruction {S T U : UnitSquare} {o : Point}
     have rE := represents_cardinal (ψ := φ) hE 1 (by simpa [quarterShift] using hEc)
       (by simpa [quarterShift] using hEs)
     refine ⟨φ,Or.inl ⟨?_,?_⟩,?_⟩
-    · simpa [turnPoint,threeCenters,SquareChart.signedB,hr,hc.1,hc.2] using rC
-    · simpa [turnPoint,threeCenters,SquareChart.signedB,hrD,hd.1,hd.2] using rD
-    · simpa [turnPoint,threeCenters,SquareChart.signedB,he.1,he.2] using rE
+    · simpa [neg_div,turnPoint,threeCenters,SquareChart.signedB,hr,hc.1,hc.2] using rC
+    · simpa [neg_div,turnPoint,threeCenters,SquareChart.signedB,hrD,hd.1,hd.2] using rD
+    · simpa [neg_div,turnPoint,threeCenters,SquareChart.signedB,he.1,he.2] using rE
   · have hrD : D.reversed=false := by simpa only [hr,Bool.not_true] using hrev
     let φ := C.phase
     have rC : Represents S o φ (threeCenters 1) := by
-      simpa [φ,threeCenters,SquareChart.signedB,hr,hc.1,hc.2] using hC
+      simpa [neg_div,φ,threeCenters,SquareChart.signedB,hr,hc.1,hc.2] using hC
     have rD := represents_cardinal (ψ := φ) hD 2
       (by simp [φ,hanti,quarterShift]) (by simp [φ,hanti,quarterShift])
     have rE := represents_cardinal (ψ := φ) hE 1
       (by simpa [φ,quarterShift] using hEcos)
       (by simpa [φ,quarterShift,hr] using hEsin)
     refine ⟨φ,Or.inr ⟨rC,?_⟩,?_⟩
-    · simpa [turnPoint,threeCenters,SquareChart.signedB,hrD,hd.1,hd.2] using rD
-    · simpa [turnPoint,threeCenters,SquareChart.signedB,he.1,he.2] using rE
+    · simpa [neg_div,turnPoint,threeCenters,SquareChart.signedB,hrD,hd.1,hd.2] using rD
+    · simpa [neg_div,turnPoint,threeCenters,SquareChart.signedB,he.1,he.2] using rE
 
 end ThreeUnitSquaresInCircle.Uniqueness

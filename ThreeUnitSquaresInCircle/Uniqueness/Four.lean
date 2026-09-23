@@ -62,7 +62,7 @@ lemma four_no_containing (S : Fin 4 → UnitSquare) (o : Point)
     intro h
     change alpha (S k) o < 1/2 ∧ beta (S k) o < 1/2 at h
     linarith [h.1]
-  · exact closed_open_disjoint (S k) (S i) (hd k i hi.symm) hclosed
+  · exact closed_open_disjoint (S k) (S i) (hd k i (Ne.symm hi)) hclosed
 
 /-- At radius 1/2 an exterior square contributes at least pi/2. Actual disk
 containment makes the bound strict unless the diamond tangent is saturated. -/
@@ -175,7 +175,7 @@ lemma vertex_arc {S : UnitSquare} {o : Point} (C : SquareChart S o)
       rw [ha,hb]
       exact ⟨abs_lt.mpr ⟨by linarith,by linarith [Real.cos_le_one t]⟩,
         abs_lt.mpr ⟨by linarith,by linarith [Real.sin_le_one t]⟩⟩)
-  exact ⟨A,by rw [hA]; ring,by simpa only [zero_add,div_div] using hc⟩
+  exact ⟨A,by rw [hA]; ring,by rw [hc,vertexMid,show (0+Real.pi/2)/2=Real.pi/4 by ring]⟩
 
 lemma vertex_represents {S : UnitSquare} {o : Point} (C : SquareChart S o)
     (ha : C.a=1/2) (hb : C.b=1/2) :
@@ -187,14 +187,17 @@ lemma vertex_represents {S : UnitSquare} {o : Point} (C : SquareChart S o)
     simpa only [he,ha,SquareChart.signedB,hr,Bool.false_eq_true,ite_false,hb] using h
   · have hhalf : ((Real.pi/4:ℝ):Direction)+((Real.pi/4:ℝ):Direction)=((Real.pi/2:ℝ):Direction) := by
       rw [← Real.Angle.coe_add]; congr 1; ring
+    have hq1 : quarterShift 1=((Real.pi/2:ℝ):Direction) := by simp [quarterShift]
     have he : C.phase=(vertexMid C-((Real.pi/4:ℝ):Direction))+quarterShift 1 := by
-      simp only [vertexMid,chartAngle,hr,ite_true,Real.Angle.coe_neg,quarterShift]
-      rw [← hhalf]
+      rw [hq1,← hhalf]
+      simp only [vertexMid,chartAngle,hr,ite_true,Real.Angle.coe_neg]
       abel
     have h' : Represents S o
-        ((vertexMid C-((Real.pi/4:ℝ):Direction))+quarterShift 1) (1/2,-1/2) := by
-      simpa only [← he,ha,SquareChart.signedB,hr,ite_true,hb] using h
-    simpa only [turnPoint,neg_neg] using represents_quarter 1 h'
+        ((vertexMid C-((Real.pi/4:ℝ):Direction))+quarterShift 1) (1/2,-(1/2)) := by
+      rw [← he]
+      simpa only [ha,SquareChart.signedB,hr,ite_true,hb] using h
+    have ht : turnPoint 1 (1/2,-(1/2))=((1:ℝ)/2,(1:ℝ)/2) := by simp [turnPoint]
+    simpa only [ht] using represents_quarter 1 h'
 
 /-- The only radius-sqrt(2) packing is the block, including the disk center. -/
 theorem four_uniqueness (S : Fin 4 → UnitSquare) (o : Point)

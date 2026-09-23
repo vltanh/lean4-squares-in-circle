@@ -39,14 +39,18 @@ def frameEquiv (o : Point) (φ : Direction) : Point ≃ Point where
       nlinarith only [congrArg (fun t : ℝ => t*(p.1-o.1)) hu,
         congrArg (fun t : ℝ => t*(p.2-o.2)) hu]
 
+@[simp] lemma frameEquiv_apply (o : Point) (φ : Direction) (p : Point) :
+    frameEquiv o φ p = pointInDirection o φ p.1 p.2 := rfl
+
 lemma frameEquiv_zero (o : Point) (φ : Direction) : frameEquiv o φ (0,0)=o := by
-  simp [frameEquiv,pointInDirection]
+  simp [pointInDirection]
 
 lemma frameEquiv_distance (o : Point) (φ : Direction) (p q : Point) :
     normSq (sub (frameEquiv o φ p) (frameEquiv o φ q))=normSq (sub p q) := by
   calc
     _ = (φ.cos^2+φ.sin^2)*normSq (sub p q) := by
-      dsimp [frameEquiv,pointInDirection,normSq,sub]; ring
+      rw [frameEquiv_apply,frameEquiv_apply]
+      dsimp [pointInDirection,normSq,sub]; ring
     _ = _ := by rw [Real.Angle.cos_sq_add_sin_sq]; ring
 
 /-- A scalar endpoint is obtained from all strict convex combinations. -/
@@ -76,7 +80,7 @@ lemma shrink_open (S : UnitSquare) {p : Point} (hp : closedSquare S p)
   have he := local_affine S S.center p t
   have hx0 : localX S S.center=0 := by simp [localX]
   have hy0 : localY S S.center=0 := by simp [localY]
-  rw [hx0,hy0,mul_zero,zero_add,mul_zero,zero_add] at he
+  simp only [hx0,hy0,mul_zero,zero_add] at he
   have hX : |t*localX S p| < 1/2 := by
     rw [abs_mul,abs_of_nonneg ht0]
     exact (mul_le_mul_of_nonneg_left hp.1 ht0).trans_lt (by linarith)
@@ -142,8 +146,10 @@ lemma Represents.closed {S : UnitSquare} {o : Point} {φ : Direction} {c : Point
   have hopen : ∀ p, openSquare S p ↔ openSquare (modelSquare o φ c) p := by
     intro p
     obtain ⟨q,rfl⟩ := (frameEquiv o φ).surjective p
-    simpa only [frameEquiv,openSquare,(modelSquare_local o φ c q.1 q.2).1,
-      (modelSquare_local o φ c q.1 q.2).2] using h q.1 q.2
+    have hm := modelSquare_local o φ c q.1 q.2
+    rw [frameEquiv_apply]
+    simp only [openSquare,hm.1,hm.2]
+    exact h q.1 q.2
   have hc := same_open_same_closed S (modelSquare o φ c) hopen
   simpa only [closedSquare,(modelSquare_local o φ c x y).1,
     (modelSquare_local o φ c x y).2] using hc (pointInDirection o φ x y)
@@ -169,8 +175,8 @@ lemma normal_form_of_slots {n : ℕ} {S : Fin n → UnitSquare} {o : Point}
     intro i j hij
     by_contra hne
     let z := pointInDirection o φ (c (f i)).1 (c (f i)).2
-    have hz₁ : openSquare (S i) z := (hf i _ _).mpr (by simp)
-    have hz₂ : openSquare (S j) z := (hf j _ _).mpr (by simpa only [hij] using (show OpenRect (c (f j)) (c (f j)).1 (c (f j)).2 by simp))
+    have hz₁ : openSquare (S i) z := (hf i _ _).mpr (by simp [OpenRect])
+    have hz₂ : openSquare (S j) z := (hf j _ _).mpr (by rw [← hij]; simp [OpenRect])
     exact hd i j hne z ⟨hz₁,hz₂⟩
   let e := Equiv.ofBijective f hi.bijective_of_finite
   refine ⟨φ,e.symm,?_⟩

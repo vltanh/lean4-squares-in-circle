@@ -49,7 +49,7 @@ lemma truncated_closed {u v : ℝ} (hu0 : 0 ≤ u) (hu1 : u ≤ 1/2)
     nlinarith [Real.cos_le_one (Real.arcsin u)]
   have hdom : Real.arcsin u+Real.pi/6 ∈ Ioc (-(Real.pi/2)) (Real.pi/2) := by
     constructor <;> linarith [Real.pi_pos]
-  have hle := (Real.le_arcsin_iff_sin_le' hdom).mpr (hsin.trans (by linarith))
+  have hle := (Real.le_arcsin_iff_sin_le' (y := v) hdom).mpr (hsin.trans (by linarith))
   refine ⟨by dsimp [Real.arccos]; linarith,?_⟩
   intro hbudget
   have hu : u=0 := by
