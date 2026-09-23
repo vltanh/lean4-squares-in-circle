@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="511" height="416" viewBox="0 0 511 416" role="img" aria-label="An arc of a set U on the circle: all points within angle w of the direction theta zero lie in U">
+<title>An arc of a set U on the circle: all points within angle w of the direction theta zero lie in U</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="311.8,248.4 495.4,199.2 446.2,15.6 262.6,64.8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="198.5" cy="217.5" r="152.0" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 349.1 238.3 A 152.0 152.0 0 0 0 267.2 81.9" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M 348.2 191.4 A 152.0 152.0 0 0 0 291.0 96.9" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<line x1="198.5" y1="217.5" x2="361.0" y2="119.1" stroke="#1f2937" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="198.5" y1="217.5" x2="348.2" y2="191.4" stroke="#1f2937" stroke-width="1"/>
+<line x1="198.5" y1="217.5" x2="291.0" y2="96.9" stroke="#1f2937" stroke-width="1"/>
+<path d="M 247.3 188.0 A 57.0 57.0 0 0 0 233.2 172.3" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-linecap="round"/>
+<text x="255.1" y="166.8" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">w</text>
+<text x="377.3" y="109.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">θ<tspan dy="4.5" font-size="10.2">0</tspan></text>
+<text x="445.5" y="75.0" font-size="17" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">U</text>
+<text x="56.0" y="103.5" font-size="16" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">Γ<tspan dy="4.8" font-size="10.9">r</tspan></text>
+<circle cx="198.5" cy="217.5" r="3.2" fill="#1f2937"/>
+<text x="192.8" y="232.7" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

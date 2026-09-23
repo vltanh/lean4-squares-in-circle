@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="468" height="494" viewBox="0 0 468 494" role="img" aria-label="A square with a vertex at o holds the quarter of the circle of radius 1/2 between its two edges from o, centred at the bisecting direction">
+<title>A square with a vertex at o holds the quarter of the circle of radius 1/2 between its two edges from o, centred at the bisecting direction</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="162.0,342.0 387.5,259.9 305.4,34.4 79.9,116.5" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="162.0" cy="342.0" r="120.0" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 274.8 301.0 A 120.0 120.0 0 0 0 121.0 229.2" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<line x1="162.0" y1="342.0" x2="288.8" y2="70.1" stroke="#1f2937" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<text x="295.9" y="54.9" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">μ<tspan dy="4.5" font-size="10.2">S</tspan></text>
+<path d="M 207.1 325.6 A 48.0 48.0 0 0 0 182.3 298.5" fill="none" stroke="#1f2937" stroke-width="1" stroke-linecap="round"/>
+<text x="215.1" y="293.4" font-size="12" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle">π/4</text>
+<circle cx="162.0" cy="342.0" r="3.2" fill="#1f2937"/>
+<text x="152.4" y="356.4" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+<text x="293.7" y="260.2" font-size="17" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">S</text>
+</svg>

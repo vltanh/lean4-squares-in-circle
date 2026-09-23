@@ -37,11 +37,13 @@ theorems:
 | `Three.uniqueness` | `Packing S o Three.radius → HasNormalForm S o Three.centers` |
 
 `Five.polygon_uniqueness` needs only interior-disjointness and the closed 12-gon
-of Step 1 in [the proof outline](proof.md), not the disk.
+of [Step 1 for five squares](proof/five.md#step-1-the-contact-polygon), not the
+disk.
 
 **Polygon relaxations.** For three and five squares the proofs go through
 stronger statements that mention no disk at all:
 `three_polygon_strict_impossible` and `five_polygon_strict_impossible` rule out
 `n` interior-disjoint squares whose centres all satisfy the strict contact
-polygon of Step 1 in [the proof outline](proof.md). For four squares,
-`four_diamond_impossible` needs the closed disk as well as the strict diamond.
+polygon of Step 1 in [the proof outline](proof/README.md#three-to-five-squares).
+For four squares, `four_diamond_impossible` needs the closed disk as well as the
+strict diamond.

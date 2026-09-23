@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="395" height="395" viewBox="0 0 395 395" role="img" aria-label="The 2 by 1 rectangle in its circle of radius root 5 over 2">
+<title>The 2 by 1 rectangle in its circle of radius root 5 over 2</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="197.7" cy="197.7" r="167.7" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="6 4"/>
+<polygon points="47.7,272.7 197.7,272.7 197.7,122.7 47.7,122.7" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="197.7,272.7 347.7,272.7 347.7,122.7 197.7,122.7" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="197.7" cy="197.7" r="3.2" fill="#1f2937"/>
+<text x="205.2" y="209.7" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

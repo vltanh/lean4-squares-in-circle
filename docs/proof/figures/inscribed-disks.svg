@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="383" height="383" viewBox="0 0 383 383" role="img" aria-label="The disk of radius one half about the centre, and the disk of radius one half minus alpha about o, both inside the open square">
+<title>The disk of radius one half about the centre, and the disk of radius one half minus alpha about o, both inside the open square</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="51.6,331.6 331.6,331.6 331.6,51.6 51.6,51.6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="191.6" cy="191.6" r="140.0" fill="none" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="5 4"/>
+<circle cx="135.6" cy="149.6" r="84.0" fill="#ffedd5" stroke="#ea580c" stroke-width="1.6"/>
+<line x1="191.6" y1="191.6" x2="306.3" y2="271.9" stroke="#2563eb" stroke-width="1.2"/>
+<text x="266.0" y="225.8" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle">½</text>
+<line x1="135.6" y1="149.6" x2="62.9" y2="107.6" stroke="#ea580c" stroke-width="1.2"/>
+<text x="141.2" y="121.6" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="end" dominant-baseline="middle" font-style="italic">½ − α</text>
+<circle cx="191.6" cy="191.6" r="3.2" fill="#1f2937"/>
+<text x="200.0" y="205.6" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">S</tspan></text>
+<circle cx="135.6" cy="149.6" r="3.2" fill="#ea580c"/>
+<text x="146.8" y="163.6" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

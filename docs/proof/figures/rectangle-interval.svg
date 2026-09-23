@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="546" height="436" viewBox="0 0 546 436" role="img" aria-label="On a larger circle the arc of an exterior square runs from the lower edge to the upper edge">
+<title>On a larger circle the arc of an exterior square runs from the lower edge to the upper edge</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="298.0,308.0 498.0,308.0 498.0,108.0 298.0,108.0" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="398.0" cy="208.0" r="3.2" fill="#2563eb"/>
+<text x="406.0" y="222.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="start" dominant-baseline="middle" font-style="italic">(a<tspan dy="4.2" font-size="9.5">S</tspan><tspan dy="-4.2">, </tspan>b<tspan dy="4.2" font-size="9.5">S</tspan><tspan dy="-4.2">)</tspan></text>
+<line x1="298.0" y1="414.0" x2="298.0" y2="28.0" stroke="#1f2937" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="22.0" y1="308.0" x2="524.0" y2="308.0" stroke="#1f2937" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="22.0" y1="108.0" x2="524.0" y2="108.0" stroke="#1f2937" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="292.0" y="34.0" font-size="12" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle">near edge</text>
+<text x="28.0" y="320.0" font-size="12" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">lower edge</text>
+<text x="28.0" y="96.0" font-size="12" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">upper edge</text>
+<line x1="22.0" y1="228.0" x2="524.0" y2="228.0" stroke="#9ca3af" stroke-width="1"/>
+<circle cx="208.0" cy="228.0" r="166.7" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 354.2 308.0 A 166.7 166.7 0 0 0 323.7 108.0" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<line x1="208.0" y1="228.0" x2="354.2" y2="308.0" stroke="#1f2937" stroke-width="1"/>
+<circle cx="354.2" cy="308.0" r="3.2" fill="#1f2937"/>
+<line x1="208.0" y1="228.0" x2="323.7" y2="108.0" stroke="#1f2937" stroke-width="1"/>
+<circle cx="323.7" cy="108.0" r="3.2" fill="#1f2937"/>
+<circle cx="298.0" cy="87.7" r="3.2" fill="#9ca3af"/>
+<circle cx="208.0" cy="228.0" r="3.2" fill="#1f2937"/>
+<text x="202.0" y="244.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+<text x="64.0" y="372.0" font-size="16" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">Γ<tspan dy="4.8" font-size="10.9">r</tspan></text>
+</svg>

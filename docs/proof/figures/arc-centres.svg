@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="444" height="420" viewBox="0 0 444 420" role="img" aria-label="Two disjoint arcs on a circle: their centres are at least the sum of their half-widths apart">
+<title>Two disjoint arcs on a circle: their centres are at least the sum of their half-widths apart</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="218.0" cy="226.0" r="160.0" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 368.4 280.7 A 160.0 160.0 0 0 0 298.0 87.4" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+<line x1="218.0" y1="226.0" x2="368.4" y2="171.3" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="389.4" y="163.6" font-size="16" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">U</text>
+<path d="M 209.6 66.2 A 160.0 160.0 0 0 0 65.0 179.2" fill="none" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+<line x1="218.0" y1="226.0" x2="119.5" y2="99.9" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="105.7" y="82.3" font-size="16" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="middle" dominant-baseline="middle" font-style="italic">V</text>
+<path d="M 266.1 208.5 A 51.2 51.2 0 0 0 186.5 185.7" fill="none" stroke="#1f2937" stroke-width="1.4" stroke-linecap="round"/>
+<text x="242.3" y="141.4" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">≥ w<tspan dy="4.2" font-size="9.5">U</tspan><tspan dy="-4.2"> + </tspan>w<tspan dy="4.2" font-size="9.5">V</tspan></text>
+<circle cx="218.0" cy="226.0" r="3.2" fill="#1f2937"/>
+<text x="222.8" y="238.8" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

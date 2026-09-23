@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="447" height="447" viewBox="0 0 447 447" role="img" aria-label="Three pairwise disjoint unit squares in a closed disk of radius R about o">
+<title>Three pairwise disjoint unit squares in a closed disk of radius R about o</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="223.4" cy="223.4" r="195.0" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="6 4"/>
+<polygon points="179.8,206.9 307.0,179.9 280.0,52.7 152.8,79.7" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="53.0,304.8 173.5,353.5 222.2,233.0 101.7,184.3" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="295.8,365.9 402.3,291.4 327.8,184.9 221.3,259.4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<line x1="223.4" y1="223.4" x2="405.4" y2="153.5" stroke="#1f2937" stroke-width="1"/>
+<text x="328.0" y="169.3" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">R</text>
+<circle cx="223.4" cy="223.4" r="3.2" fill="#1f2937"/>
+<text x="229.9" y="213.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

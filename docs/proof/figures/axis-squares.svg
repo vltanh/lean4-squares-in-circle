@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="471" height="462" viewBox="0 0 471 462" role="img" aria-label="Two axis-parallel squares whose centres are more than 1 apart across, inside a box of half-sides B and C, inside the circle of radius root of B squared plus C squared">
+<title>Two axis-parallel squares whose centres are more than 1 apart across, inside a box of half-sides B and C, inside the circle of radius root of B squared plus C squared</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="235.5" cy="231.0" r="199.7" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="6 4"/>
+<polygon points="70.5,343.5 400.5,343.5 400.5,118.5 70.5,118.5" fill="none" stroke="#9ca3af" stroke-width="1.4" fill-opacity="1"/>
+<polygon points="78.0,336.0 228.0,336.0 228.0,186.0 78.0,186.0" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="250.5,268.5 400.5,268.5 400.5,118.5 250.5,118.5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<line x1="235.5" y1="231.0" x2="235.5" y2="31.3" stroke="#1f2937" stroke-width="1"/>
+<text x="229.5" y="73.5" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle">√(B² + C²)</text>
+<line x1="235.5" y1="358.5" x2="400.5" y2="358.5" stroke="#1f2937" stroke-width="1"/>
+<text x="318.0" y="373.5" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">B</text>
+<line x1="415.5" y1="231.0" x2="415.5" y2="118.5" stroke="#1f2937" stroke-width="1"/>
+<text x="430.5" y="174.8" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">C</text>
+<text x="153.0" y="264.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">Q(p)</text>
+<text x="325.5" y="190.5" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="middle" dominant-baseline="middle" font-style="italic">Q(q)</text>
+<circle cx="235.5" cy="231.0" r="3.2" fill="#1f2937"/>
+<text x="228.0" y="219.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

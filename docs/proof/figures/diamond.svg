@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="455" height="455" viewBox="0 0 455 455" role="img" aria-label="The disk where phi is at most 2, inside the diamond a plus b at most 1, which touches it at (1/2, 1/2); dashed, the octagon">
+<title>The disk where phi is at most 2, inside the diamond a plus b at most 1, which touches it at (1/2, 1/2); dashed, the octagon</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="57.6,397.5 387.6,397.5 305.1,150.0 57.6,67.5" fill="none" stroke="#1f2937" stroke-width="1" fill-opacity="1" stroke-dasharray="5 4"/>
+<polygon points="57.6,397.5 387.6,397.5 57.6,67.5" fill="#ffedd5" stroke="#ea580c" stroke-width="2" fill-opacity="1"/>
+<polygon points="57.6,397.5 329.1,397.5 327.4,392.9 325.6,388.3 323.7,383.7 321.8,379.1 319.8,374.6 317.8,370.1 315.7,365.6 313.6,361.1 311.4,356.7 309.2,352.2 307.0,347.8 304.7,343.4 302.3,339.1 300.0,334.8 297.5,330.5 295.0,326.2 292.5,321.9 289.9,317.7 287.3,313.5 284.7,309.3 281.9,305.2 279.2,301.1 276.4,297.0 273.6,292.9 270.7,288.9 267.8,284.9 264.8,281.0 261.8,277.0 258.8,273.1 255.7,269.3 252.5,265.4 249.4,261.6 246.2,257.9 242.9,254.1 239.6,250.4 236.3,246.8 232.9,243.2 229.5,239.6 226.1,236.0 222.6,232.5 219.1,229.0 215.5,225.6 211.9,222.2 208.3,218.8 204.7,215.5 201.0,212.2 197.2,208.9 193.5,205.7 189.7,202.6 185.8,199.4 182.0,196.3 178.1,193.3 174.1,190.3 170.2,187.3 166.2,184.4 162.2,181.5 158.1,178.7 154.0,175.9 149.9,173.2 145.8,170.4 141.6,167.8 137.4,165.2 133.2,162.6 128.9,160.1 124.6,157.6 120.3,155.1 116.0,152.8 111.7,150.4 107.3,148.1 102.9,145.9 98.4,143.7 94.0,141.5 89.5,139.4 85.0,137.3 80.5,135.3 76.0,133.3 71.4,131.4 66.8,129.5 62.2,127.7 57.6,126.0" fill="#dbeafe" stroke="#2563eb" stroke-width="1.4" fill-opacity="1"/>
+<line x1="24.6" y1="397.5" x2="427.2" y2="397.5" stroke="#1f2937" stroke-width="1" marker-end="url(#arrow)"/>
+<line x1="57.6" y1="430.5" x2="57.6" y2="27.9" stroke="#1f2937" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="427.2" y="417.3" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">a</text>
+<text x="37.8" y="34.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">b</text>
+<circle cx="222.6" cy="232.5" r="4" fill="#1f2937"/>
+<text x="235.8" y="212.7" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">(½, ½)</text>
+<text x="150.0" y="331.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">φ ≤ 2</text>
+<text x="183.0" y="150.0" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="start" dominant-baseline="middle">a + b = 1</text>
+<text x="318.3" y="133.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">P<tspan dy="4.5" font-size="10.2">8</tspan></text>
+</svg>

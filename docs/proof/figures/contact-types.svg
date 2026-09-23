@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="748" height="367" viewBox="0 0 748 367" role="img" aria-label="Left: a type A square in its chart, holding a third of the circle of radius 3/8, centred on its axis. Right: a type B square, holding a third of that circle and half of the small circle of radius 1/16">
+<title>Left: a type A square in its chart, holding a third of the circle of radius 3/8, centred on its axis. Right: a type B square, holding a third of that circle and half of the small circle of radius 1/16</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<line x1="27.5" y1="230.8" x2="350.5" y2="230.8" stroke="#9ca3af" stroke-width="1"/>
+<polygon points="148.6,325.8 338.6,325.8 338.6,135.8 148.6,135.8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="243.6" cy="230.8" r="3.2" fill="#2563eb"/>
+<circle cx="113.0" cy="230.8" r="71.2" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 148.6 292.5 A 71.2 71.2 0 0 0 148.6 169.1" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<text x="204.2" y="230.8" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="middle" dominant-baseline="middle">2π/3</text>
+<circle cx="113.0" cy="230.8" r="3.2" fill="#1f2937"/>
+<text x="105.4" y="246.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+<text x="227.0" y="35.1" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle">type A</text>
+<text x="227.0" y="59.8" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle">(a<tspan dy="3.9" font-size="8.8">S</tspan><tspan dy="-3.9">, </tspan>b<tspan dy="3.9" font-size="8.8">S</tspan><tspan dy="-3.9">)</tspan> = (11/16, 0)</text>
+<line x1="436.0" y1="230.8" x2="759.0" y2="230.8" stroke="#9ca3af" stroke-width="1"/>
+<polygon points="521.5,266.4 711.5,266.4 711.5,76.4 521.5,76.4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="616.5" cy="171.4" r="3.2" fill="#16a34a"/>
+<circle cx="521.5" cy="230.8" r="71.2" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 583.2 266.4 A 71.2 71.2 0 0 0 521.5 159.6" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<text x="600.5" y="185.2" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="middle" dominant-baseline="middle">2π/3</text>
+<circle cx="521.5" cy="230.8" r="3.2" fill="#1f2937"/>
+<text x="513.9" y="246.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+<text x="635.5" y="35.1" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="middle" dominant-baseline="middle">type B</text>
+<text x="635.5" y="59.8" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="middle" dominant-baseline="middle">(a<tspan dy="3.9" font-size="8.8">S</tspan><tspan dy="-3.9">, </tspan>b<tspan dy="3.9" font-size="8.8">S</tspan><tspan dy="-3.9">)</tspan> = (1/2, 5/16)</text>
+<circle cx="521.5" cy="230.8" r="11.9" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 521.5 242.7 A 11.9 11.9 0 0 0 521.5 218.9" fill="none" stroke="#9333ea" stroke-width="4" stroke-linecap="round"/>
+</svg>

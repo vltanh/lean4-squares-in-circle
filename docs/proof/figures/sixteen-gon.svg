@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="526" height="526" viewBox="0 0 526 526" role="img" aria-label="The part with a, b at least 0 of the 16-gon of three squares, hugging the disk where phi is at most 425/256; the disk touches it at the type A and type B points">
+<title>The part with a, b at least 0 of the 16-gon of three squares, hugging the disk where phi is at most 425/256; the disk touches it at the type A and type B points</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="75.6,450.0 405.6,450.0 371.3,368.6 275.3,250.3 157.0,154.3 75.6,120.0" fill="#ffedd5" stroke="#ea580c" stroke-width="2" fill-opacity="1"/>
+<polygon points="75.6,450.0 405.6,450.0 403.3,444.5 400.9,439.0 398.4,433.6 395.9,428.1 393.3,422.7 390.7,417.3 388.1,412.0 385.3,406.7 382.6,401.4 379.8,396.1 376.9,390.8 374.0,385.6 371.0,380.4 368.0,375.3 364.9,370.1 361.8,365.0 358.6,359.9 355.4,354.9 352.1,349.9 348.8,344.9 345.5,340.0 342.1,335.0 338.6,330.2 335.1,325.3 331.6,320.5 328.0,315.7 324.3,311.0 320.6,306.3 316.9,301.6 313.1,297.0 309.3,292.4 305.4,287.8 301.5,283.3 297.5,278.8 293.6,274.3 289.5,269.9 285.4,265.6 281.3,261.2 277.1,256.9 272.9,252.7 268.7,248.5 264.4,244.3 260.0,240.2 255.7,236.1 251.3,232.0 246.8,228.1 242.3,224.1 237.8,220.2 233.2,216.3 228.6,212.5 224.0,208.7 219.3,205.0 214.6,201.3 209.9,197.6 205.1,194.0 200.3,190.5 195.4,187.0 190.6,183.5 185.6,180.1 180.7,176.8 175.7,173.5 170.7,170.2 165.7,167.0 160.6,163.8 155.5,160.7 150.3,157.6 145.2,154.6 140.0,151.6 134.8,148.7 129.5,145.8 124.2,143.0 118.9,140.3 113.6,137.5 108.3,134.9 102.9,132.3 97.5,129.7 92.0,127.2 86.6,124.7 81.1,122.3 75.6,120.0" fill="#dbeafe" stroke="#2563eb" stroke-width="1.4" fill-opacity="1"/>
+<polygon points="75.6,450.0 405.6,450.0 371.3,368.6 275.3,250.3 157.0,154.3 75.6,120.0" fill="none" stroke="#ea580c" stroke-width="2" fill-opacity="1"/>
+<line x1="27.6" y1="450.0" x2="498.0" y2="450.0" stroke="#1f2937" stroke-width="1" marker-end="url(#arrow)"/>
+<line x1="75.6" y1="498.0" x2="75.6" y2="27.6" stroke="#1f2937" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="498.0" y="478.8" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">a</text>
+<text x="46.8" y="37.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">b</text>
+<circle cx="405.6" cy="450.0" r="4" fill="#1f2937"/>
+<text x="422.4" y="433.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">A</text>
+<circle cx="75.6" cy="120.0" r="4" fill="#1f2937"/>
+<text x="92.4" y="103.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">A</text>
+<circle cx="315.6" cy="300.0" r="4" fill="#1f2937"/>
+<text x="332.4" y="283.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">B</text>
+<circle cx="225.6" cy="210.0" r="4" fill="#1f2937"/>
+<text x="242.4" y="193.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">B</text>
+<text x="195.6" y="330.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">φ ≤ 425/256</text>
+<text x="363.6" y="186.0" font-size="16" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="start" dominant-baseline="middle" font-style="italic">P<tspan dy="4.8" font-size="10.9">3</tspan></text>
+</svg>

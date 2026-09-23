@@ -141,8 +141,12 @@ isometry of the plane.
 
 ## Proof outline
 
-More on each step, and on the earlier certificate proof of three squares:
-[docs/proof.md](docs/proof.md).
+The proofs as mathematics: the setting first, then the shared toolkit, then
+one page per case: [docs/proof/](docs/proof/README.md)
+([preliminaries](docs/proof/preliminaries.md),
+[shared lemmas](docs/proof/common.md), [one](docs/proof/one.md),
+[two](docs/proof/two.md), [three](docs/proof/three.md),
+[four](docs/proof/four.md), [five](docs/proof/five.md)).
 
 - **One and two squares.** The farthest corner of a square is at least half a
   diagonal from the disk centre. For two squares, the centres of disjoint unit
@@ -217,41 +221,6 @@ Apache-2.0, matching mathlib and the Lean ecosystem.
 
 ## Contributors
 
-This formalization was produced by AI models working in sequence.
-
-**Legacy certificate proof.** ChatGPT 6 Pro supplied the mathematics and the
-initial Lean development. Claude Opus 5 High-Max ported it to Lean `4.34.0` /
-mathlib `v4.34.0`, fixed the errors that surfaced once it was compiled, and
-arranged the repository. ChatGPT's informal argument, Python certificate
-verifier and three Lean drafts are preserved verbatim in `reference/` on the
-`legacy` branch; they play no part in the Lean verification path.
-
-**Occupied-arc proof.** Following an idea from Claude Opus 5 Max, ChatGPT 6
-Pro wrote the proof for three, four and five squares and the draft Lean
-development, submitted uncompiled as
-[PR #2](https://github.com/vltanh/lean4-squares-in-circles/pull/2).
-Claude Opus 5.5 Max cleaned it up. It compiled the draft against Lean
-`4.34.0` / mathlib `v4.34.0`, with repairs covering library renames, tactic
-normal forms and the missing measure instance on `Real.Angle`; no theorem
-statement changed. It then separated the proof from the certificate modules
-and made it the main proof.
-
-**Uniqueness.** ChatGPT 6 Pro wrote the uniqueness proofs for three, four and
-five squares and the draft Lean development, submitted uncompiled as
-[PR #3](https://github.com/vltanh/lean4-squares-in-circles/pull/3).
-Claude Opus 5.5 Max compiled it against Lean `4.34.0` / mathlib `v4.34.0`, with
-repairs covering library interfaces, tactic normal forms and the reduction of
-vector literals; no public statement changed. It then integrated the uniqueness
-theorems into the main proof.
-
-**One and two squares.** Claude Opus 5.5 Max added the cases `n = 1` and
-`n = 2`, and reorganized the library by `n` as `SquaresInCircles`.
-
-**Simplification.** Claude Opus 5.5 Max reviewed the whole library and
-simplified it: one containing-square argument for three squares instead of a
-strict and a closed copy, one auxiliary circle for four squares, shared lemmas
-for caps, chart arcs and the radial budget, every definition of the statements
-in `Geometry.lean`, and imports of only the parts of mathlib in use.
-
-Direction, review and the decisions about scope and naming were the
-repository owner's.
+The proofs and the Lean code were written by AI models, ChatGPT 6 Pro and
+Claude Opus 5 and 5.5, with the repository owner directing and reviewing the
+work. Who did what, and when: [docs/contributors.md](docs/contributors.md).

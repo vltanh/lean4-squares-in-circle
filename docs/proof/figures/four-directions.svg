@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="509" height="434" viewBox="0 0 509 434" role="img" aria-label="Four directions pairwise at least a quarter turn apart: they are a first direction and its quarter turns">
+<title>Four directions pairwise at least a quarter turn apart: they are a first direction and its quarter turns</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="250.5" cy="220.5" r="150.0" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<line x1="250.5" y1="220.5" x2="386.4" y2="157.1" stroke="#1f2937" stroke-width="1.4"/>
+<circle cx="386.4" cy="157.1" r="3.2" fill="#1f2937"/>
+<text x="402.8" y="149.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">θ<tspan dy="4.5" font-size="10.2">0</tspan></text>
+<line x1="250.5" y1="220.5" x2="187.1" y2="84.6" stroke="#1f2937" stroke-width="1.4"/>
+<circle cx="187.1" cy="84.6" r="3.2" fill="#1f2937"/>
+<text x="179.5" y="68.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">θ<tspan dy="4.5" font-size="10.2">0</tspan><tspan dy="-4.5"> + π/2</tspan></text>
+<line x1="250.5" y1="220.5" x2="114.6" y2="283.9" stroke="#1f2937" stroke-width="1.4"/>
+<circle cx="114.6" cy="283.9" r="3.2" fill="#1f2937"/>
+<text x="98.2" y="291.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">θ<tspan dy="4.5" font-size="10.2">0</tspan><tspan dy="-4.5"> + π</tspan></text>
+<line x1="250.5" y1="220.5" x2="313.9" y2="356.4" stroke="#1f2937" stroke-width="1.4"/>
+<circle cx="313.9" cy="356.4" r="3.2" fill="#1f2937"/>
+<text x="321.5" y="372.8" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">θ<tspan dy="4.5" font-size="10.2">0</tspan><tspan dy="-4.5"> + 3π/2</tspan></text>
+<line x1="268.2" y1="212.3" x2="259.9" y2="194.6" stroke="#1f2937" stroke-width="1"/>
+<line x1="259.9" y1="194.6" x2="242.3" y2="202.8" stroke="#1f2937" stroke-width="1"/>
+<circle cx="250.5" cy="220.5" r="3.2" fill="#1f2937"/>
+<text x="241.5" y="241.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

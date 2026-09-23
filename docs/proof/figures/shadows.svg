@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="580" height="376" viewBox="0 0 580 376" role="img" aria-label="Two disjoint squares and a separating direction n: their shadows on a line in direction n do not overlap">
+<title>Two disjoint squares and a separating direction n: their shadows on a line in direction n do not overlap</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="103.2,262.9 262.9,204.8 204.8,45.1 45.1,103.2" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="154.0" cy="154.0" r="3.2" fill="#2563eb"/>
+<line x1="45.1" y1="324.0" x2="262.9" y2="324.0" stroke="#2563eb" stroke-width="5"/>
+<line x1="154.0" y1="330.8" x2="154.0" y2="317.2" stroke="#2563eb" stroke-width="1.6"/>
+<line x1="154.0" y1="154.0" x2="154.0" y2="324.0" stroke="#2563eb" stroke-width="1" stroke-dasharray="3 3"/>
+<polygon points="299.1,200.4 438.4,297.9 535.9,158.6 396.6,61.1" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="417.5" cy="179.5" r="3.2" fill="#16a34a"/>
+<line x1="299.1" y1="324.0" x2="535.9" y2="324.0" stroke="#16a34a" stroke-width="5"/>
+<line x1="417.5" y1="330.8" x2="417.5" y2="317.2" stroke="#16a34a" stroke-width="1.6"/>
+<line x1="417.5" y1="179.5" x2="417.5" y2="324.0" stroke="#16a34a" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="26.5" y1="324.0" x2="553.5" y2="324.0" stroke="#1f2937" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="553.5" y="310.4" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">n</text>
+<line x1="281.5" y1="307.0" x2="281.5" y2="26.5" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="208.5" y="341.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">w<tspan dy="4.2" font-size="9.5">S</tspan></text>
+<text x="358.3" y="341.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="middle" dominant-baseline="middle" font-style="italic">w<tspan dy="4.2" font-size="9.5">T</tspan></text>
+<text x="77.5" y="57.1" font-size="17" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">S</text>
+<text x="502.5" y="69.0" font-size="17" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="middle" dominant-baseline="middle" font-style="italic">T</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="484" height="499" viewBox="0 0 484 499" role="img" aria-label="Disjoint squares hold disjoint arcs of a circle around the disk centre">
+<title>Disjoint squares hold disjoint arcs of a circle around the disk centre</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="256.5" cy="236.1" r="75.0" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<polygon points="286.0,248.3 434.0,272.8 458.5,124.9 310.5,100.4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<path d="M 329.0 255.4 A 75.0 75.0 0 0 0 298.3 173.8" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+<polygon points="158.7,219.0 298.9,165.7 245.7,25.5 105.4,78.8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5" fill-opacity="1"/>
+<path d="M 290.1 169.1 A 75.0 75.0 0 0 0 186.8 208.4" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<polygon points="25.5,309.6 145.6,399.4 235.5,279.3 115.4,189.5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<path d="M 181.5 239.0 A 75.0 75.0 0 0 0 219.2 301.1" fill="none" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+<polygon points="287.0,473.9 402.0,377.7 305.8,262.6 190.7,358.8" fill="#f3e8ff" stroke="#9333ea" stroke-width="1.5" fill-opacity="1"/>
+<path d="M 248.4 310.7 A 75.0 75.0 0 0 0 318.7 278.0" fill="none" stroke="#9333ea" stroke-width="5" stroke-linecap="round"/>
+<circle cx="256.5" cy="236.1" r="3.2" fill="#1f2937"/>
+<text x="262.5" y="246.6" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+<text x="253.5" y="287.1" font-size="16" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">Γ<tspan dy="4.8" font-size="10.9">r</tspan></text>
+</svg>

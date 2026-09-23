@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="549" height="425" viewBox="0 0 549 425" role="img" aria-label="Axes at o parallel to the sides of S; a square T with the same axes sits at the coordinates (c1, c2) of its centre in this frame">
+<title>Axes at o parallel to the sides of S; a square T with the same axes sits at the coordinates (c1, c2) of its centre in this frame</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<line x1="64.0" y1="348.6" x2="468.7" y2="159.9" stroke="#9ca3af" stroke-width="1" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<line x1="177.6" y1="390.0" x2="53.2" y2="123.1" stroke="#9ca3af" stroke-width="1" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<polygon points="131.1,380.2 303.3,299.9 223.1,127.7 50.9,208.0" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="303.3,299.9 475.5,219.6 395.2,47.4 223.1,127.7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<line x1="141.5" y1="312.5" x2="365.4" y2="208.1" stroke="#ea580c" stroke-width="2.4"/>
+<line x1="365.4" y1="208.1" x2="349.3" y2="173.7" stroke="#ea580c" stroke-width="2.4"/>
+<circle cx="177.1" cy="254.0" r="3.2" fill="#2563eb"/>
+<circle cx="349.3" cy="173.7" r="3.2" fill="#16a34a"/>
+<text x="173.3" y="238.8" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">S</tspan></text>
+<text x="358.8" y="164.2" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="start" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">T</tspan></text>
+<circle cx="141.5" cy="312.5" r="3.2" fill="#1f2937"/>
+<text x="132.0" y="322.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+<text x="477.3" y="155.9" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">φ</text>
+<text x="261.5" y="277.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="middle" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">1</tspan></text>
+<text x="374.5" y="182.9" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="start" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">2</tspan></text>
+</svg>

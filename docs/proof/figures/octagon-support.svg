@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="462" height="462" viewBox="0 0 462 462" role="img" aria-label="The part of the octagon with a, b at least 0, a quadrilateral, and level lines of pa + qb; the largest value is taken at a vertex, here the corner (3/4, 3/4)">
+<title>The part of the octagon with a, b at least 0, a quadrilateral, and level lines of pa + qb; the largest value is taken at a vertex, here the corner (3/4, 3/4)</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polygon points="54.0,408.0 354.0,408.0 279.0,183.0 54.0,108.0" fill="#ffedd5" stroke="#ea580c" stroke-width="2" fill-opacity="1"/>
+<line x1="174.0" y1="408.0" x2="54.0" y2="208.0" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="294.0" y1="408.0" x2="54.0" y2="8.0" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="414.0" y1="408.0" x2="54.0" y2="-192.0" stroke="#2563eb" stroke-width="1.6"/>
+<line x1="24.0" y1="408.0" x2="435.0" y2="408.0" stroke="#1f2937" stroke-width="1" marker-end="url(#arrow)"/>
+<line x1="54.0" y1="438.0" x2="54.0" y2="27.0" stroke="#1f2937" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="435.0" y="426.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">a</text>
+<text x="36.0" y="33.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">b</text>
+<circle cx="279.0" cy="183.0" r="4.5" fill="#2563eb"/>
+<text x="294.0" y="162.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle">(¾, ¾)</text>
+<line x1="114.0" y1="348.0" x2="191.2" y2="301.7" stroke="#1f2937" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="217.8" y="289.3" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">(p, q)</text>
+<text x="222.0" y="48.0" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="start" dominant-baseline="middle">pa + qb = ¾(p + q)</text>
+<text x="90.0" y="222.0" font-size="16" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="middle" dominant-baseline="middle" font-style="italic">P<tspan dy="4.8" font-size="10.9">8</tspan></text>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="486" height="414" viewBox="0 0 486 414" role="img" aria-label="The frame at o turned by phi, and a square sitting at c = (c1, c2) in that frame">
+<title>The frame at o turned by phi, and a square sitting at c = (c1, c2) in that frame</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<line x1="27.0" y1="297.0" x2="441.0" y2="297.0" stroke="#9ca3af" stroke-width="1"/>
+<line x1="55.1" y1="342.6" x2="438.5" y2="163.9" stroke="#1f2937" stroke-width="1.1" marker-end="url(#arrow)"/>
+<line x1="191.0" y1="378.6" x2="46.5" y2="68.6" stroke="#1f2937" stroke-width="1.1" marker-end="url(#arrow)"/>
+<polygon points="222.1,274.7 385.2,198.7 309.1,35.5 146.0,111.6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<line x1="153.0" y1="297.0" x2="299.8" y2="228.5" stroke="#ea580c" stroke-width="2.4"/>
+<line x1="299.8" y1="228.5" x2="265.6" y2="155.1" stroke="#ea580c" stroke-width="2.4"/>
+<text x="253.1" y="230.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="middle" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">1</tspan></text>
+<text x="302.3" y="182.7" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#ea580c" text-anchor="start" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">2</tspan></text>
+<path d="M 216.0 297.0 A 63.0 63.0 0 0 0 210.1 270.4" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-linecap="round"/>
+<text x="232.1" y="279.5" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">φ</text>
+<circle cx="265.6" cy="155.1" r="3.2" fill="#2563eb"/>
+<circle cx="153.0" cy="297.0" r="3.2" fill="#1f2937"/>
+<text x="145.8" y="311.4" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+<text x="378.0" y="81.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">Q(c)</text>
+</svg>

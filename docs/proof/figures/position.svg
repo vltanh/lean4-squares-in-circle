@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="446" height="320" viewBox="0 0 446 320" role="img" aria-label="A square in its own frame, turned so that the disk centre o lies in the first quadrant; o is reached from the centre by going a along the first axis and b along the second">
+<title>A square in its own frame, turned so that the disk centre o lies in the first quadrant; o is reached from the centre by going a along the first axis and b along the second</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<line x1="24.0" y1="178.0" x2="392.0" y2="178.0" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="168.0" y1="322.0" x2="168.0" y2="30.0" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="4 4"/>
+<text x="398.0" y="178.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#9ca3af" text-anchor="start" dominant-baseline="middle" font-style="italic">x<tspan dy="4.2" font-size="9.5">S</tspan></text>
+<text x="174.0" y="30.0" font-size="14" font-family="Georgia, 'Times New Roman', serif" fill="#9ca3af" text-anchor="start" dominant-baseline="middle" font-style="italic">y<tspan dy="4.2" font-size="9.5">S</tspan></text>
+<polygon points="68.0,278.0 268.0,278.0 268.0,78.0 68.0,78.0" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<text x="92.0" y="102.0" font-size="17" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">S</text>
+<circle cx="168.0" cy="178.0" r="3.2" fill="#1f2937"/>
+<text x="160.0" y="192.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">S</tspan></text>
+<line x1="168.0" y1="178.0" x2="338.0" y2="178.0" stroke="#1f2937" stroke-width="2.4"/>
+<line x1="338.0" y1="178.0" x2="338.0" y2="118.0" stroke="#1f2937" stroke-width="2.4"/>
+<line x1="168.0" y1="184.0" x2="168.0" y2="172.0" stroke="#1f2937" stroke-width="1.6"/>
+<line x1="338.0" y1="184.0" x2="338.0" y2="172.0" stroke="#1f2937" stroke-width="1.6"/>
+<line x1="332.0" y1="118.0" x2="344.0" y2="118.0" stroke="#1f2937" stroke-width="1.6"/>
+<text x="253.0" y="194.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="middle" dominant-baseline="middle" font-style="italic">a<tspan dy="4.5" font-size="10.2">S</tspan></text>
+<text x="352.0" y="148.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">b<tspan dy="4.5" font-size="10.2">S</tspan></text>
+<circle cx="338.0" cy="118.0" r="3.2" fill="#1f2937"/>
+<text x="334.0" y="102.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

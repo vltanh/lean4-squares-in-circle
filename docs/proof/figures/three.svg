@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="447" height="447" viewBox="0 0 447 447" role="img" aria-label="The T with the circle of radius 3/8">
+<title>The T with the circle of radius 3/8</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="223.3" cy="223.3" r="193.3" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="6 4"/>
+<polygon points="73.3,345.1 223.3,345.1 223.3,195.1 73.3,195.1" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="223.3,345.1 373.3,345.1 373.3,195.1 223.3,195.1" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="148.3,195.1 298.3,195.1 298.3,45.1 148.3,45.1" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="223.3" cy="223.3" r="56.2" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 174.5 195.2 A 56.2 56.2 0 0 0 223.3 279.5" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+<path d="M 223.3 279.5 A 56.2 56.2 0 0 0 272.0 195.1" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<path d="M 272.0 195.1 A 56.2 56.2 0 0 0 174.6 195.1" fill="none" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+<circle cx="223.3" cy="223.3" r="3.2" fill="#1f2937"/>
+<text x="230.8" y="235.3" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

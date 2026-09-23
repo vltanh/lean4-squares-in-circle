@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="468" height="420" viewBox="0 0 468 420" role="img" aria-label="Two centres inside the disk of radius one half about o, and the parallelogram they span with o; its diagonals are the segment between the centres and the dashed segment from o">
+<title>Two centres inside the disk of radius one half about o, and the parallelogram they span with o; its diagonals are the segment between the centres and the dashed segment from o</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="234.0" cy="216.0" r="150.0" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="5 4"/>
+<polygon points="234.0,216.0 108.0,252.0 198.0,153.0 324.0,117.0" fill="#ffedd5" stroke="#9ca3af" stroke-width="1" fill-opacity="1"/>
+<line x1="108.0" y1="252.0" x2="324.0" y2="117.0" stroke="#ea580c" stroke-width="2.2"/>
+<line x1="234.0" y1="216.0" x2="198.0" y2="153.0" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="3 3"/>
+<circle cx="234.0" cy="216.0" r="3.2" fill="#1f2937"/>
+<text x="243.0" y="231.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+<circle cx="198.0" cy="153.0" r="2.5" fill="#9ca3af"/>
+<circle cx="108.0" cy="252.0" r="3.2" fill="#2563eb"/>
+<text x="108.0" y="273.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#2563eb" text-anchor="middle" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">S</tspan></text>
+<circle cx="324.0" cy="117.0" r="3.2" fill="#16a34a"/>
+<text x="330.0" y="96.0" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#16a34a" text-anchor="start" dominant-baseline="middle" font-style="italic">c<tspan dy="4.5" font-size="10.2">T</tspan></text>
+<text x="120.0" y="81.0" font-size="13" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="end" dominant-baseline="middle" font-style="italic">D(o, ½)</text>
+</svg>
