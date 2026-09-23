@@ -1,12 +1,7 @@
 import SquaresInCircles.Seven.Labels
 import SquaresInCircles.Seven.Construction
 
-/-!
-# Elementary support lemmas for the affine markers
-
-The support expression is the actual support of the canonical unit square.
-Marker-point membership is distinguished from the full marker-arc theorem.
--/
+/-! Actual support of the canonical square and its affine marker point. -/
 noncomputable section
 namespace SquaresInCircles.Seven
 
@@ -23,7 +18,6 @@ lemma label_ge_sixth {a u : ℝ} (h : Admissible a u) (hu : 1/2 ≤ u) :
   unfold label
   exact le_min (le_min hA hT) (by linarith [Real.pi_pos])
 
-/-- The marker point itself is in the canonical closed square. -/
 theorem marker_point_magnitude {a u : ℝ} (h : Admissible a u) :
     |Real.cos (label a u)-a| ≤ 1/2 ∧
     |Real.sin (label a u)-u| ≤ 1/2 := by
@@ -133,7 +127,11 @@ lemma support_lower {a b : ℝ} (h : Admissible a |b|) (z : ℝ) :
     nlinarith only [hid,hn,hsq]
   have hdot : -(Real.sqrt 3-1/2) ≤ a*Real.cos z+b*Real.sin z := by
     generalize a*Real.cos z+b*Real.sin z = D at hd2 ⊢
-    nlinarith only [hd2,hr,hr0]
+    have hc : 0 ≤ Real.sqrt 3-1/2 := by nlinarith only [hr,hr0]
+    by_contra hn
+    have hp := mul_pos (show 0 < -D-(Real.sqrt 3-1/2) by linarith)
+      (show 0 < -D+(Real.sqrt 3-1/2) by linarith)
+    nlinarith only [hp,hd2]
   have hw := direction_width_ge_one z
   dsimp [support]
   linarith
