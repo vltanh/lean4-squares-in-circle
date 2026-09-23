@@ -1,0 +1,24 @@
+name: Lean build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build, audit axioms, run checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Installs the pinned toolchain, fetches the mathlib cache, runs
+      # `lake build`, and fails if any declaration under `SquaresInCircles`
+      # depends on an axiom other than propext, Classical.choice, Quot.sound.
+      - uses: leanprover/lean-action@v1
+        with:
+          axiom-audit: true
+      - name: Axiom audit and sanity checks
+        run: |
+          lake env lean AxiomAudit.lean
+          lake env lean SanityChecks.lean

@@ -25,6 +25,11 @@ and no `native_decide`.
   all five optimal packings against their normal forms; it must elaborate
   without errors.
 
+[`.github/workflows/lean.yml`](../.github/workflows/lean.yml) runs these steps
+on every push to `main` and on pull requests, using `leanprover/lean-action`.
+Its axiom audit covers every declaration under `SquaresInCircles`, not only the
+ones printed by `AxiomAudit.lean`.
+
 Build from the committed `lake-manifest.json`, which pins every dependency by
 hash. Avoid `lake update`: seven transitive packages track `main` or `master`
 and would be re-resolved.
