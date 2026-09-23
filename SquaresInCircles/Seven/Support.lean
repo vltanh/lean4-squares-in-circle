@@ -5,9 +5,7 @@ import SquaresInCircles.Seven.Construction
 # Elementary support lemmas for the affine markers
 
 The support expression is the actual support of the canonical unit square.
-This file proves marker-point membership, support domination by that point,
-and the outward-radial sector. The larger marker ARC and the other fixed-gap
-support sectors are not inferred merely from marker-point membership.
+Marker-point membership is distinguished from the full marker-arc theorem.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -57,7 +55,7 @@ theorem marker_point_magnitude {a u : ℝ} (h : Admissible a u) :
           constructor <;> linarith [Real.pi_pos]) ht6
       rw [Real.sin_pi_div_six] at hmon
       linarith [h.u_lt]
-  exact ⟨abs_le.mpr ⟨hc0,hc1⟩,abs_le.mpr ⟨hy0,hy1⟩⟩
+  exact ⟨abs_le.mpr ⟨by linarith,hc1⟩,abs_le.mpr ⟨by linarith,hy1⟩⟩
 
 lemma marker_point_signed {a b : ℝ} (h : Admissible a |b|) :
     |Real.cos (signedLabel a b)-a| ≤ 1/2 ∧
@@ -79,12 +77,12 @@ lemma point_le_support {a b x y : ℝ}
   have hx0 : (x-a)*Real.cos z ≤ (1/2)*|Real.cos z| := by
     calc
       _ ≤ |(x-a)*Real.cos z| := le_abs_self _
-      _ = |x-a|*|Real.cos z| := abs_mul _ _
+      _ = |x-a| * |Real.cos z| := abs_mul _ _
       _ ≤ _ := mul_le_mul_of_nonneg_right hx (abs_nonneg _)
   have hy0 : (y-b)*Real.sin z ≤ (1/2)*|Real.sin z| := by
     calc
       _ ≤ |(y-b)*Real.sin z| := le_abs_self _
-      _ = |y-b|*|Real.sin z| := abs_mul _ _
+      _ = |y-b| * |Real.sin z| := abs_mul _ _
       _ ≤ _ := mul_le_mul_of_nonneg_right hy (abs_nonneg _)
   dsimp [support]
   nlinarith
@@ -131,7 +129,11 @@ lemma support_lower {a b : ℝ} (h : Admissible a |b|) (z : ℝ) :
   have hsq := sq_nonneg (a*Real.sin z-b*Real.cos z)
   have hr := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
   have hr0 := Real.sqrt_nonneg (3 : ℝ)
-  have hdot : -(Real.sqrt 3-1/2) ≤ a*Real.cos z+b*Real.sin z := by nlinarith
+  have hd2 : (a*Real.cos z+b*Real.sin z)^2 ≤ (Real.sqrt 3-1/2)^2 := by
+    nlinarith only [hid,hn,hsq]
+  have hdot : -(Real.sqrt 3-1/2) ≤ a*Real.cos z+b*Real.sin z := by
+    generalize a*Real.cos z+b*Real.sin z = D at hd2 ⊢
+    nlinarith only [hd2,hr,hr0]
   have hw := direction_width_ge_one z
   dsimp [support]
   linarith
@@ -144,7 +146,6 @@ lemma outward_support_pos {a b A B : ℝ}
   have hroot : Real.sqrt 3 < 2 := by nlinarith [Real.sqrt_nonneg (3 : ℝ)]
   linarith
 
-/-- Coordinate form of Cauchy--Schwarz, for vertices inside the candidate disk. -/
 lemma dot_lower_candidate {X Y p r : ℝ} (hXY : X^2+Y^2 ≤ targetSq) :
     -radius * Real.sqrt (p^2+r^2) ≤ p*X+r*Y := by
   have hid : (p*X+r*Y)^2+(p*Y-r*X)^2=(p^2+r^2)*(X^2+Y^2) := by ring

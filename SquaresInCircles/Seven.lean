@@ -9,6 +9,7 @@ import SquaresInCircles.Seven.Support
 import SquaresInCircles.Seven.MarkerArc
 import SquaresInCircles.Seven.EasySectors
 import SquaresInCircles.Seven.SideSide
+import SquaresInCircles.Seven.SeparatingAxes
 import SquaresInCircles.Seven.Reduction
 import SquaresInCircles.Seven.Remaining
 

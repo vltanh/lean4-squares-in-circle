@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      # The default target covers the established n <= 5 entry point.
       - uses: leanprover/lean-action@v1
         with:
           axiom-audit: true
@@ -20,11 +19,31 @@ jobs:
         run: |
           lake env lean AxiomAudit.lean
           lake env lean SanityChecks.lean
-      # Seven is an optional entry point and must be built explicitly.
-      # A clean axiom list for a conditional theorem does not prove its hypotheses.
       - name: Build seven-square development
         run: lake build SquaresInCircles.Seven
       - name: Seven-square audit and sanity checks
         run: |
           lake env lean SevenAxiomAudit.lean
           lake env lean SevenSanityChecks.lean
+      # Temporary development artifact: only public source, toolchain and build
+      # objects. No .git directory, credentials, environment or runner home.
+      - name: Export reproducible proof-development environment
+        if: always()
+        run: |
+          mkdir -p /tmp/seven-environment
+          TC="$(dirname "$(dirname "$(elan which lean)")")"
+          tar --exclude='*.a' --exclude='*.o' --exclude='*.ilean' \
+            -I 'zstd -3 -T2' -cf /tmp/seven-environment/toolchain.tar.zst \
+            -C "$TC" bin lib
+          tar --exclude='.git' --exclude='ir' --exclude='*.a' --exclude='*.o' \
+            --exclude='*.ilean' --exclude='*.c' \
+            -I 'zstd -3 -T2' -cf /tmp/seven-environment/project.tar.zst \
+            .lake SquaresInCircles SquaresInCircles.lean lakefile.toml \
+            lake-manifest.json lean-toolchain SevenAxiomAudit.lean SevenSanityChecks.lean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seven-proof-environment
+          path: /tmp/seven-environment/*.tar.zst
+          compression-level: 0
+          retention-days: 1
