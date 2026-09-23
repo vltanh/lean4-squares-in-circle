@@ -1,14 +1,15 @@
 # Lean 4 formalization of packing three unit squares in a disk
 
 A machine-checked proof that the smallest disk containing three
-non-overlapping unit squares has radius `5 * Real.sqrt 17 / 16 ≈ 1.2884705`.
-The same occupied-arc framework also settles four squares (radius `√2`) and
-five squares (radius `√(5/2)`).
+non-overlapping unit squares has radius `5 * Real.sqrt 17 / 16 ≈ 1.2884705`,
+and that the T arrangement is the only packing attaining it, up to rotation and
+relabelling. The same occupied-arc framework settles four squares (radius `√2`,
+only the 2×2 block) and five squares (radius `√(5/2)`, only the plus).
 
 - **Toolchain:** Lean `4.34.0`, mathlib `v4.34.0`
 - **Axioms:** `propext`, `Classical.choice`, `Quot.sound` only
 - **Admissions:** none — no `sorry`, no `axiom`, no `native_decide`
-- **Source:** 28 modules, ~3,400 lines
+- **Source:** 39 modules, ~5,100 lines
 
 The earlier certificate-based proof of the three-square result is preserved on
 the [`legacy`](https://github.com/vltanh/three-unit-squares-in-circle/tree/legacy)
@@ -52,8 +53,30 @@ theorem five_optimality (S : Fin 5 → UnitSquare) (o : Point) (R : ℝ)
 The 2×2 block and the plus arrangement attain these (`block_packing`,
 `plus_packing` in `Unified/Constructions.lean`).
 `optimality_and_attainment_345` (`Unified/Main.lean`) states lower bound and
-attainment together for `n = 3, 4, 5`. No uniqueness or equality
-classification is claimed.
+attainment together for `n = 3, 4, 5`.
+
+**Uniqueness.** Each optimum is attained by one packing only, up to a rotation
+about the disk centre and a relabelling of the squares. The theorems are in
+namespaces `ThreeUniqueness`, `FourUniqueness` and `FiveUniqueness`
+(`ThreeUniqueness.lean`, `FourUniqueness.lean`, `FiveUniqueness.lean`), under
+`ThreeUnitSquaresInCircle`:
+
+```lean
+theorem ThreeUniqueness.uniqueness (S : Fin 3 → UnitSquare) (o : Point)
+    (hp : Packing S o optimalRadius) : HasNormalForm S o threeCenters
+
+theorem FourUniqueness.uniqueness (S : Fin 4 → UnitSquare) (o : Point)
+    (hp : PackingN S o (Real.sqrt 2)) : HasNormalForm S o fourCenters
+
+theorem FiveUniqueness.uniqueness (S : Fin 5 → UnitSquare) (o : Point)
+    (hp : PackingN S o (Real.sqrt ((5:ℝ)/2))) : HasNormalForm S o fiveCenters
+```
+
+Each namespace also has `rigid_uniqueness`. It gives an explicit bijection of
+the plane that preserves Euclidean distance and takes the origin to `o`, under
+which the closed squares are exactly the model squares.
+`FiveUniqueness.polygon_uniqueness` needs only interior-disjointness and the
+closed 12-gon of Step 1, not the disk.
 
 **Polygon relaxations.** The proofs go through stronger statements that
 mention no disk at all: `three_polygon_strict_impossible`,
@@ -200,6 +223,40 @@ def PackingN {n : ℕ} (S : Fin n → UnitSquare) (o : Point) (R : ℝ) : Prop :
 
 `PackingN S o R ↔ Packing S o R` holds by `Iff.rfl` for `S : Fin 3 → UnitSquare`.
 
+### Normal forms
+
+Uniqueness is stated about point sets
+(`ThreeUnitSquaresInCircle/Uniqueness/Basic.lean`,
+`Unified/ThreeCoordinates.lean`):
+
+```lean
+def pointInDirection (o : Point) (phase : Direction) (x y : ℝ) : Point :=
+  (o.1+phase.cos*x-phase.sin*y, o.2+phase.sin*x+phase.cos*y)
+
+abbrev OpenRect (c : Point) (x y : ℝ) : Prop := |x-c.1| < 1/2 ∧ |y-c.2| < 1/2
+abbrev ClosedRect (c : Point) (x y : ℝ) : Prop := |x-c.1| ≤ 1/2 ∧ |y-c.2| ≤ 1/2
+
+def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
+    (centers : Fin n → Point) : Prop :=
+  ∃ (φ : Direction) (σ : Equiv.Perm (Fin n)), ∀ i x y,
+    (openSquare (S (σ i)) (pointInDirection o φ x y) ↔ OpenRect (centers i) x y) ∧
+    (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔ ClosedRect (centers i) x y)
+```
+
+`pointInDirection o φ` reads coordinates `(x, y)` in the frame at the disk
+centre `o`, rotated by `φ`. `HasNormalForm` says that in one such frame, after
+relabelling by `σ`, square `σ i` is exactly the axis-parallel unit square
+centred at `centers i`, both as an open and as a closed set. It compares point
+sets rather than `UnitSquare` records, because a quarter-turn of a frame
+describes the same square. No reflection is needed, since each model is
+symmetric under one. With the disk centre at the origin, the models are:
+
+| n | `centers` | configuration |
+| --- | --- | --- |
+| 3 | `(-1/2, -5/16)`, `(1/2, -5/16)`, `(0, 11/16)` | the T |
+| 4 | `(±1/2, ±1/2)` | the 2×2 block |
+| 5 | `(0, 0)`, `(±1, 0)`, `(0, ±1)` | the plus |
+
 Read these definitions before trusting the result. A kernel check establishes
 that the proofs are valid; it cannot establish that the statements mean what
 you intend.
@@ -340,6 +397,44 @@ impossible. So `targetSq ≤ R²`, and `radius_lower_of_squared` gives
 `optimalRadius ≤ R`. The four- and five-square bounds conclude the same way with
 `Real.sqrt`.
 
+### Step 7 — Uniqueness
+
+`ThreeUniqueness.uniqueness`, `FourUniqueness.uniqueness`,
+`FiveUniqueness.uniqueness`
+
+At the optimal radius the lower-bound arguments run again with equality
+allowed. Every inequality in the chain must then be tight, and the tight cases
+are reconstructed exactly.
+
+- **Five squares** (`Uniqueness/Five.lean`, `Uniqueness/Contacts.lean`). The
+  closed 12-gon puts every centre within distance 1 of `o`. If no square were
+  centred at `o`, the exterior arcs (still longer than `72°`) and the sweep of a
+  containing square (`72°`) would overfill the circle, so one square is centred
+  exactly at `o`. Centres of interior-disjoint unit squares are at least 1
+  apart, with equality only for parallel axes and a unit offset along an axis.
+  The other four squares are therefore the four side-neighbours of the centred
+  one: the plus. This uses only the closed 12-gon, not the disk.
+- **Four squares** (`Uniqueness/Four.lean`). The closed diamond alone is not
+  rigid, so this case uses the disk. The strict Diamond Lemma leaves a square
+  with `a + b ≥ 1`, and `phi a b ≤ 2` then forces `a = b = 1/2`: `o` is a vertex
+  of that square and lies in no open square. On the circle of radius `1/2` each
+  square holds an arc of at least `90°`, strictly more unless `a + b = 1`, so
+  the budget makes `o` a vertex of all four squares. Their quarter-circle arcs
+  have midpoints a quarter turn apart, which is the block.
+- **Three squares** (`Uniqueness/ThreeClosed.lean`,
+  `Uniqueness/ThreeReconstruction.lean`, `Uniqueness/Three.lean`). A square
+  containing `o` keeps strict contact tangents even at the optimum, and the
+  Step 5 argument still refutes it when the other two squares satisfy only the
+  closed 16-gon. So no square contains `o`, and the three exterior arcs of at
+  least `120°` are each exactly `120°`. Equality leaves two contact types for
+  the sorted chart coordinates: A = `(11/16, 0)`, with `o` on the square's axis,
+  and B = `(1/2, 5/16)`, with `o` on the line of one of its edges. Two A-squares
+  would overlap, and three B-squares would each hold a semicircle of the circle
+  of radius `1/16`, so there is one A-square and two B-squares. The
+  B-semicircles make the two B-phases antipodal and the three `120°` arcs make
+  the midpoints equally spaced. Solving these angle equations puts the squares
+  in the T slots, for every labelling and chart orientation.
+
 ## Modules
 
 ### Problem statement and shared tools
@@ -391,6 +486,20 @@ impossible. So `targetSq ≤ R²`, and `radius_lower_of_squared` gives
 `ThreeUnitSquaresInCircle/ThreeArc.lean` does not import the four- or
 five-square modules.
 
+### Uniqueness
+
+| File | Contents |
+| --- | --- |
+| `Uniqueness/Basic.lean` | `HasNormalForm`, the rigid-motion witness, slots to a permutation |
+| `Uniqueness/Angles.lean` | Quarter turns of a frame; four directions a quarter turn apart |
+| `Uniqueness/Contacts.lean` | Two squares at centre distance 1 are side-neighbours |
+| `Uniqueness/Five.lean` | A square centred at `o`; rigidity of the closed 12-gon |
+| `Uniqueness/Four.lean` | Radius-`1/2` arcs; `o` is a vertex of every square; the block |
+| `Uniqueness/ThreeClosed.lean` | Closed caps; no square contains `o`; the two contact types |
+| `Uniqueness/ThreeReconstruction.lean` | One A-square and two B-squares; the T |
+| `Uniqueness/Three.lean` | Assembly over all labellings |
+| `ThreeUniqueness.lean`, `FourUniqueness.lean`, `FiveUniqueness.lean` | `uniqueness` and `rigid_uniqueness` |
+
 ## Verification
 
 ```sh
@@ -407,10 +516,11 @@ Requires Elan/Lake and network access for mathlib.
   `[propext, Classical.choice, Quot.sound]`.
 - `sorryAx` in that output would indicate an unproved lemma;
   `Lean.ofReduceBool` would indicate `native_decide` and compiler trust.
-- The audit also prints `Packing`, `PackingN` and the theorem signatures for
-  inspection.
-- `SanityChecks.lean` re-proves the exact rational margins the proof relies on
-  and restates the public theorems; it must elaborate without errors.
+- The audit also prints `Packing`, `PackingN`, `HasNormalForm`, the T model
+  and the theorem signatures for inspection.
+- `SanityChecks.lean` re-proves the exact rational margins the proof relies on,
+  restates the public theorems, and checks the T, the block and the plus
+  against their normal forms; it must elaborate without errors.
 
 Build from the committed `lake-manifest.json`, which pins every dependency by
 hash. Avoid `lake update`: seven transitive packages track `main` or `master`
@@ -433,8 +543,8 @@ branch with 53 rational certificates checked by `decide +kernel`. Its
 same `Geometry.lean`.
 
 The occupied-arc proof replaced it as the main proof because a single framework
-covers three, four and five squares, and it needs no case enumeration or
-certificate tables.
+covers three, four and five squares and extends to uniqueness, and it needs no
+case enumeration or certificate tables.
 
 ## License
 
@@ -460,6 +570,14 @@ Claude Opus 5.5 Max cleaned it up. It compiled the draft against Lean
 normal forms and the missing measure instance on `Real.Angle`; no theorem
 statement changed. It then separated the proof from the certificate modules
 and made it the main proof.
+
+**Uniqueness.** ChatGPT 6 Pro wrote the uniqueness proofs for three, four and
+five squares and the draft Lean development, submitted uncompiled as
+[PR #3](https://github.com/vltanh/three-unit-squares-in-circle/pull/3).
+Claude Opus 5.5 Max compiled it against Lean `4.34.0` / mathlib `v4.34.0`, with
+repairs covering library interfaces, tactic normal forms and the reduction of
+vector literals; no public statement changed. It then integrated the uniqueness
+theorems into the main proof.
 
 Direction, review and the decisions about scope and naming were the
 repository owner's.

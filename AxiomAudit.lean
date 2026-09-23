@@ -33,6 +33,15 @@ used in this development.
 #print axioms ThreeUnitSquaresInCircle.Unified.three_compensation
 #print axioms ThreeUnitSquaresInCircle.Unified.near_axis_square_overlap
 
+-- Uniqueness of the optimal packings.
+#print axioms ThreeUnitSquaresInCircle.ThreeUniqueness.uniqueness
+#print axioms ThreeUnitSquaresInCircle.ThreeUniqueness.rigid_uniqueness
+#print axioms ThreeUnitSquaresInCircle.FourUniqueness.uniqueness
+#print axioms ThreeUnitSquaresInCircle.FourUniqueness.rigid_uniqueness
+#print axioms ThreeUnitSquaresInCircle.FiveUniqueness.uniqueness
+#print axioms ThreeUnitSquaresInCircle.FiveUniqueness.polygon_uniqueness
+#print axioms ThreeUnitSquaresInCircle.FiveUniqueness.rigid_uniqueness
+
 -- Attaining configurations.
 #print axioms ThreeUnitSquaresInCircle.exists_packing_at_optimum
 #print axioms ThreeUnitSquaresInCircle.Unified.block_packing
@@ -46,3 +55,10 @@ used in this development.
 #check @ThreeUnitSquaresInCircle.Unified.four_optimality
 #check @ThreeUnitSquaresInCircle.Unified.five_optimality
 #check @ThreeUnitSquaresInCircle.Unified.optimality_and_attainment_345
+#print ThreeUnitSquaresInCircle.Uniqueness.HasNormalForm
+#print ThreeUnitSquaresInCircle.Uniqueness.threeCenters
+#check @ThreeUnitSquaresInCircle.ThreeUniqueness.uniqueness
+#check @ThreeUnitSquaresInCircle.ThreeUniqueness.rigid_uniqueness
+#check @ThreeUnitSquaresInCircle.FourUniqueness.uniqueness
+#check @ThreeUnitSquaresInCircle.FiveUniqueness.uniqueness
+#check @ThreeUnitSquaresInCircle.FiveUniqueness.polygon_uniqueness

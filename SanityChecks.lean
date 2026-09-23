@@ -6,6 +6,7 @@ points of the polygon relaxations, and the public statements.
 -/
 noncomputable section
 open ThreeUnitSquaresInCircle ThreeUnitSquaresInCircle.Unified
+open ThreeUnitSquaresInCircle.Uniqueness
 
 -- Three squares: deficit, radial and transverse margins.
 example : (22:ℝ)/42-13/29 = 46/609 := by norm_num
@@ -47,3 +48,15 @@ example (S : Fin 3 → UnitSquare) (o : Point)
   three_polygon_strict_impossible S o hd hp
 example : PackingN block (0,0) (Real.sqrt 2) := block_packing
 example : PackingN plus (0,0) (Real.sqrt ((5:ℝ)/2)) := plus_packing
+
+-- Uniqueness: margins, and the attaining packings in their own normal forms.
+example : (2:ℝ)/3 < Real.sqrt 2/2 := by
+  have hs := Real.sq_sqrt (show (0:ℝ) ≤ 2 by norm_num)
+  nlinarith [Real.sqrt_nonneg 2]
+example : ((5:ℝ)/6+1/2)^2+(1/2)^2 > 2 := by norm_num
+example : HasNormalForm tSquares tCenter threeCenters :=
+  ThreeUniqueness.uniqueness tSquares tCenter tSquares_packing
+example : HasNormalForm block (0,0) fourCenters :=
+  FourUniqueness.uniqueness block (0,0) block_packing
+example : HasNormalForm plus (0,0) fiveCenters :=
+  FiveUniqueness.uniqueness plus (0,0) plus_packing

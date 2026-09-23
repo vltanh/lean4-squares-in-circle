@@ -2,7 +2,7 @@ import ThreeUnitSquaresInCircle.Uniqueness.ThreeReconstruction
 import ThreeUnitSquaresInCircle.ThreeArc
 
 /-! Uniqueness of the T packing at radius 5*sqrt(17)/16.  The endpoint uses
-the original Packing predicate and the arc framework, not the legacy tables. -/
+the original `Packing` predicate and the occupied-arc framework. -/
 noncomputable section
 open Set
 namespace ThreeUnitSquaresInCircle.Uniqueness

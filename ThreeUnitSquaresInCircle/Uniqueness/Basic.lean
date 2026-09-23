@@ -3,9 +3,10 @@ import ThreeUnitSquaresInCircle.Unified.ThreeCoordinates
 /-!
 # Geometric normal forms, not equality of frame records
 
-Additive uniqueness development against main d7fa1f3.  These new proof scripts
-have not been compiled.  A normal form specifies both open and closed square
-sets in one Euclidean frame and includes a permutation of the squares.
+A normal form specifies both the open and the closed point set of every square
+in one Euclidean frame centred at the disk centre, up to a permutation of the
+squares. It does not equate `UnitSquare` records: a quarter-turn of a frame
+describes the same square.
 -/
 noncomputable section
 open Set

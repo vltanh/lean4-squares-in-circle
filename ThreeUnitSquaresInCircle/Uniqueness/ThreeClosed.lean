@@ -170,19 +170,12 @@ lemma three_cap_mem_closed {a b t : ℝ} (ha : 1/2 ≤ a) (hb : 0 ≤ b)
   exact ⟨abs_lt.mpr ⟨by linarith,by linarith⟩,
     abs_lt.mpr ⟨by linarith,by linarith⟩⟩
 
-lemma cap_length_identity_copy (A V : ℝ) : A-max (-A) (-V)=min (2*A) (A+V) := by
-  by_cases h : A ≤ V
-  · rw [max_eq_left (by linarith),min_eq_left (by linarith)]
-    ring
-  · rw [max_eq_right (by linarith),min_eq_right (by linarith)]
-    ring
-
 lemma three_cap_arc_formula_closed {S : UnitSquare} {o : Point} (C : SquareChart S o)
     (ha : 1/2 ≤ C.a) (hp : P3 C.a C.b) :
     ∃ B : OpenArc o auxThree {z | openSquare S z},
       2*B.halfWidth=threeCapLength C.a C.b := by
   obtain ⟨hx0,hx1,hv,hA,hAp,hgap⟩ := three_cap_data_closed ha C.nonneg.2 hp
-  have hlen := cap_length_identity_copy (threeCapA C.a) (threeCapV C.b)
+  have hlen := cap_length_identity (threeCapA C.a) (threeCapV C.b)
   change threeCapA C.a-max (-threeCapA C.a) (-threeCapV C.b)=
     threeCapLength C.a C.b at hlen
   obtain ⟨B,hB⟩ := C.arc auxThree
