@@ -192,6 +192,7 @@ lemma signedLabel_neg {a b : ℝ} (h : Admissible a |b|) :
   by_cases hb : b = 0
   · subst b
     have hz := h.label_zero_iff.mpr (show |(0 : ℝ)| = 0 by simp)
+    simp only [abs_zero] at hz
     simp [signedLabel, hz]
   · by_cases hn : b < 0
     · simp [signedLabel, hn, show ¬ -b < 0 by linarith, abs_neg]

@@ -96,11 +96,13 @@ def slidingModel (c : Column) : Fin 7 → UnitSquare :=
   fun i => axisSquare (slidingCenters c i)
 
 lemma slidingModel_disjoint (c : Column) : InteriorDisjoint (slidingModel c) := by
+  have hbm := c.gap_lower
+  have hmt := c.gap_upper
+  have hbt : c.bottom+1 ≤ c.top := by linarith
   intro i j hij
   apply axis_disjoint
   fin_cases i <;> fin_cases j <;>
-    norm_num [slidingCenters, AxisSeparated] at * <;>
-    linarith [c.gap_lower, c.gap_upper]
+    norm_num [slidingCenters, AxisSeparated, hbm, hmt, hbt] at *
 
 lemma middle_square_contained {y : ℝ} (hy : -columnLimit ≤ y ∧ y ≤ columnLimit) :
     ∀ p, closedSquare (axisSquare (0, y)) p → inDisk (0, 0) radius p := by
@@ -145,7 +147,6 @@ theorem model_packing : Packing model (0, 0) radius := sliding_packing centeredC
 
 theorem attainment : ∃ (S : Fin 7 → UnitSquare) (o : Point), Packing S o radius :=
   ⟨model, (0, 0), model_packing⟩
-
 
 /-- The four side squares already force this radius within the sliding family. -/
 theorem sliding_radius_necessary (c : Column) (R : ℝ)

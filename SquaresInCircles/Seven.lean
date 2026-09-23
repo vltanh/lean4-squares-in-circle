@@ -7,6 +7,7 @@ import SquaresInCircles.Seven.TaylorBounds
 import SquaresInCircles.Seven.PolynomialCertificates
 import SquaresInCircles.Seven.Support
 import SquaresInCircles.Seven.MarkerArc
+import SquaresInCircles.Seven.EasySectors
 import SquaresInCircles.Seven.SideSide
 import SquaresInCircles.Seven.Reduction
 import SquaresInCircles.Seven.Remaining
@@ -14,9 +15,10 @@ import SquaresInCircles.Seven.Remaining
 /-!
 # Partial seven-square analytical formalization
 
-The full canonical marker-arc proof has been added. The lower-bound endpoint
-remains conditional on `Seven.MarkerSeparationStatement`: the fixed-gap sector
-partition and geometric reduction are not yet completely formalized.
+The full canonical marker-arc proof and several whole-domain support sectors
+have been added. The lower-bound endpoint remains conditional on
+`Seven.MarkerSeparationStatement`: the complete fixed-gap partition and
+geometric reduction are still being formalized.
 
 The optional entry point is built explicitly by CI. A green check for the old
 root entry point alone does not verify this development. The sliding family
