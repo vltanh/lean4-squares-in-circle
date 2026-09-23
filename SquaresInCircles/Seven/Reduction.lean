@@ -63,9 +63,9 @@ theorem optimality_of_marker_separation
     (hpair : MarkerSeparationStatement)
     (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ)
     (hp : Packing S o R) : radius ≤ R := by
-  apply radius_lower_of_squared hp.1
-  rw [radius_sq]
-  exact squared_lower_of_marker_separation hpair S o R hp
+  have hsq := squared_lower_of_marker_separation hpair S o R hp
+  change (13 : ℝ)/4 ≤ R^2 at hsq
+  nlinarith [radius_sq, radius_nonneg, hp.1]
 
 /-- This theorem still has the displayed substantive hypothesis `hpair`.
 The unconditional component is only the attaining construction. -/

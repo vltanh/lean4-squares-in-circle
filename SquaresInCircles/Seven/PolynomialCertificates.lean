@@ -8,6 +8,8 @@ Every polynomial identity is checked by `ring`; all coefficient inequalities
 are rational arithmetic checked by `norm_num`. Bernstein positivity proves a
 whole interval at once, not a finite set of sample points.
 -/
+set_option maxHeartbeats 4000000
+set_option maxRecDepth 4000
 noncomputable section
 open scoped BigOperators
 namespace SquaresInCircles.Seven
@@ -33,7 +35,9 @@ private lemma positive_bernstein_sum (n : ℕ) (c : Fin (n+1) → ℝ)
       simpa [bernstein] using hc (Fin.last n)
     exact ht.trans_le (Finset.single_le_sum (fun i _ => hnon i)
       (Finset.mem_univ (Fin.last n)))
-  · have hx' : 0 < 1-x := by rcases hx with ⟨hl,hu⟩; linarith
+  · have hx' : 0 < 1-x := by
+      by_contra hn
+      exact h (le_antisymm hx.2 (by linarith))
     have ht : 0 < c 0 * bernstein n 0 x := by
       have he : bernstein n 0 x = (1-x)^n := by simp [bernstein]
       rw [he]
@@ -58,7 +62,7 @@ lemma axialPairPolynomial_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 11/10) :
   have hp := positive_bernstein_sum 5 axialPairCoefficients hc hx
   have hid : axialPairPolynomial z =
       ∑ i : Fin 6, axialPairCoefficients i * bernstein 5 i x := by
-    simp [axialPairPolynomial, axialPairCoefficients, bernstein,
+    norm_num [Nat.choose, axialPairPolynomial, axialPairCoefficients, bernstein,
       Fin.sum_univ_succ, x]
     ring
   rw [hid]
@@ -80,7 +84,7 @@ lemma axialRatioPolynomial_pos {X : ℝ} (hX : 8/5 ≤ X ∧ X ≤ 7/4) :
   have hp := positive_bernstein_sum 5 axialRatioCoefficients hc hx
   have hid : axialRatioPolynomial X =
       ∑ i : Fin 6, axialRatioCoefficients i * bernstein 5 i x := by
-    simp [axialRatioPolynomial, axialRatioCoefficients, bernstein,
+    norm_num [Nat.choose, axialRatioPolynomial, axialRatioCoefficients, bernstein,
       Fin.sum_univ_succ, x]
     ring
   rw [hid]
@@ -111,7 +115,7 @@ lemma radialPolynomial_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 5/8) :
   have hp := positive_bernstein_sum 11 radialCoefficients hc hx
   have hid : radialPolynomial z =
       ∑ i : Fin 12, radialCoefficients i * bernstein 11 i x := by
-    simp [radialPolynomial, radialCoefficients, bernstein,
+    norm_num [Nat.choose, radialPolynomial, radialCoefficients, bernstein,
       Fin.sum_univ_succ, x]
     ring
   rw [hid]

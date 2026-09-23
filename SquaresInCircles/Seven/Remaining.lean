@@ -1,12 +1,12 @@
 import SquaresInCircles.Seven.Reduction
-import SquaresInCircles.Seven.Support
+import SquaresInCircles.Seven.MarkerArc
 
 /-!
 # Exact statements for the remaining analytical formalization
 
-The declarations in this file are proposition DEFINITIONS, not theorems.
-Nothing in this file asserts that the conditions hold. The statements are
-included so that the remaining proof work has an unambiguous interface.
+The full canonical marker-arc theorem is now supplied. The fixed-gap support
+partition and the geometric reduction below are still proposition definitions,
+not asserted theorems. The final lower bound remains conditional.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -28,12 +28,16 @@ def pairSupport (a u A v : ℝ) (s t : TransverseSign) (k : Fin 4) (gamma : ℝ)
   support A (t.coe*v)
     (cardinalAngle k+Real.pi-gamma-s.coe*label a u+t.coe*label A v)
 
-/-- The manuscript's genuine marker-arc assertion. Closed membership is
-intentional: tangent boundary points cannot be assumed to be interior. -/
+/-- Closed membership is intentional; tangencies need not be interior. -/
 def MarkerArcStatement : Prop :=
   ∀ (a u t : ℝ), Admissible a u →
     |t-label a u| ≤ 801/1600 →
     |Real.cos t-a| ≤ 1/2 ∧ |Real.sin t-u| ≤ 1/2
+
+/-- Full marker-arc proof, rather than just marker-point membership. -/
+theorem markerArc_proved : MarkerArcStatement := by
+  intro a u t h ht
+  exact marker_arc h ht
 
 /-- All fixed-gap source/sign/label sectors, with the strictness needed below
 the candidate. The new source proves only some sectors of this proposition. -/
@@ -44,18 +48,16 @@ def FixedGapStatement : Prop :=
     (StrictlyAdmissible a u → StrictlyAdmissible A v →
       0 < pairSupport a u A v s t k gap)
 
-/-- The intermediate-angle minimum argument and its transport through the
-square charts. This implication has not been proved in this extension. -/
+/-- Intermediate-angle minimization and transport through square charts.
+This implication has not been proved in this extension. -/
 def GeometricReductionStatement : Prop :=
   MarkerArcStatement → FixedGapStatement → MarkerSeparationStatement
 
-/-- Once the three separately stated obligations are supplied, the finished
-counting/selection layer assembles them without an additional packing axiom. -/
 theorem optimality_of_analytic_obligations
-    (harc : MarkerArcStatement) (hsupport : FixedGapStatement)
+    (hsupport : FixedGapStatement)
     (hgeometry : GeometricReductionStatement)
     (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ) (hp : Packing S o R) :
     radius ≤ R :=
-  optimality_of_marker_separation (hgeometry harc hsupport) S o R hp
+  optimality_of_marker_separation (hgeometry markerArc_proved hsupport) S o R hp
 
 end SquaresInCircles.Seven

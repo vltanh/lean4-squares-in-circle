@@ -45,6 +45,7 @@ lemma side_identity_radial (a u : ℝ) :
 
 namespace Admissible
 variable {a u : ℝ} (h : Admissible a u)
+include h
 
 lemma a_nonneg : 0 ≤ a := by linarith [h.2.2.1]
 lemma slack_nonneg : 0 ≤ targetSq - phi a u := sub_nonneg.mpr h.2.2.2
@@ -115,7 +116,7 @@ lemma label_zero_iff : label a u = 0 ↔ u = 0 := by
   · intro hu
     subst u
     apply le_antisymm
-    · exact h.label_le_axial
+    · simpa only [axial, mul_zero, zero_div] using h.label_le_axial
     · exact h.label_nonneg
 
 lemma radial_label_bound : a ≤ 1 + 2*Real.pi/15 - (4/5)*label a u := by
@@ -194,7 +195,10 @@ lemma signedLabel_neg {a b : ℝ} (h : Admissible a |b|) :
     simp [signedLabel, hz]
   · by_cases hn : b < 0
     · simp [signedLabel, hn, show ¬ -b < 0 by linarith, abs_neg]
-    · simp [signedLabel, hn, show -b < 0 by linarith, abs_neg]
+    · have hbpos : 0 < b := by
+        by_contra hle
+        exact hb (le_antisymm (le_of_not_gt hle) (le_of_not_gt hn))
+      simp [signedLabel, hn, show -b < 0 by linarith, abs_neg]
 
 lemma abs_signedLabel_le {a b : ℝ} (h : Admissible a |b|) :
     |signedLabel a b| ≤ Real.pi/4 := by

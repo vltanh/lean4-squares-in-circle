@@ -99,7 +99,7 @@ lemma slidingModel_disjoint (c : Column) : InteriorDisjoint (slidingModel c) := 
   intro i j hij
   apply axis_disjoint
   fin_cases i <;> fin_cases j <;>
-    simp [slidingCenters, AxisSeparated] at * <;>
+    norm_num [slidingCenters, AxisSeparated] at * <;>
     linarith [c.gap_lower, c.gap_upper]
 
 lemma middle_square_contained {y : ℝ} (hy : -columnLimit ≤ y ∧ y ≤ columnLimit) :
@@ -153,10 +153,8 @@ theorem sliding_radius_necessary (c : Column) (R : ℝ)
   have hv : closedSquare (slidingModel c 1) (3/2,1) := by
     norm_num [slidingModel, slidingCenters, axisSquare, closedSquare, localX, localY]
   have hh := hp.2.1 1 (3/2,1) hv
-  apply radius_lower_of_squared hp.1
-  rw [radius_sq]
   norm_num [inDisk, normSq, sub] at hh
-  linarith
+  nlinarith [radius_sq, radius_nonneg, hp.1]
 
 /-- The middle square contains the disk center, but need not be centered there. -/
 lemma sliding_middle_contains (c : Column) : openSquare (slidingModel c 5) (0,0) := by
@@ -171,6 +169,6 @@ lemma sliding_middle_contains (c : Column) : openSquare (slidingModel c 5) (0,0)
     dsimp [columnLimit] at hu
     linarith [c.gap_upper]
   norm_num [slidingModel, slidingCenters, axisSquare, openSquare, localX, localY]
-  exact abs_lt.mpr ⟨hlow,hhigh⟩
+  exact abs_lt.mpr ⟨by linarith,hhigh⟩
 
 end SquaresInCircles.Seven
