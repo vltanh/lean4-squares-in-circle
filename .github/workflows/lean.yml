@@ -12,9 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      # Installs the pinned toolchain, fetches the mathlib cache, runs
-      # `lake build`, and fails if any declaration under `SquaresInCircles`
-      # depends on an axiom other than propext, Classical.choice, Quot.sound.
+      # The default target covers the established n <= 5 entry point.
       - uses: leanprover/lean-action@v1
         with:
           axiom-audit: true
@@ -22,3 +20,11 @@ jobs:
         run: |
           lake env lean AxiomAudit.lean
           lake env lean SanityChecks.lean
+      # Seven is an optional entry point and must be built explicitly.
+      # A clean axiom list for a conditional theorem does not prove its hypotheses.
+      - name: Build seven-square development
+        run: lake build SquaresInCircles.Seven
+      - name: Seven-square audit and sanity checks
+        run: |
+          lake env lean SevenAxiomAudit.lean
+          lake env lean SevenSanityChecks.lean
