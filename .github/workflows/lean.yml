@@ -19,82 +19,10 @@ jobs:
         run: |
           lake env lean AxiomAudit.lean
           lake env lean SanityChecks.lean
+      # Seven is an optional entry point and must be built explicitly.
       - name: Build seven-square development
         run: lake build SquaresInCircles.Seven
       - name: Seven-square audit and sanity checks
         run: |
           lake env lean SevenAxiomAudit.lean
           lake env lean SevenSanityChecks.lean
-      # Temporary: transfer only public source, compiler and proof objects.
-      # No Git directory, credentials, environment or runner home is archived.
-      - name: Export reproducible proof-development environment
-        if: always()
-        run: |
-          mkdir -p /tmp/seven-environment /tmp/seven-parts
-          TC="$(dirname "$(dirname "$(elan which lean)")")"
-          tar --exclude='*.a' --exclude='*.o' --exclude='*.ilean' \
-            -I 'zstd -3 -T2' -cf /tmp/seven-environment/toolchain.tar.zst \
-            -C "$TC" bin lib
-          tar --exclude='.git' --exclude='ir' --exclude='*.a' --exclude='*.o' \
-            --exclude='*.ilean' --exclude='*.c' \
-            -I 'zstd -3 -T2' -cf /tmp/seven-environment/project.tar.zst \
-            .lake SquaresInCircles SquaresInCircles.lean lakefile.toml \
-            lake-manifest.json lean-toolchain SevenAxiomAudit.lean SevenSanityChecks.lean
-          tar -cf - -C /tmp/seven-environment toolchain.tar.zst project.tar.zst \
-            | split -b 450000000 -d - /tmp/seven-parts/part-
-          sha256sum /tmp/seven-parts/part-* > /tmp/seven-parts/SHA256SUMS
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-00
-          path: /tmp/seven-parts/part-00
-          compression-level: 0
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-01
-          path: /tmp/seven-parts/part-01
-          compression-level: 0
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-02
-          path: /tmp/seven-parts/part-02
-          compression-level: 0
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-03
-          path: /tmp/seven-parts/part-03
-          compression-level: 0
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-04
-          path: /tmp/seven-parts/part-04
-          compression-level: 0
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-05
-          path: /tmp/seven-parts/part-05
-          compression-level: 0
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-06
-          path: /tmp/seven-parts/part-06
-          compression-level: 0
-          retention-days: 1
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: seven-environment-checksums
-          path: /tmp/seven-parts/SHA256SUMS
-          retention-days: 1
