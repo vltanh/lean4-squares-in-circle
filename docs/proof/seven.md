@@ -150,9 +150,9 @@ turns the latter into $(y, 0)$ with $\frac52 - \sqrt3 \le y \le \sqrt3 - \frac12
 For a state $(a, u)$ let
 
 ```math
-\operatorname{axial}(u) = \tfrac54 u, \qquad
-\operatorname{side}(a, u) = \tfrac\pi6 + \tfrac13\left(u - \tfrac12\right) + \tfrac34(1 - a), \qquad
-\ell(a, u) = \min\left(\operatorname{axial}(u), \operatorname{side}(a, u), \tfrac\pi4\right) .
+\mathrm{axial}(u) = \tfrac54 u, \qquad
+\mathrm{side}(a, u) = \tfrac\pi6 + \tfrac13\left(u - \tfrac12\right) + \tfrac34(1 - a), \qquad
+\ell(a, u) = \min\left(\mathrm{axial}(u), \mathrm{side}(a, u), \tfrac\pi4\right) .
 ```
 
 $\ell$ is the *label*; it is *axial*, *side* or *capped* according to which
@@ -161,8 +161,8 @@ exterior square $S$ is the direction $\theta_S + \varepsilon_S\,\ell(a_S, b_S)$.
 
 The label is an angle measured in the chart from the phase, towards the
 centre of $S$. In the optimal packing the side squares have
-$\ell = \operatorname{side}(1, \frac12) = \frac\pi6$ and the top and bottom
-squares $\ell = \operatorname{axial}(0) = 0$, which puts the six markers at
+$\ell = \mathrm{side}(1, \frac12) = \frac\pi6$ and the top and bottom
+squares $\ell = \mathrm{axial}(0) = 0$, which puts the six markers at
 30°, 90°, …, 330°, exactly $\frac\pi3$ apart (figure above). The axial and side
 labels agree on the line $9a + 11u = 2\pi + 7$, which meets the circle
 $\varphi = \frac{13}4$ at the *transition state*
@@ -183,14 +183,14 @@ $u < \frac{31}{40}$ and $0 \le \ell(a, u) \le \frac\pi4$, with $\ell = 0$ only
 if $u = 0$. Moreover
 
 ```math
-\operatorname{side}(a, u) = \tfrac\pi6 + \tfrac56\left(u - \tfrac12\right) + \tfrac14 r(a, u)
+\mathrm{side}(a, u) = \tfrac\pi6 + \tfrac56\left(u - \tfrac12\right) + \tfrac14 r(a, u)
 = \tfrac\pi6 - \tfrac54(a - 1) - \tfrac16 r(a, u) .
 ```
 
 *Proof.* The first inequality is $r \ge 0$, and the two bounds follow from
 $\varphi(a, u) \le \frac{13}4$ with $u \ge 0$ and $u \le a$. The label is a
 minimum of three nonnegative terms, one of which is $\frac\pi4$, and
-$\operatorname{axial}(u) = 0$ only at $u = 0$, while the side label is
+$\mathrm{axial}(u) = 0$ only at $u = 0$, while the side label is
 positive. The identities are the definition of $r$. $\square$
 
 *Lean:
@@ -288,7 +288,7 @@ and $T$ are the directions $s\ell(a, u)$ and $d + t\ell(A, v)$: they are $g$
 apart. For $k = 0, 1, 2, 3$ the *support sum* on the $k$-th axis is
 
 ```math
-\sigma_k(g) = h\!\left(a, su, k\tfrac\pi2\right) + h\!\left(A, tv, k\tfrac\pi2 + \pi - d\right)
+\sigma_k(g) = h\left(a, su, k\tfrac\pi2\right) + h\left(A, tv, k\tfrac\pi2 + \pi - d\right)
 = \max_{\overline S}\,\langle \cdot, n_k\rangle - \min_{\overline T}\,\langle \cdot, n_k\rangle ,
 ```
 
