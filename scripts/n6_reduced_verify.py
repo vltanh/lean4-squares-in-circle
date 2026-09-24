@@ -24,6 +24,7 @@ import math
 import os
 import sys
 import time
+from functools import lru_cache
 from decimal import Decimal, getcontext
 from typing import List, Sequence, Tuple
 
@@ -42,6 +43,9 @@ QSTAR = float(qD)
 SSTAR = float(sD)
 TSTAR = float(tD)
 DSTAR = float(dD)
+RB = math.sqrt(QSTAR)
+RHO = math.sqrt(QSTAR - 0.25) - 0.5
+CAPK = RHO - 0.5
 
 PI = math.pi
 R_PIN = 0.9
@@ -150,6 +154,7 @@ def asI(x: I | float) -> I:
     return x if isinstance(x, I) else I(float(x), float(x))
 
 
+@lru_cache(maxsize=500000)
 def trig_interval(x: I, fn: str) -> I:
     """Diagnostic enclosure for sin/cos over x, expanded by one ulp."""
     if x.width >= 2 * PI:
@@ -178,6 +183,7 @@ def cosI(x: I) -> I:
     return trig_interval(x, "cos")
 
 
+@lru_cache(maxsize=500000)
 def widthI(phi: I) -> I:
     return 0.5 * (cosI(phi).abs() + sinI(phi).abs())
 
@@ -379,12 +385,120 @@ def cardinal_sep_margin(box: Box, name: str) -> I:
     raise KeyError(name)
 
 
-def central_pattern_possible(box: Box, pattern: int) -> bool:
-    for i, name in enumerate(NAMES):
-        own = (pattern >> i) & 1
-        margin = primary_sep_margin(box, name) if own else cardinal_sep_margin(box, name)
-        if margin.hi < 0.0:
+def _point_contract(box: Box, name: str, qx: I, qy: I) -> bool:
+    phi, a, b = box.get(name)
+    c, s = cosI(phi), sinI(phi)
+    along = qx * c + qy * s
+    across = qx * (-s) + qy * c
+    na = a.intersect(I(along.lo - 0.5, along.hi + 0.5))
+    nb = b.intersect(I(across.lo - 0.5, across.hi + 0.5))
+    if na is None or nb is None:
+        return False
+    box.set_outer(name, a=na, b=nb)
+    return True
+
+
+def moving_pin_contract(box: Box, pattern: int) -> bool:
+    cx, cy = box.iv[CX], box.iv[CY]
+    # Global piercing points for E/N hold for either separator type.
+    if not _point_contract(box, "E", cx + 1.0, I(0.0, 0.0)):
+        return False
+    if not _point_contract(box, "N", I(0.0, 0.0), cy + 1.0):
+        return False
+
+    # A cardinal-side assignment gets its cap-piercing point.
+    if ((pattern >> 2) & 1) == 0:
+        if not _point_contract(box, "W", cx - 1.0, I(0.0, 0.0)):
             return False
+    if ((pattern >> 3) & 1) == 0:
+        if not _point_contract(box, "D", cx - 1.0, I(0.0, 0.0)):
+            return False
+    if ((pattern >> 4) & 1) == 0:
+        if not _point_contract(box, "S", I(0.0, 0.0), cy - 1.0):
+            return False
+    return True
+
+
+def _dev_min(phi: I, target: float) -> float:
+    if phi.lo <= target <= phi.hi:
+        return 0.0
+    return min(abs(phi.lo - target), abs(phi.hi - target))
+
+
+def _cap_depth(theta: float) -> float:
+    if RB * math.sin(theta) <= 0.5:
+        return CAPK * math.cos(theta) - 0.5 * math.sin(theta)
+    return RB - math.cos(theta) - math.sin(theta)
+
+
+def _side_depth(box: Box, name: str) -> I:
+    cx, cy = box.iv[CX], box.iv[CY]
+    if name == "E":
+        return cx + 0.5
+    if name == "N":
+        return cy + 0.5
+    if name == "W":
+        return 0.5 - cx
+    if name == "S":
+        return 0.5 - cy
+    raise KeyError(name)
+
+
+def sharp_central_constraints(box: Box, pattern: int) -> bool:
+    # W and D are the doubled west-primary category. At most one can actually
+    # use C's west side.
+    if ((pattern >> 2) & 1) == 0 and ((pattern >> 3) & 1) == 0:
+        return False
+
+    # E/N own-primary piercing proof gives deviation < 9/20.
+    for name in ("E", "N"):
+        i = NAMES.index(name)
+        if (pattern >> i) & 1:
+            if _dev_min(box.get(name)[0], PHI_CAND[name]) >= 9.0 / 20.0:
+                return False
+
+    # Cardinal helpers obey the exact one-square cap-depth profile.
+    for name in ("E", "N", "W", "S"):
+        i = NAMES.index(name)
+        if ((pattern >> i) & 1) == 0:
+            dm = _dev_min(box.get(name)[0], PHI_CAND[name])
+            if dm >= 2.0 / 5.0:
+                return False
+            if _side_depth(box, name).lo > _cap_depth(dm) + 3e-15:
+                return False
+
+    # Opposite cardinal helper angle sums.
+    if ((pattern >> 0) & 1) == 0 and ((pattern >> 2) & 1) == 0:
+        if (_dev_min(box.get("E")[0], PHI_CAND["E"])
+                + _dev_min(box.get("W")[0], PHI_CAND["W"])
+                > 4.0 * (RHO - 1.0) + 3e-15):
+            return False
+    if ((pattern >> 1) & 1) == 0 and ((pattern >> 4) & 1) == 0:
+        if (_dev_min(box.get("N")[0], PHI_CAND["N"])
+                + _dev_min(box.get("S")[0], PHI_CAND["S"])
+                > 4.0 * (RHO - 1.0) + 3e-15):
+            return False
+    return True
+
+
+def central_pattern_possible(box: Box, pattern: int) -> bool:
+    if not moving_pin_contract(box, pattern):
+        return False
+    if not sharp_central_constraints(box, pattern):
+        return False
+
+    for i, name in enumerate(NAMES):
+        cardinal = cardinal_sep_margin(box, name)
+        if (pattern >> i) & 1:
+            # Canonical branch assignment: own-primary is used only where the
+            # cardinal separator is unavailable. Cardinal ties belong to bit 0.
+            if primary_sep_margin(box, name).hi < 0.0:
+                return False
+            if cardinal.lo >= 0.0:
+                return False
+        else:
+            if cardinal.hi < 0.0:
+                return False
     return True
 
 
@@ -483,16 +597,19 @@ def analytic_cover(box: Box, pattern: int) -> str | None:
 
 
 def reject_reason(box: Box, pattern: int) -> str | None:
-    if not contract_box(box):
-        return "contraction"
-    if not containment_possible(box):
-        return "containment"
-    if not marker_gaps_possible(box):
-        return "marker-gap"
-    if not foot_constraints_possible(box):
-        return "foot-type"
-    if not central_pattern_possible(box, pattern):
-        return "central-separator"
+    # Moving-pin contractions shrink a,b; feed those changes back into
+    # containment/marker/foot constraints before subdivision.
+    for _ in range(2):
+        if not contract_box(box):
+            return "contraction"
+        if not containment_possible(box):
+            return "containment"
+        if not central_pattern_possible(box, pattern):
+            return "central-separator"
+        if not marker_gaps_possible(box):
+            return "marker-gap"
+        if not foot_constraints_possible(box):
+            return "foot-type"
 
     for name in NAMES:
         if not pin_possible(box, name):
@@ -514,10 +631,34 @@ def reject_reason(box: Box, pattern: int) -> str | None:
 SCALES = [0.23, 0.23] + sum(([PI/2, 0.23, 0.94] for _ in NAMES), [])
 
 
+def _possible_axes(box: Box, a: str, b: str):
+    pa = box.get(a)[0]
+    pb = box.get(b)[0]
+    axes = [pa, pa + PI/2, pb, pb + PI/2]
+    out = []
+    for axis in axes:
+        u = axis_margin_upper(box.get(a)[0], box.center(a),
+                              box.get(b)[0], box.center(b), axis)
+        if u >= 0.0:
+            out.append((axis, u))
+    return out
+
+
 def split_box(box: Box) -> Tuple[Box, Box]:
     scores = [iv.width / sc for iv, sc in zip(box.iv, SCALES)]
     for name in NAMES:
         scores[OFF[name]] *= 1.25
+
+    # Search-order heuristic only: when a stress-graph pair has a unique
+    # possible separating axis, resolve the variables on that pair first.
+    for a, b in (("W", "N"), ("S", "E"), ("D", "W"), ("D", "S")):
+        if len(_possible_axes(box, a, b)) == 1:
+            for name in (a, b):
+                k0 = OFF[name]
+                scores[k0] *= 3.0
+                scores[k0 + 1] *= 2.0
+                scores[k0 + 2] *= 2.0
+
     k = max(range(DIM), key=scores.__getitem__)
     iv = box.iv[k]
     mid = (iv.lo + iv.hi) / 2.0
