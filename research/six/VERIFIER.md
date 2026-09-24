@@ -1,6 +1,6 @@
 # n=6 reduced verifier
 
-scripts/n6_reduced_verify.py is a diagnostic branch-and-bound driver for the
+research/six/n6_reduced_verify.py is a diagnostic branch-and-bound driver for the
 current normalized six-square state space.
 
 ## Important trust boundary
@@ -83,15 +83,15 @@ because only D uses its own primary normal.
 
 Quick diagnostic run:
 
-    python scripts/n6_reduced_verify.py --branch 8 --max-nodes 100000
+    python research/six/n6_reduced_verify.py --branch 8 --max-nodes 100000
 
 All 32 discrete branches:
 
-    python scripts/n6_reduced_verify.py --branch all --max-nodes 1000000
+    python research/six/n6_reduced_verify.py --branch all --max-nodes 1000000
 
 Checkpoint one branch:
 
-    python scripts/n6_reduced_verify.py \
+    python research/six/n6_reduced_verify.py \
       --branch 8 \
       --max-nodes 5000000 \
       --checkpoint /tmp/n6-branch8.json.gz \
@@ -99,7 +99,7 @@ Checkpoint one branch:
 
 Resume:
 
-    python scripts/n6_reduced_verify.py \
+    python research/six/n6_reduced_verify.py \
       --branch 8 \
       --resume /tmp/n6-branch8.json.gz \
       --checkpoint /tmp/n6-branch8.json.gz \
@@ -107,7 +107,7 @@ Resume:
 
 Write unresolved depth-limit boxes:
 
-    python scripts/n6_reduced_verify.py \
+    python research/six/n6_reduced_verify.py \
       --branch 8 \
       --max-depth 56 \
       --survivors /tmp/n6-survivors.jsonl
