@@ -40,6 +40,13 @@ dD = Decimal(1) / 2 + hD - tD
 qD = Decimal(2) * sD * sD + Decimal(4) * sD + Decimal(5) / 2
 
 QSTAR = float(qD)
+# Rational search ceiling used for the global finite cover.  The exact replay
+# core proves q_* < 142559/50000 = 2.85118.
+QSEARCH = 142559 / 50000
+RSEARCH = math.sqrt(QSEARCH)
+RHOSEARCH = math.sqrt(QSEARCH - 0.25) - 0.5
+KSEARCH = RHOSEARCH - 0.5
+
 SSTAR = float(sD)
 TSTAR = float(tD)
 DSTAR = float(dD)
@@ -188,6 +195,35 @@ def widthI(phi: I) -> I:
     return 0.5 * (cosI(phi).abs() + sinI(phi).abs())
 
 
+def cap_depth(theta: float) -> float:
+    """Maximum cap depth at QSEARCH for acute frame deviation theta."""
+    if RSEARCH * math.sin(theta) <= 0.5:
+        return KSEARCH * math.cos(theta) - 0.5 * math.sin(theta)
+    return RSEARCH - math.cos(theta) - math.sin(theta)
+
+
+def cap_angle_max(depth: float) -> float:
+    """
+    Largest theta in [0,pi/4] with cap_depth(theta)>=depth.
+
+    cap_depth is decreasing on this interval.  This routine is diagnostic
+    floating point; the final certificate replays the inequality with exact
+    rational trig bounds.
+    """
+    if depth <= cap_depth(PI / 4):
+        return PI / 4
+    if depth > cap_depth(0.0):
+        return -1.0
+    lo, hi = 0.0, PI / 4
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        if cap_depth(mid) >= depth:
+            lo = mid
+        else:
+            hi = mid
+    return lo
+
+
 @dataclasses.dataclass
 class Box:
     iv: List[I]
@@ -243,14 +279,33 @@ def min_abs(x: I) -> float:
     return min(abs(x.lo), abs(x.hi))
 
 
-def contract_box(box: Box) -> bool:
-    cx, cy = box.iv[CX], box.iv[CY]
-    cmin = (min_abs(cx) + 0.5) ** 2 + (min_abs(cy) + 0.5) ** 2
-    if cmin > QSTAR:
+def contract_box(box: Box, pattern: int) -> bool:
+    """
+    Contract candidate-radius containment, pin coordinates, and exact cap
+    constraints for whichever central separators are cardinal in this branch.
+    """
+    # W and D are the two west-category squares.  At most one square can use
+    # the west cardinal side of C.
+    iW, iD = NAMES.index("W"), NAMES.index("D")
+    if ((pattern >> iW) & 1) == 0 and ((pattern >> iD) & 1) == 0:
         return False
 
-    for _ in range(3):
+    cx, cy = box.iv[CX], box.iv[CY]
+    cmin = (min_abs(cx) + 0.5) ** 2 + (min_abs(cy) + 0.5) ** 2
+    if cmin > QSEARCH:
+        return False
+
+    cardinal = {
+        "E": (CX, +1, 0.0),
+        "N": (CY, +1, PI / 2),
+        "W": (CX, -1, PI),
+        "D": (CX, -1, PI),
+        "S": (CY, -1, 3 * PI / 2),
+    }
+
+    for _ in range(6):
         changed = False
+
         for name in NAMES:
             phi, a, b = box.get(name)
             delta = I(PIN_GAMMA[name], PIN_GAMMA[name]) - phi
@@ -263,7 +318,7 @@ def contract_box(box: Box) -> bool:
                 return False
 
             bmin = min_abs(nb)
-            rem = QSTAR - (bmin + 0.5) ** 2
+            rem = QSEARCH - (bmin + 0.5) ** 2
             if rem < 0:
                 return False
             ahi = math.sqrt(max(0.0, rem)) - 0.5
@@ -271,7 +326,7 @@ def contract_box(box: Box) -> bool:
             if na is None:
                 return False
 
-            rem2 = QSTAR - (na.lo + 0.5) ** 2
+            rem2 = QSEARCH - (na.lo + 0.5) ** 2
             if rem2 < 0:
                 return False
             babs_hi = max(0.0, math.sqrt(rem2) - 0.5)
@@ -283,6 +338,47 @@ def contract_box(box: Box) -> bool:
                 changed = True
                 box.set_outer(name, a=na, b=nb)
 
+        # A selected cardinal separator places the whole square in the
+        # corresponding cap.  The sharp one-square cap formula therefore
+        # couples the current side depth and orientation in both directions.
+        for i, name in enumerate(NAMES):
+            if (pattern >> i) & 1:
+                continue
+            coord, sign, center_angle = cardinal[name]
+            phi, _, _ = box.get(name)
+            c = box.iv[coord]
+
+            if sign > 0:
+                depth_min = 0.5 + c.lo
+            else:
+                depth_min = 0.5 - c.hi
+
+            theta_max = cap_angle_max(depth_min)
+            if theta_max < 0:
+                return False
+
+            nphi = phi.intersect(I(center_angle - theta_max,
+                                   center_angle + theta_max))
+            if nphi is None:
+                return False
+            if nphi != phi:
+                box.set_outer(name, phi=nphi)
+                changed = True
+
+            phi, _, _ = box.get(name)
+            dev = min_abs(I(phi.lo - center_angle, phi.hi - center_angle))
+            depth_max = cap_depth(dev)
+
+            if sign > 0:
+                nc = c.intersect(I(-1.0, depth_max - 0.5))
+            else:
+                nc = c.intersect(I(0.5 - depth_max, 1.0))
+            if nc is None:
+                return False
+            if nc != c:
+                box.iv[coord] = nc
+                changed = True
+
         if not changed:
             break
 
@@ -291,7 +387,6 @@ def contract_box(box: Box) -> bool:
     if phiW.lo > phiD.hi:
         return False
     return True
-
 
 def pin_possible(box: Box, name: str) -> bool:
     phi, a, b = box.get(name)
@@ -351,12 +446,12 @@ def foot_constraints_possible(box: Box) -> bool:
 
 def containment_possible(box: Box) -> bool:
     cx, cy = box.iv[CX], box.iv[CY]
-    if (min_abs(cx) + 0.5)**2 + (min_abs(cy) + 0.5)**2 > QSTAR:
+    if (min_abs(cx) + 0.5)**2 + (min_abs(cy) + 0.5)**2 > QSEARCH:
         return False
     for name in NAMES:
         _, a, b = box.get(name)
         qmin = (a.lo + 0.5)**2 + (min_abs(b) + 0.5)**2
-        if qmin > QSTAR:
+        if qmin > QSEARCH:
             return False
     return True
 
@@ -668,7 +763,7 @@ def reject_reason(box: Box, pattern: int) -> str | None:
     # Moving-pin contractions shrink a,b; feed those changes back into
     # containment/marker/foot constraints before subdivision.
     for _ in range(2):
-        if not contract_box(box):
+        if not contract_box(box, pattern):
             return "contraction"
         if not containment_possible(box):
             return "containment"
@@ -752,6 +847,7 @@ def save_checkpoint(path: str, queue: Sequence[Box], stats: dict, pattern: int) 
         "version": 1,
         "pattern": pattern,
         "qstar": QSTAR,
+        "qsearch": QSEARCH,
         "stats": stats,
         "queue": [box_to_json(x) for x in queue],
     }
@@ -861,10 +957,11 @@ def main():
 
     print(json.dumps({
         "qstar": QSTAR,
+        "qsearch": QSEARCH,
         "s": SSTAR,
         "t": TSTAR,
         "d": DSTAR,
-        "warning": "diagnostic IEEE-754 interval search; NOT a proof certificate",
+        "warning": "diagnostic search at rational Q0=2.85118; exact replay required",
     }))
 
     if args.branch == "all":
