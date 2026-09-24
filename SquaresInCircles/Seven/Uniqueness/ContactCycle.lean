@@ -4,9 +4,8 @@ import SquaresInCircles.Common.Angles
 /-!
 # The equality contact cycle
 
-There are exactly three directed states: lower side, upper side, axial. The
-zero-support transitions cycle through them. This reconstructs the four rigid
-side squares and the two independently sliding outer column squares.
+The directed states lower-side, upper-side, axial recur twice around the
+hexagon. All coordinate transports are explicit; the axial radii are free.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -14,13 +13,9 @@ namespace Equality
 
 def KindAt (a u : ℝ) (s : TransverseSign) : Fin 3 → Prop :=
   ![s = .negative ∧ Side a u, s = .positive ∧ Side a u, u = 0]
-
 def kindOffset : Fin 3 → ℝ := ![-Real.pi/6,Real.pi/6,0]
-
 def cycleKinds : Fin 6 → Fin 3 := ![0,1,2,0,1,2]
-
 def cycleTurns : Fin 6 → Fin 4 := ![0,0,1,2,2,3]
-
 def cycleTurnAngle : Fin 6 → ℝ := ![0,0,Real.pi/2,Real.pi,Real.pi,3*Real.pi/2]
 
 lemma kind_unique {a u : ℝ} {s : TransverseSign} {i j : Fin 3}
@@ -86,6 +81,13 @@ lemma kind_cycle_values (k : Fin 6 → Fin 3)
   intro i
   fin_cases i <;> simp [cycleKinds,h0,h1,h2,h3,h4,h5]
 
+lemma coe_nat_gap (n : ℕ) : (((n : ℝ)*gap : ℝ) : Direction) = n • (gap : Direction) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      simp only [Nat.cast_succ,add_mul,one_mul,Real.Angle.coe_add,ih,
+        add_nsmul,one_nsmul]
+
 lemma marker_steps (m : Fin 6 → Direction)
     (hm : ∀ i, (gap : Direction) = m (next i)-m i) :
     ∀ i, m i = m 0+(((i.val : ℝ)*gap : ℝ) : Direction) := by
@@ -99,17 +101,18 @@ lemma marker_steps (m : Fin 6 → Direction)
   have h5 := hs 4
   norm_num [next] at h1 h2 h3 h4 h5
   intro i
-  fin_cases i <;> norm_num <;>
-    rw [h5,h4,h3,h2,h1] <;>
-    simp only [←Real.Angle.coe_add] <;>
-    first | rfl | congr 1 <;> ring
+  rw [coe_nat_gap]
+  fin_cases i <;> norm_num only [Fin.val_zero,Fin.val_one] <;>
+    simp only [h5,h4,h3,h2,h1] <;> abel
 
 lemma cycle_turn_coe (i : Fin 6) :
     (cycleTurnAngle i : Direction) = quarterShift (cycleTurns i) := by
-  fin_cases i <;> simp [cycleTurnAngle,cycleTurns,quarterShift]
-  have h : (3 : ℝ)*Real.pi/2 = -Real.pi/2+2*Real.pi := by ring
-  rw [h,Real.Angle.coe_add]
-  simp [Real.Angle.coe_neg]
+  have hlast : ((3*Real.pi/2 : ℝ) : Direction) = ((-Real.pi/2 : ℝ) : Direction) := by
+    rw [show 3*Real.pi/2 = -Real.pi/2+2*Real.pi by ring,Real.Angle.coe_add]
+    simp
+  fin_cases i <;> simpa [cycleTurnAngle,cycleTurns,quarterShift] using
+    (show (0 : Direction) = 0 from rfl)
+  exact hlast
 
 lemma cycle_phase_arithmetic (i : Fin 6) :
     (i.val : ℝ)*gap-kindOffset (cycleKinds i)-Real.pi/6 = cycleTurnAngle i := by
@@ -117,7 +120,6 @@ lemma cycle_phase_arithmetic (i : Fin 6) :
 
 end Equality
 
-/-- The exterior ring in cyclic order. top/bottom are independent radii. -/
 def ringCenters (top bottom : ℝ) : Fin 6 → Point :=
   ![(1,-1/2),(1,1/2),(0,top),(-1,1/2),(-1,-1/2),(0,-bottom)]
 
@@ -163,14 +165,17 @@ lemma ring_of_ordered_contacts {S : Fin 6 → UnitSquare} {o : Point}
   have hphase (i : Fin 6) : (C (σ i)).phase = φ+quarterShift (cycleTurns i) := by
     have hi := hgrid i
     rw [chartMarker_formula,chartMarker_formula,hoff i,hoff 0] at hi
-    have he : (C (σ i)).phase = φ+
-        (((i.val : ℝ)*gap-kindOffset (cycleKinds i)-Real.pi/6 : ℝ) : Direction) := by
-      dsimp [φ]
-      simp only [cycleKinds,kindOffset,Matrix.cons_val_zero] at hi
-      rw [Real.Angle.coe_sub,Real.Angle.coe_sub]
-      rw [hi]
+    have he := congrArg
+      (fun z : Direction => z-((kindOffset (cycleKinds i) : ℝ) : Direction)) hi
+    simp only [add_sub_cancel_right] at he
+    have hreal := cycle_phase_arithmetic i
+    have hcalc : (C (σ i)).phase =
+        φ+(((i.val : ℝ)*gap-kindOffset (cycleKinds i)-Real.pi/6 : ℝ) : Direction) := by
+      rw [he]
+      simp only [Real.Angle.coe_sub,Real.Angle.coe_neg]
+      dsimp [φ,cycleKinds,kindOffset]
       abel
-    rw [he,cycle_phase_arithmetic,cycle_turn_coe]
+    rw [hcalc,hreal,cycle_turn_coe]
   let top := (C (σ 2)).a
   let bottom := (C (σ 5)).a
   have ht : 1/2 ≤ top ∧ top ≤ columnLimit :=
@@ -185,15 +190,23 @@ lemma ring_of_ordered_contacts {S : Fin 6 → UnitSquare} {o : Point}
   have hrot := represents_quarter (cycleTurns i) hr
   have he : turnPoint (cycleTurns i) ((C (σ i)).a,(C (σ i)).signedB) =
       ringCenters top bottom i := by
-    have hh := hkind i
     rw [←chartSign_coordinate]
-    fin_cases i <;> simp only [cycleKinds,KindAt,cycleTurns,ringCenters,turnPoint,
-      Matrix.cons_val_zero,Matrix.cons_val_one,Matrix.cons_val_two] at hh ⊢ <;>
-      rcases hh with ⟨hs,ha,hu⟩ | hu <;>
-      simp_all [top,bottom,TransverseSign.coe]
+    fin_cases i
+    · rcases hkind 0 with ⟨hs,ha,hu⟩
+      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
+    · rcases hkind 1 with ⟨hs,ha,hu⟩
+      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
+    · have hu : (C (σ 2)).b = 0 := hkind 2
+      simp [cycleTurns,ringCenters,turnPoint,hu,top]
+    · rcases hkind 3 with ⟨hs,ha,hu⟩
+      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
+    · rcases hkind 4 with ⟨hs,ha,hu⟩
+      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
+    · have hu : (C (σ 5)).b = 0 := hkind 5
+      simp [cycleTurns,ringCenters,turnPoint,hu,bottom]
   simpa only [he] using hrot
 
-/-- All six exterior squares at the critical radius have this ring form. -/
+/-- Six exterior squares at the critical radius have the exact two-column ring. -/
 theorem six_exterior_ring (S : Fin 6 → UnitSquare) (o : Point)
     (hd : InteriorDisjoint S) (hext : ∀ i, ¬ openSquare (S i) o)
     (hphi : ∀ i, phi (alpha (S i) o) (beta (S i) o) ≤ targetSq) :
