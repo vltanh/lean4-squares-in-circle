@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.NearestCornerMinimum
+import SquaresInCircles.Seven.SupportPeriodicity
 
 /-!
 # All marker gaps up to pi/3
