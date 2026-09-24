@@ -1,0 +1,342 @@
+import SquaresInCircles.Seven.LabelBoundary
+import SquaresInCircles.Seven.AnalyticOrder
+
+/-!
+# Exact label-level segments
+
+Support at a fixed marker label is affine in the center. This file proves the
+feasible segments and the endpoint reduction used by the remaining sectors.
+No extremum is inferred from a numerical search.
+-/
+noncomputable section
+open Set
+namespace SquaresInCircles.Seven
+namespace Boundary
+
+lemma circle_radicand_pos {u : ℝ} (hu : 0 ≤ u ∧ u ≤ rd) :
+    0 < targetSq-(u+1/2)^2 := by
+  have hrd : (rd+1/2)^2=targetSq/2 := by
+    dsimp [rd,targetSq]
+    simpa using Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)
+  have hmul := mul_nonneg (sub_nonneg.mpr hu.2)
+    (show 0 ≤ rd+u+1 by linarith [hu.1,rd_bounds.1])
+  dsimp [targetSq] at *
+  nlinarith
+
+lemma circle_eq {u : ℝ} (hu : 0 ≤ u ∧ u ≤ rd) :
+    (circle u+1/2)^2+(u+1/2)^2=targetSq := by
+  have hs := Real.sq_sqrt (circle_radicand_pos hu).le
+  dsimp [circle]
+  nlinarith
+
+lemma circle_ge_coordinate {u : ℝ} (hu : 0 ≤ u ∧ u ≤ rd) : u ≤ circle u := by
+  have he := circle_eq hu
+  have hs : 0 ≤ circle u+1/2 := by dsimp [circle]; positivity
+  have hrd : (rd+1/2)^2=targetSq/2 := by
+    dsimp [rd,targetSq]
+    simpa using Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)
+  have hm := mul_nonneg (sub_nonneg.mpr hu.2)
+    (show 0 ≤ rd+u+1 by linarith [hu.1,rd_bounds.1])
+  nlinarith
+
+lemma circle_state {u : ℝ} (hu : 0 ≤ u ∧ u ≤ rd) : Admissible (circle u) u := by
+  have he := circle_eq hu
+  have ha := circle_ge_coordinate hu
+  have hr := rd_bounds
+  have hroot : 0 ≤ circle u+1/2 := by dsimp [circle]; positivity
+  have ha0 : 1/2 ≤ circle u := by
+    dsimp [targetSq] at he
+    nlinarith
+  exact ⟨hu.1,ha,ha0,by dsimp [phi]; linarith⟩
+
+lemma circle_order {u v : ℝ} (hu : 0 ≤ u) (huv : u ≤ v) (hv : v ≤ rd) :
+    circle v ≤ circle u ∧ circle u-circle v ≤ v-u := by
+  have hu' : 0 ≤ u ∧ u ≤ rd := ⟨hu,huv.trans hv⟩
+  have hv' : 0 ≤ v ∧ v ≤ rd := ⟨hu.trans huv,hv⟩
+  have eu := circle_eq hu'
+  have ev := circle_eq hv'
+  have au := circle_state hu'
+  have av := circle_state hv'
+  have hprod := mul_nonneg (sub_nonneg.mpr huv) (show 0 ≤ u+v+1 by linarith)
+  have hanti : circle v ≤ circle u := by nlinarith [au.a_nonneg,av.a_nonneg]
+  have hid : (circle u-circle v)*(circle u+circle v+1)=(v-u)*(u+v+1) := by
+    nlinarith
+  have hwidth := mul_nonneg (sub_nonneg.mpr huv)
+    (show 0 ≤ circle u+circle v-u-v by linarith [au.2.1,av.2.1])
+  have hpos : 0 < circle u+circle v+1 := by linarith [au.a_nonneg,av.a_nonneg]
+  refine ⟨hanti,?_⟩
+  by_contra hn
+  have hm := mul_pos (show 0 < circle u-circle v-(v-u) by linarith) hpos
+  nlinarith
+
+lemma circle_u0 : circle u0=a0 := by
+  have h := transition_coarse
+  have he := circle_eq ⟨by linarith,by linarith [rd_bounds.1]⟩
+  have hp := transition_circle
+  have hc := circle_state ⟨by linarith,by linarith [rd_bounds.1]⟩
+  dsimp [a0,u0] at *
+  nlinarith [hc.a_nonneg]
+
+lemma circle_switch_left {u : ℝ} (hu : 0 ≤ u ∧ u ≤ u0) :
+    circle u ≤ axialLine u := by
+  have hr : u0 ≤ rd := by linarith [transition_coarse.2.2.2.1,rd_bounds.1]
+  have ho := circle_order hu.1 hu.2 hr
+  rw [circle_u0] at ho
+  have hl := transition_line
+  dsimp [axialLine]
+  linarith
+
+lemma circle_switch_right {u : ℝ} (hu : u0 ≤ u ∧ u ≤ rd) :
+    axialLine u ≤ circle u := by
+  have hu0 : 0 ≤ u0 := by linarith [transition_coarse.2.2.1]
+  have ho := circle_order hu0 hu.1 hu.2
+  rw [circle_u0] at ho
+  have hl := transition_line
+  dsimp [axialLine]
+  linarith
+
+lemma axialTop_left {u : ℝ} (hu : 0 ≤ u ∧ u ≤ u0) : axialTop u=circle u :=
+  min_eq_left (circle_switch_left hu)
+
+lemma axialTop_right {u : ℝ} (hu : u0 ≤ u ∧ u ≤ rd) : axialTop u=axialLine u :=
+  min_eq_right (circle_switch_right hu)
+
+lemma a_le_circle {a u : ℝ} (h : Admissible a u) : a ≤ circle u := by
+  have hp := h.2.2.2
+  have hr : 0 ≤ targetSq-(u+1/2)^2 := by
+    dsimp [phi] at hp
+    nlinarith [sq_nonneg (a+1/2)]
+  have hs := Real.sq_sqrt hr
+  have hn := Real.sqrt_nonneg (targetSq-(u+1/2)^2)
+  dsimp [circle,phi] at *
+  nlinarith [h.a_nonneg]
+
+lemma axial_upper {a u : ℝ} (h : Admissible a u)
+    (hA : label a u=axial u) : a ≤ axialTop u := by
+  apply le_min (a_le_circle h)
+  have hh := axial_tangent h hA
+  dsimp [axialLine]
+  linarith
+
+lemma axialTop_state {u : ℝ} (hu : 0 ≤ u ∧ u ≤ Real.pi/5) :
+    Admissible (axialTop u) u ∧ label (axialTop u) u=axial u := by
+  have huR : u ≤ rd := by linarith [hu.2,pi_upper_22,rd_bounds.1]
+  have hc := circle_state ⟨hu.1,huR⟩
+  have hlineU : u ≤ axialLine u := by dsimp [axialLine]; linarith [hu.2,pi_upper_22]
+  have hlineA : 1/2 ≤ axialLine u := by dsimp [axialLine]; linarith [hu.2,pi_lower_157]
+  have htop : 1/2 ≤ axialTop u := le_min hc.2.2.1 hlineA
+  have hgeU : u ≤ axialTop u := le_min hc.2.1 hlineU
+  have hle : axialTop u ≤ circle u := min_le_left _ _
+  have hphi : phi (axialTop u) u ≤ targetSq := by
+    have hm := mul_nonneg (sub_nonneg.mpr hle)
+      (show 0 ≤ circle u+axialTop u+1 by linarith [hc.a_nonneg])
+    have he := circle_eq ⟨hu.1,huR⟩
+    dsimp [phi]
+    nlinarith
+  have ha : Admissible (axialTop u) u := ⟨hu.1,hgeU,htop,hphi⟩
+  have hside : axial u ≤ side (axialTop u) u := by
+    have hh : axialTop u ≤ axialLine u := min_le_right _ _
+    dsimp [axialLine,axial,side] at *
+    linarith
+  have hcap : axial u ≤ Real.pi/4 := by dsimp [axial]; linarith [hu.2]
+  exact ⟨ha,by simp only [label,min_eq_left hside,min_eq_left hcap]⟩
+
+lemma side_state_transition_bounds {a u : ℝ} (h : Admissible a u)
+    (hT : label a u=side a u) : u0 ≤ u ∧ a ≤ a0 ∧ s0 ≤ label a u := by
+  have ht := h.label_le_axial
+  rw [hT] at ht
+  have hline : 2*Real.pi+7 ≤ 9*a+11*u := by dsimp [side,axial] at ht; linarith
+  have h0 := transition_coarse
+  have he := transition_circle
+  have hl := transition_line
+  have hphi := h.2.2.2
+  have hu : u0 ≤ u := by
+    by_contra hn
+    have hd : 0 < u0-u := by linarith
+    have ha : 0 < a-a0 := by linarith
+    have hweighted := mul_nonneg
+      (show 0 ≤ (a-a0)-(11/9)*(u0-u) by linarith)
+      (show 0 ≤ 2*X0 by dsimp [a0] at h0; linarith)
+    have hpositive := mul_pos hd
+      (show 0 < (22/9)*X0-2*Y0 by dsimp [a0,u0] at h0; linarith)
+    have hid : phi a u-targetSq =
+        2*X0*(a-a0)+2*Y0*(u-u0)+(a-a0)^2+(u-u0)^2 := by
+      dsimp [phi,a0,u0] at *
+      nlinarith
+    nlinarith [sq_nonneg (a-a0),sq_nonneg (u-u0)]
+  have ha : a ≤ a0 := by
+    have hp := mul_nonneg (sub_nonneg.mpr hu)
+      (show 0 ≤ u+u0+1 by linarith [h.1])
+    dsimp [phi,a0,u0] at *
+    nlinarith [h.a_nonneg]
+  have hs : s0 ≤ label a u := by
+    rw [hT]
+    have heq := transition_labels.2
+    have heq' : side a0 u0=s0 := by
+      rw [← heq,transition_labels.1]
+      dsimp [s0,axial]; ring
+    rw [← heq']
+    dsimp [side]
+    linarith
+  exact ⟨hu,ha,hs⟩
+
+lemma circle_state_at_label {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
+    Admissible (sideA t) (sideU t) ∧ label (sideA t) (sideU t)=side (sideA t) (sideU t) := by
+  have hb := circle_bounds ht
+  have he := circle_identities ht
+  have ha : Admissible (sideA t) (sideU t) := by
+    refine ⟨?_,?_,?_,?_⟩
+    · dsimp [sideU]; dsimp [u0] at transition_coarse; linarith [transition_coarse.2.2.1]
+    · dsimp [sideA,sideU]; linarith
+    · dsimp [sideA]; linarith
+    · dsimp [phi,sideA,sideU]; nlinarith [he.1]
+  have hcircle : circle (sideU t)=sideA t := by
+    have hsq := Real.sq_sqrt
+      (show 0 ≤ targetSq-(sideU t+1/2)^2 by dsimp [sideU]; nlinarith [he.1,sq_nonneg (X t)])
+    have hn := Real.sqrt_nonneg (targetSq-(sideU t+1/2)^2)
+    dsimp [circle,sideA,sideU] at *
+    nlinarith
+  have huR : sideU t ≤ rd := by
+    have hrd : (rd+1/2)^2=targetSq/2 := by
+      dsimp [rd,targetSq]; simpa using Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)
+    have hm := mul_nonneg (sub_nonneg.mpr hb.2.2.1) (show 0 ≤ X t+Y t by linarith)
+    dsimp [sideU]
+    nlinarith [he.1,rd_bounds.1]
+  have hu0 : u0 ≤ sideU t := by dsimp [u0,sideU]; linarith [hb.2.1]
+  have hsw := circle_switch_right ⟨hu0,huR⟩
+  rw [hcircle] at hsw
+  have hTA : side (sideA t) (sideU t) ≤ axial (sideU t) := by
+    dsimp [axialLine,side,axial] at hsw ⊢
+    linarith
+  have hcap : side (sideA t) (sideU t) ≤ Real.pi/4 := by
+    rw [circle_label ht]
+    exact ht.2.trans td_bounds.2.le
+  exact ⟨ha,by simp only [label,min_eq_right hTA,min_eq_left hcap]⟩
+
+lemma diagonal_state {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
+    Admissible (diagonal t) (diagonal t) ∧
+      label (diagonal t) (diagonal t)=side (diagonal t) (diagonal t) ∧
+      side (diagonal t) (diagonal t)=t := by
+  have hd : diagonal td=rd := by dsimp [diagonal,td]; ring
+  have hupper : diagonal t ≤ rd := by rw [← hd]; dsimp [diagonal]; linarith [ht.1]
+  have hlower : 1/2 < diagonal t := by dsimp [diagonal]; linarith [ht.2,pi_upper_22]
+  have hphi : phi (diagonal t) (diagonal t) ≤ targetSq := by
+    have hrd : (rd+1/2)^2=targetSq/2 := by
+      dsimp [rd,targetSq]; simpa using Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)
+    have hp := mul_nonneg (sub_nonneg.mpr hupper)
+      (show 0 ≤ rd+diagonal t+1 by linarith [rd_bounds.1])
+    dsimp [phi]
+    nlinarith
+  have he : side (diagonal t) (diagonal t)=t := by dsimp [side,diagonal]; ring
+  have hTA : side (diagonal t) (diagonal t) ≤ axial (diagonal t) := by
+    rw [he]
+    dsimp [diagonal,axial]
+    linarith [ht.2,pi_upper_22]
+  refine ⟨⟨hlower.le,le_rfl,hlower.le,hphi⟩,?_,he⟩
+  simp only [label,min_eq_right hTA,he,min_eq_left ht.2]
+
+lemma sideTop_state {t : ℝ} (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
+    Admissible (sideTopA t) (sideTopU t) ∧
+      label (sideTopA t) (sideTopU t)=t := by
+  by_cases hc : t ≤ td
+  · obtain ⟨ha,hsel⟩ := circle_state_at_label ⟨ht.1,hc⟩
+    simp only [sideTopA,sideTopU,if_pos hc]
+    exact ⟨ha,by rw [hsel,circle_label ⟨ht.1,hc⟩]⟩
+  · obtain ⟨ha,hsel,he⟩ := diagonal_state ⟨(lt_of_not_ge hc).le,ht.2⟩
+    simp only [sideTopA,sideTopU,if_neg hc]
+    exact ⟨ha,hsel.trans he⟩
+
+lemma tie_state {t : ℝ} (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
+    Admissible (tieA t) ((4/5)*t) ∧
+      label (tieA t) ((4/5)*t)=t ∧ side (tieA t) ((4/5)*t)=t := by
+  have hu : 0 ≤ (4/5)*t ∧ (4/5)*t ≤ Real.pi/5 := by
+    have hs := transition_coarse
+    constructor <;> linarith [ht.1,ht.2]
+  have hu0 : u0 ≤ (4/5)*t := by dsimp [s0] at ht; linarith [ht.1]
+  have hur : (4/5)*t ≤ rd := by linarith [hu.2,pi_upper_22,rd_bounds.1]
+  have he : axialTop ((4/5)*t)=tieA t := by
+    rw [axialTop_right ⟨hu0,hur⟩]
+    dsimp [axialLine,tieA]; ring
+  obtain ⟨ha,hA⟩ := axialTop_state hu
+  rw [he] at ha hA
+  exact ⟨ha,by simpa [axial] using hA,by dsimp [side,tieA]; ring⟩
+
+lemma side_segment {a u : ℝ} (h : Admissible a u)
+    (hT : label a u=side a u) :
+    (4/5)*label a u ≤ u ∧ u ≤ sideTopU (label a u) ∧
+      a=tieA (label a u)+(4/9)*(u-(4/5)*label a u) := by
+  let t := label a u
+  have ht : s0 ≤ t ∧ t ≤ Real.pi/4 :=
+    ⟨(side_state_transition_bounds h hT).2.2,h.label_le_quarter⟩
+  have hlin : a=tieA t+(4/9)*(u-(4/5)*t) := by
+    dsimp [t]
+    rw [hT]
+    dsimp [tieA,side]
+    ring
+  have hlow : (4/5)*t ≤ u := by
+    have hh := h.label_le_axial
+    dsimp [axial] at hh
+    linarith
+  have hupp : u ≤ sideTopU t := by
+    by_cases hc : t ≤ td
+    · have htop := sideTop_state ht
+      have htopT : side (sideTopA t) (sideTopU t)=t := by
+        simp only [sideTopA,sideTopU,if_pos hc]
+        exact circle_label ⟨ht.1,hc⟩
+      have htoplin : sideTopA t=tieA t+(4/9)*(sideTopU t-(4/5)*t) := by
+        dsimp [side,tieA] at htopT ⊢
+        linarith
+      have hnorm : phi (sideTopA t) (sideTopU t)=targetSq := by
+        simp only [sideTopA,sideTopU,if_pos hc]
+        have he := (circle_identities ⟨ht.1,hc⟩).1
+        dsimp [phi,sideA,sideU]
+        nlinarith
+      by_contra hn
+      have hu' : sideTopU t < u := lt_of_not_ge hn
+      have ha' : sideTopA t < a := by linarith
+      have hmu := mul_pos (sub_pos.mpr hu')
+        (show 0 < u+sideTopU t+1 by linarith [h.1,htop.1.1])
+      have hma := mul_pos (sub_pos.mpr ha')
+        (show 0 < a+sideTopA t+1 by linarith [h.a_nonneg,htop.1.a_nonneg])
+      have hp := h.2.2.2
+      dsimp [phi] at hnorm hp
+      nlinarith
+    · simp only [sideTopU,if_neg hc]
+      dsimp [diagonal,tieA] at hlin ⊢
+      linarith [h.2.1]
+  exact ⟨hlow,hupp,hlin⟩
+
+/-- The two endpoint alternatives are sufficient for any affine support at a
+fixed side label; both endpoint states are genuinely admissible. -/
+lemma side_linear_min {a u p r : ℝ} (h : Admissible a u)
+    (hT : label a u=side a u) :
+    min (p*tieA (label a u)+r*((4/5)*label a u))
+      (p*sideTopA (label a u)+r*sideTopU (label a u)) ≤ p*a+r*u := by
+  let t := label a u
+  have hs := side_segment h hT
+  have ht : s0 ≤ t ∧ t ≤ Real.pi/4 :=
+    ⟨(side_state_transition_bounds h hT).2.2,h.label_le_quarter⟩
+  have heT : side (sideTopA t) (sideTopU t)=t := by
+    by_cases hc : t ≤ td
+    · simp only [sideTopA,sideTopU,if_pos hc]
+      exact circle_label ⟨ht.1,hc⟩
+    · simp only [sideTopA,sideTopU,if_neg hc]
+      exact (diagonal_state ⟨(lt_of_not_ge hc).le,ht.2⟩).2.2
+  have htopline : sideTopA t=tieA t+(4/9)*(sideTopU t-(4/5)*t) := by
+    dsimp [side,tieA] at heT ⊢
+    linarith
+  by_cases hc : 0 ≤ r+(4/9)*p
+  · have hm := mul_nonneg hc (show 0 ≤ u-(4/5)*t by exact sub_nonneg.mpr hs.1)
+    apply (min_le_left _ _).trans
+    change p*tieA t+r*((4/5)*t) ≤ p*a+r*u
+    rw [hs.2.2]
+    nlinarith
+  · have hm := mul_nonneg (show 0 ≤ -(r+(4/9)*p) by linarith)
+      (show 0 ≤ sideTopU t-u by exact sub_nonneg.mpr hs.2.1)
+    apply (min_le_right _ _).trans
+    change p*sideTopA t+r*sideTopU t ≤ p*a+r*u
+    rw [hs.2.2,htopline]
+    nlinarith
+
+end Boundary
+end SquaresInCircles.Seven
