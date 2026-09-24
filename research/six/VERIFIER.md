@@ -121,3 +121,32 @@ mathematical coverage.
 The next implementation target is to replace the diagnostic trig interval
 routine with an independently checkable enclosure and to add branch-specific
 dual certificates for the small set of surviving boxes.
+
+
+## Exact replay core
+
+`scripts/n6_exact_interval.py` is the beginning of the independent replay
+layer.  It contains no libm calls in the certificate arithmetic.
+
+It provides:
+
+* a rational enclosure of (pi) from Machin's identity
+  (pi=16arctan(1/5)-4arctan(1/239));
+* alternating-series bounds for the two arctangents;
+* rational Taylor/Lagrange enclosures for sine and cosine at rational points;
+* interval sine/cosine enclosures with exact critical-point accounting using
+  the rational (pi) interval;
+* an exact check that (q_*<Q_0=2.85118).
+
+The intended architecture is now:
+
+1. **fast discovery:** the floating-point driver finds a finite terminal cover
+   and writes each box plus the rule that rejects it;
+2. **exact replay:** rationally widen every recorded endpoint and verify the
+   named rejection rule with `n6_exact_interval.py` primitives;
+3. **Lean bridge:** either import the replayed finite certificate as explicit
+   rational data and prove its checker sound in Lean, or translate the small
+   remaining scalar certificate families directly into Lean.
+
+The discovery run remains non-authoritative.  Only exact replay (and,
+ultimately, its Lean soundness connection) is intended to enter the proof.
