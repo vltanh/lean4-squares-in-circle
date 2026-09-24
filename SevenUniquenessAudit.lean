@@ -12,8 +12,8 @@ A normal-form theorem must not retain a contact-classification assumption.
 #print axioms SquaresInCircles.Seven.Equality.ordered_chart_contact
 #print axioms SquaresInCircles.Seven.Equality.six_directions_hexagon
 #print axioms SquaresInCircles.Seven.Equality.six_exterior_ring
-#print axioms SquaresInCircles.Seven.Equality.central_represents
-#print axioms SquaresInCircles.Seven.Equality.classify_optimal
+#print axioms SquaresInCircles.Seven.Equality.central_square_represents
+#print axioms SquaresInCircles.Seven.Equality.classify
 #print axioms SquaresInCircles.Seven.uniqueness
 #print axioms SquaresInCircles.Seven.rigid_uniqueness
 #print axioms SquaresInCircles.Seven.packing_at_radius_iff
@@ -25,3 +25,4 @@ A normal-form theorem must not retain a contact-classification assumption.
 #check SquaresInCircles.Seven.packing_at_radius_iff
 #check SquaresInCircles.Seven.classification_of_radius_le
 #check SquaresInCircles.Seven.uniqueness_slots
+#check SquaresInCircles.Seven.off_center_sliding_attainment
