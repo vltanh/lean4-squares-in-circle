@@ -5,7 +5,7 @@ Exact rational replay for the large-angle candidate contact graph.
 This terminal certificate covers the region
 
     1/6 <= theta_E,theta_N,theta_W,theta_S <= 1/3
-    |eps_D| <= 1/12,
+    |eps_D| <= 1/8,
 
 with the candidate graph of separator axes:
 
@@ -241,7 +241,7 @@ ROOT = (
     I(F(1, 6), F(1, 3)),
     I(F(1, 6), F(1, 3)),
     I(F(1, 6), F(1, 3)),
-    I(-F(1, 12), F(1, 12)),
+    I(-F(1, 8), F(1, 8)),
 )
 
 
