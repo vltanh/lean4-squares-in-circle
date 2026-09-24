@@ -351,7 +351,7 @@ continuous regions.
 
 ### Exact arithmetic core
 
-scripts/n6_exact_intervals.py is the first replay-oriented component. It uses
+research/six/n6_exact_intervals.py is the first replay-oriented component. It uses
 only Python integer/rational arithmetic for its proof-relevant calculations:
 
 * pi is enclosed from Machin's identity pi = 16 atan(1/5) - 4 atan(1/239),
@@ -420,7 +420,7 @@ the already-proved local candidate neighborhood under the slightly weaker
 assumption (R^2le Q_0).  The local theorem handles the neighborhood at the
 exact value (q_*).
 
-`scripts/n6_exact_interval.py` checks these comparisons using
+`research/six/n6_exact_interval.py` checks these comparisons using
 `fractions.Fraction` only.
 
 ### Exact cardinal cap contraction
