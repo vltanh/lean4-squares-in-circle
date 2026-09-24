@@ -481,10 +481,78 @@ def sharp_central_constraints(box: Box, pattern: int) -> bool:
     return True
 
 
+def _cardinal_linear(box: Box, name: str):
+    cx, cy = box.iv[CX], box.iv[CY]
+    phi, _, b = box.get(name)
+    c, s = cosI(phi), sinI(phi)
+    w = widthI(phi)
+    if name == "E":
+        coef = c
+        rest = (-b * s) - cx - (0.5 + w)
+    elif name == "N":
+        coef = s
+        rest = b * c - cy - (0.5 + w)
+    elif name in ("W", "D"):
+        coef = -c
+        rest = b * s + cx - (0.5 + w)
+    elif name == "S":
+        coef = -s
+        rest = cy - b * c - (0.5 + w)
+    else:
+        raise KeyError(name)
+    return coef, rest
+
+
+def _own_linear(box: Box, name: str):
+    cx, cy = box.iv[CX], box.iv[CY]
+    phi, _, _ = box.get(name)
+    c, s = cosI(phi), sinI(phi)
+    rest = -(cx * c + cy * s) - (0.5 + widthI(phi))
+    return I(1.0, 1.0), rest
+
+
+def linear_separator_contract(box: Box, pattern: int) -> bool:
+    # Each remaining central separator is affine in the canonical radial
+    # coordinate a. Propagate the selected inequality before subdivision.
+    for i, name in enumerate(NAMES):
+        phi, a, b = box.get(name)
+        k = OFF[name]
+
+        if (pattern >> i) & 1:
+            # Own-primary separator >= 0 gives a lower bound.
+            coef, rest = _own_linear(box, name)
+            lo = a.lo
+            if rest.hi < 0.0:
+                lo = max(lo, -rest.hi / coef.hi)
+
+            # Canonical own branch also has cardinal margin < 0. This gives
+            # an upper bound on a.
+            cc, rr = _cardinal_linear(box, name)
+            if cc.lo <= 0.0 or rr.lo >= 0.0:
+                return False
+            hi = min(a.hi, -rr.lo / cc.lo)
+            if lo > hi:
+                return False
+            box.set_outer(name, a=I(lo, hi))
+        else:
+            coef, rest = _cardinal_linear(box, name)
+            if coef.hi <= 0.0:
+                return False
+            lo = a.lo
+            if rest.hi < 0.0:
+                lo = max(lo, -rest.hi / coef.hi)
+            if lo > a.hi:
+                return False
+            box.set_outer(name, a=I(lo, a.hi))
+    return True
+
+
 def central_pattern_possible(box: Box, pattern: int) -> bool:
     if not moving_pin_contract(box, pattern):
         return False
     if not sharp_central_constraints(box, pattern):
+        return False
+    if not linear_separator_contract(box, pattern):
         return False
 
     for i, name in enumerate(NAMES):
