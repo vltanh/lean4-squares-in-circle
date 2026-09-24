@@ -1,114 +1,173 @@
-# Seven squares: analytical Lean development
+# Seven squares: end-to-end analytical Lean source draft
 
 ## Status
 
-**Partial and uncompiled. This PR is not a completed Lean proof of the
-seven-square optimum.** It supplies substantive proof scripts from the
-analytical manuscript and the exact assembly that would finish the original
-packing theorem once its remaining pair lemma is supplied.
+The three previously external proof obligations now have draft proof bodies.
+The standalone entry point exports **unconditional** `Seven.optimality` and
+`Seven.optimality_and_attainment` for the repository's original `Packing`
+predicate. Neither theorem takes a marker, support, normal-selection, interval
+certificate, or other geometric hypothesis beyond packing.
 
-Base: `1e873b0cc56853f4ec33f98db13340c77053806d` of
-`vltanh/lean4-squares-in-circles`, using the existing Lean/mathlib v4.34.0 setup.
-No original file, packing definition, proof, toolchain, root import or workflow
-is changed. All new modules use the existing square and Euclidean-distance
-model.
+**This is a completed source-level draft, not a kernel-verified theorem.** No
+Lean compiler, Lake build, CI inspection, or axiom audit was run while writing
+this completion. Elaboration, library-interface, tactic, and potentially more
+substantial proof repairs may still be needed. The existence of an explicit
+proof body does not establish Lean acceptance.
 
-No Lean compiler, Lake build, or axiom audit was run while preparing the files.
-The source can still contain elaboration, library-interface or tactic errors.
-The absence of admission tokens is not a completion claim: the final lower
-bound still requires the explicit, unproved `MarkerSeparationStatement`.
+Work was saved incrementally to the existing `draft/seven-analytic-lean` branch.
+The completion starts from `0d99802b3a55f424cbed09b7ae61c12060c0c23e`; the original
+project base was `1e873b0cc56853f4ec33f98db13340c77053806d`. No new toolchain or
+external interval checker is introduced. The original n <= 5 root entry point
+is not changed by this completion.
 
-## Entry point
+## Standalone API
 
 ```lean
 import SquaresInCircles.Seven
 ```
 
-The old root entry point is unchanged and continues to state only its existing
-results for n <= 5. There is intentionally no unconditional `Seven.optimality`.
-
-## Supplied source bodies
-
-| Module | Scope |
-| --- | --- |
-| `Seven/Construction.lean` | Candidate radius; the full sliding-column construction; its four nonnegative slots; packing and attainment; the side-corner lower bound for this fixed family. |
-| `Seven/Labels.lean` | Canonical magnitude domain; affine labels; exact contact-remainder identities; strict and non-strict bounds; signed reflection; transfer to the repository's square charts. |
-| `Seven/CircleBudget.lean` | Six directions cannot have every pairwise circular distance greater than pi/3, using the existing circle-measure theorem. No cyclic sorting needed. |
-| `Seven/ExteriorSelection.lean` | Explicit embedding that discards at most one origin-containing square; preservation of packing. Boundary points remain exterior. |
-| `Seven/ParallelLabels.lean` | Same-frame and quarter-turn label inequalities, including the min-label alternatives. These are the algebraic pair components, not a separate theorem about arbitrary rotations. |
-| `Seven/TaylorBounds.lean` | Polynomial sine and cosine bounds from monotonicity of exact remainders. |
-| `Seven/PolynomialCertificates.lean` | Whole-interval positivity via Bernstein identities, including the final degree-eleven discriminant and its quadratic consequence. |
-| `Seven/Support.lean` | Marker-point membership, actual square-support domination, center bounds, outward radial support positivity, coordinate Cauchy--Schwarz. Marker-point membership is NOT the stronger marker-arc lemma. |
-| `Seven/SideSide.lean` | Global opposite-sign side-selected/side-selected scalar support certificate, including strict containment. |
-| `Seven/Reduction.lean` | Genuine original-packing lower-bound assembly, explicitly conditional on the missing concrete pair theorem. |
-| `Seven/Remaining.lean` | Exact proposition definitions for the outstanding marker-arc, fixed-gap, and geometric reduction statements. These are not asserted as theorems. |
-
-The polynomial coefficient data are finite rational identities checked by
-`ring` and `norm_num` in the proposed Lean source. No Python/C++ verification
-result, optimizer result, interval-search transcript, `native_decide`, or
-custom axiom is imported as a proof premise.
-
-## The remaining mathematical formalization
-
-The analytical manuscript assigns
-
-```
-P(a,u) = min (5*u/4)
-              (pi/6 + (u-1/2)/3 + 3*(1-a)/4)
-              (pi/4)
-```
-
-and proves marker separation through an actual marker arc, an intermediate-angle
-minimum argument, and an exhaustive fixed-gap support analysis. That chain is
-not yet fully translated in this PR.
-
-The three explicitly stated obligations are:
-
-1. **MarkerArcStatement.** Prove closed-square membership throughout the
-   half-width 801/1600 arc around the affine marker, not only at its midpoint.
-   The subsequent proof must handle the finite square-boundary exceptions rather
-   than assume the whole closed arc is interior.
-2. **FixedGapStatement.** Finish all cardinal-axis, transverse-sign and active-label
-   sectors at marker gap pi/3. This includes capped-label convex reduction,
-   the remaining mixed axial/side cases, and the transition-state and
-   monotonicity arguments. Positivity of a residual polynomial by itself does
-   not prove the geometric reduction that produces that polynomial.
-3. **GeometricReductionStatement.** Prove that the first two obligations imply
-   the concrete pair-separation theorem for actual independently rotated squares.
-   This requires the separating-axis reduction, intermediate-angle minima,
-   chart/reflection transport, and strictness under strict containment.
-
-`Remaining.lean` gives precise formulas, including all original square
-hypotheses. None concludes `True`. None is an axiom or a theorem with an
-unproved body. The definitions merely state the tasks.
-
-The final conditional statement is:
+The public namespace is `SquaresInCircles.Seven`:
 
 ```lean
-Seven.optimality_of_marker_separation
-    (hpair : Seven.MarkerSeparationStatement)
-    (S : Fin 7 -> UnitSquare) (o : Point) (R : Real)
-    (hp : Packing S o R) : Seven.radius <= R
+squared_lower (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ)
+  (hp : Packing S o R) : (13 : ℝ) / 4 ≤ R^2
+
+optimality (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ)
+  (hp : Packing S o R) : radius ≤ R
+
+optimality_sqrt_thirteen_half ... : Real.sqrt 13 / 2 ≤ R
+
+optimality_and_attainment :
+  (∀ S o R, Packing S o R → radius ≤ R) ∧
+  ∃ (S : Fin 7 → UnitSquare) o, Packing S o radius
 ```
 
-An axiom audit of this conditional theorem does not discharge `hpair`.
-The global lower bound is not formalized until that argument is actually
-provided by a closed Lean proof.
+Here `radius = Real.sqrt (13/4)`. The stronger `six_exterior_squared_lower` and
+`six_exterior_lower` assume six original unit squares, their actual packing,
+and that the specified disk center belongs to none of their open interiors.
 
-## Sliding is represented, not excluded
+`Remaining.lean` retains its old proposition names for compatibility, but now
+supplies `markerArc_proved`, `fixedGap_proved`, `geometricReduction_proved`,
+and `analytic_obligations_proved`. They are no longer inputs to the public
+lower-bound theorem.
 
-`Seven.Column` has bottom, middle and top ordinates, with gaps at least one
-and endpoints in `[-sqrt(3)+1/2, sqrt(3)-1/2]`. `Column.slots` maps it to four
-nonnegative numbers summing to `2*sqrt(3)-3`. `columnOfSlots` builds the converse
-construction. No uniqueness statement is asserted, and the middle square is
-not assumed to be centered at the disk center.
+## Complete proof chain
 
-The side squares use the box half-extents `(3/2,1)`. The middle-column squares
-use `(1/2,sqrt(3))`; using `(3/2,1)` for all seven squares would be false.
+### 1. Containment and angular labels
 
-## Checking order
+`Labels`, `ArcAnalysis`, and `MarkerArc` contain the canonical state bounds,
+exact tangent-plus-square-remainder identities, and actual closed-square arc
+of half-width 801/1600 around the piecewise-affine label. The definition uses
+the square's own frame; independent rotations are not discarded.
 
-These commands are supplied for checking, not reported as executed:
+### 2. Every fixed-gap support sector
+
+`FixedGap.lean` is the exhaustive four-axis/four-sign assembly. It calls:
+
+- `EasySectors`: outward, backward, and negative-source inward axes;
+- `ForwardPositive`: positive/positive transverse source;
+- `OppositeForward`: negative/positive transverse source, all A/T pairs;
+- `ForwardNegativeTarget`: positive/negative, and axial-source negative/negative;
+- `ForwardBothNegative`: side-source negative/negative, including the small-margin
+  transition-state minimization;
+- `InwardSideTarget`: positive/positive inward source with a side target;
+- `InwardSideAxial` and `InwardAxialAxial`: its remaining axial-target cases;
+- `InwardOpposite`: all positive/negative inward cases.
+
+`CapReduction` handles the third, capped label by an exact barycentric triangle
+argument. Strictness is propagated from the original states, not incorrectly
+assumed for an endpoint chosen during minimization.
+
+### 3. Exact boundary minimization and scalar signs
+
+`LabelBoundary` defines the transition constants as radicals in pi and gives
+explicit circular label-level parametrizations. `BoundarySegments` proves the
+actual axial/side feasible segments and their support endpoints.
+
+`TargetBoundaryMonotonicity`, `BoundaryProfiles`, and `ForwardBothNegative`
+prove whole-interval monotonicity/concavity and the negative/negative support
+minimum. `AnalyticOrder` supplies the real-analysis order lemmas.
+
+`BoundaryPointChecks` proves the two fixed radical/trigonometric comparisons
+using rational bounds for pi and proved finite Taylor polynomials. These are
+fixed-point algebraic estimates, not configuration-space sampling.
+
+`InwardOppositeGeometry`, `InwardBoundaryMinima`, and `InwardCircularCertificate`
+handle the final mixed sector. The radical bound is proved by squaring an
+explicit quadratic envelope. Its final polynomial is connected to
+`PolynomialCertificates.radialE_pos`, rather than left as an unrelated
+positive polynomial.
+
+### 4. Intermediate marker gaps
+
+`SmallAndParallelGaps` proves positivity for gaps at most one using **three
+common closed-circle points**. If a support sum were nonpositive, the normal
+would have the same projection at all three points. Trigonometric identities
+would force both its sine and cosine to vanish. This avoids an additional
+finite-boundary-null-set lemma.
+
+At nonsmooth minima, the target normal is cardinal. The relative frame is zero
+or pi/2 in the relevant interval, so the complete parallel-label inequalities
+apply.
+
+`AngularMinima` selects a **leftmost global minimizer**. This explicitly handles
+constant sign pieces: a flat interval cannot create an unclassified interior
+case. Fermat's theorem plus a left-neighbor comparison forces the target
+sinusoid's smooth minimum to be negative.
+
+`NearestCornerMinimum` then identifies its direction as opposite the target's
+nearest corner. The sole potentially small source support is shown, using the
+affine label and elementary sine/cosine inequalities, to exceed that corner's
+distance. Thus the total support is positive even there.
+
+`AllGaps.all_gap_support_pos` assembles endpoints, cardinal minima, and smooth
+minima. No `GeometricReductionStatement` is assumed in this argument.
+
+### 5. From scalar supports to the actual squares
+
+`CanonicalPair` derives strict overlap on the first square's axes. Reversing
+and reflecting the pair derives the second square's axes. The existing proved
+`Seven.SAT.separating_axes` then produces a point in both open canonical squares.
+
+`MarkerSeparation` transfers that point through `SquareChart.cartesian` and
+`pointInDirection_transition`. A chart reversal becomes a signed transverse
+coordinate. The `Real.Angle.toReal` difference chooses the positive marker
+order; the negative case swaps the two charts. This proves the actual
+`MarkerSeparationStatement`, not just a scalar surrogate.
+
+### 6. The angular budget and original packing endpoint
+
+The already written `CircleBudget` shows that six markers cannot all have
+pairwise circular distance greater than pi/3. `ExteriorSelection` discards at
+most one origin-containing square from a seven-square packing, preserving the
+original containment and disjointness predicates.
+
+`Optimality` supplies the now-proved marker theorem to that assembly. The
+unconditional endpoint has no additional geometric assumptions.
+
+## Sliding and equality scope
+
+`Column` contains the three middle ordinates, with the two unit-spacing
+inequalities and endpoint bounds `[-sqrt(3)+1/2, sqrt(3)-1/2]`.
+`Column.slots` gives four nonnegative gaps summing to `2*sqrt(3)-3`;
+`columnOfSlots` gives the converse construction. `sliding_packing` and
+`sliding_is_optimal` cover every such column.
+
+The boundary side–axial estimates leave the axial radial coordinate free over
+its full admissible interval. The lower-bound proof needs strictness only in a
+strictly smaller enclosing disk. It does not force an isolated optimum.
+
+No classification of all equality packings or n=7 uniqueness theorem is
+asserted by this extension.
+
+## Validation boundary
+
+No compilation or CI work was performed in this completion. The audit and
+sanity scripts were updated to reference the unconditional endpoints but were
+not run. The old `docs/seven-source-inspection.json` records an earlier partial
+snapshot and must not be treated as a report for the completed branch.
+
+The intended future checks, not executed here, are:
 
 ```sh
 lake build SquaresInCircles.Seven
@@ -116,7 +175,8 @@ lake env lean SevenSanityChecks.lean
 lake env lean SevenAxiomAudit.lean
 ```
 
-The audit file includes the actual types of the outstanding propositions and
-the conditional endpoint. It must not be summarized as an audit of an
-unconditional optimality theorem. The optional source-inspection report records
-only text/import properties and is not evidence of Lean acceptance.
+The new proof bodies do not import Python/C++ success flags, interval-search
+transcripts, native evaluation or custom axioms. The whole-interval polynomial
+certificates are exact identities and coefficient signs expressed as ordinary
+Lean proofs. Until elaboration and kernel checking succeed, none of these
+source properties establishes the optimality theorem as machine-verified.
