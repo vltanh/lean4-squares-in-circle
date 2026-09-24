@@ -125,7 +125,7 @@ dual certificates for the small set of surviving boxes.
 
 ## Exact replay core
 
-`scripts/n6_exact_interval.py` is the beginning of the independent replay
+`research/six/n6_exact_interval.py` is the beginning of the independent replay
 layer.  It contains no libm calls in the certificate arithmetic.
 
 It provides:
