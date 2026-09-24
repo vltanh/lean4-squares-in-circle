@@ -1,31 +1,30 @@
-import SquaresInCircles.Seven.Construction
-import SquaresInCircles.Seven.Labels
-import SquaresInCircles.Seven.CircleBudget
-import SquaresInCircles.Seven.ExteriorSelection
-import SquaresInCircles.Seven.ParallelLabels
-import SquaresInCircles.Seven.TaylorBounds
-import SquaresInCircles.Seven.PolynomialCertificates
-import SquaresInCircles.Seven.Support
-import SquaresInCircles.Seven.MarkerArc
-import SquaresInCircles.Seven.EasySectors
-import SquaresInCircles.Seven.SideSide
-import SquaresInCircles.Seven.InwardAxialAxial
-import SquaresInCircles.Seven.SeparatingAxes
-import SquaresInCircles.Seven.Reduction
+import SquaresInCircles.Seven.Optimality
 import SquaresInCircles.Seven.Remaining
 
 /-!
-# Partial seven-square analytical formalization
+# Seven independently rotated unit squares
 
-The full canonical marker-arc proof and several whole-domain support sectors
-have proposed proof bodies. The new inward-radial positive-sign sector includes
-side-selected/axial-selected and axial-selected/axial-selected states, with the
-zero-turn case and the axial sliding equality included explicitly.
+Standalone analytical proof entry point. The public statements are:
 
-The lower-bound endpoint remains conditional on `Seven.MarkerSeparationStatement`:
-the complete fixed-gap partition and geometric reduction are still being
-formalized. These additional source bodies have not been compiled.
+* `Seven.squared_lower`
+* `Seven.optimality`
+* `Seven.optimality_sqrt_thirteen_half`
+* `Seven.six_exterior_squared_lower`
+* `Seven.six_exterior_lower`
+* `Seven.attainment`
+* `Seven.optimality_and_attainment`
+* `Seven.sliding_packing` and `Seven.sliding_is_optimal`
 
-The sliding family is retained; no uniqueness or isolated-optimum hypothesis
-is used. See `docs/seven-checkpoints.md` for incremental saved work.
+The lower-bound endpoints no longer take a marker-separation or support
+hypothesis. Every link is represented by a draft proof body in the imported
+modules: canonical marker arcs, the full fixed-gap partition, intermediate-
+angle minima, finite-axis separation, chart transport, and the angular budget.
+
+The original root entry point for n <= 5 is unchanged. No n=7 uniqueness
+statement is asserted; the entire three-parameter sliding construction remains
+available.
+
+This is an uncompiled source draft. No Lean build, CI check, or axiom audit was
+run while writing the completion. Elaboration, tactic, or proof repairs may
+still be necessary; source completeness is not kernel verification.
 -/
