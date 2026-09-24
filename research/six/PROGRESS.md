@@ -518,7 +518,7 @@ diamond vertex for D.
 The exact replay in research/six/check_alt_dw_certificate.py proves
 R^2 > Q0 = 2.85118 throughout
 
-    |theta_N| <= 1/6, |theta_W| <= 1/4,
+    |theta_N| <= 1/6, |theta_W| <= 2/5,
     1/6 <= theta_S <= 1/2, |eps_D| <= 1/6,
 
 for either W or N supplying the W--N horizontal axis, provided C--N and
@@ -531,8 +531,8 @@ the exact rational enclosure
 
     70710678/10^8 < 1/sqrt(2) < 70710679/10^8.
 
-The two source cases close after respectively 1720 and 1424 certified leaves,
-at maximum subdivision depths 15 and 14.
+The two source cases close after respectively 5110 and 3854 certified leaves,
+at maximum subdivision depths 21 and 19.
 
 This is the first nonlocal survivor family converted from a diagnostic search
 observation into a compact exact terminal certificate.
