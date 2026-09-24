@@ -110,9 +110,13 @@ lemma cycle_turn_coe (i : Fin 6) :
   have hlast : ((3*Real.pi/2 : ℝ) : Direction) = ((-Real.pi/2 : ℝ) : Direction) := by
     rw [show 3*Real.pi/2 = -Real.pi/2+2*Real.pi by ring,Real.Angle.coe_add]
     simp
-  fin_cases i <;> simpa [cycleTurnAngle,cycleTurns,quarterShift] using
-    (show (0 : Direction) = 0 from rfl)
-  exact hlast
+  fin_cases i
+  · rfl
+  · rfl
+  · rfl
+  · rfl
+  · rfl
+  · exact hlast
 
 lemma cycle_phase_arithmetic (i : Fin 6) :
     (i.val : ℝ)*gap-kindOffset (cycleKinds i)-Real.pi/6 = cycleTurnAngle i := by
