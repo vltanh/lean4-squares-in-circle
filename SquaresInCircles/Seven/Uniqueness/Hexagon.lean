@@ -1,12 +1,13 @@
 import SquaresInCircles.Seven.Uniqueness.PairGeometry
+import SquaresInCircles.Common.ArcMetric
 import Mathlib.Data.Fin.Tuple.Sort
 
 /-!
 # Angular rigidity at the critical budget
 
-Six directions separated by at least pi/3 form a regular hexagon. The proof
-sorts their real lifts and shows that all six nonnegative gap slacks sum to
-zero. Seven such directions are impossible by the existing measure budget.
+Sort six real lifts. Five consecutive gaps and the wraparound gap are at
+least pi/3; their six nonnegative slacks sum to zero. This proves the regular
+hexagon rather than assuming an equality tiling.
 -/
 noncomputable section
 open Set
@@ -15,15 +16,13 @@ namespace Equality
 
 lemma coe_angle_distance_le {x y : ℝ} (hxy : x ≤ y) :
     dist (x : Direction) (y : Direction) ≤ y-x := by
-  rw [dist_comm,direction_dist,←Real.Angle.coe_sub]
-  by_cases hh : y-x ≤ Real.pi
-  · rw [Real.Angle.abs_toReal_coe_eq_self_iff.mpr ⟨by linarith,hh⟩]
-  · exact (Real.Angle.abs_toReal_le_pi _).trans (le_of_lt (lt_of_not_ge hh))
+  rw [dist_comm,dist_eq_norm,←Real.Angle.coe_sub]
+  exact (direction_coe_norm_le (y-x)).trans_eq (abs_of_nonneg (sub_nonneg.mpr hxy))
 
 private def steps (r : Fin 6 → ℝ) : Fin 6 → ℝ :=
   ![r 1-r 0,r 2-r 1,r 3-r 2,r 4-r 3,r 5-r 4,r 0+2*Real.pi-r 5]
 
-/-- The six marker directions are precisely one regular hexagon, in order. -/
+/-- Six separated marker directions are precisely one regular hexagon. -/
 theorem six_directions_hexagon (c : Fin 6 → Direction)
     (hsep : ∀ i j, i ≠ j → gap ≤ dist (c i) (c j)) :
     ∃ (φ : Direction) (σ : Equiv.Perm (Fin 6)),
@@ -84,10 +83,19 @@ lemma hexagon_successor {c : Fin 6 → Direction} {φ : Direction}
   have hperiod : ((6*gap : ℝ) : Direction) = 0 := by
     rw [show (6 : ℝ)*gap = 2*Real.pi by dsimp [gap]; ring]
     simp
-  rw [h,h]
-  fin_cases i <;> norm_num [next] <;>
-    simp only [←Real.Angle.coe_sub,add_sub_add_left_eq_sub] <;>
-    first | congr 1 <;> ring | abel_nf at hperiod ⊢ <;> exact hperiod
+  have hwrap : (((-5 : ℝ)*gap : ℝ) : Direction) = (gap : Direction) := by
+    rw [show (-5 : ℝ)*gap = gap-6*gap by ring,Real.Angle.coe_sub,hperiod,sub_zero]
+  have hd : c (next i)-c i =
+      ((((next i).val : ℝ)*gap-(i.val : ℝ)*gap : ℝ) : Direction) := by
+    rw [h,h,Real.Angle.coe_sub]
+    abel
+  have hr : ((next i).val : ℝ)*gap-(i.val : ℝ)*gap =
+      if i = 5 then -5*gap else gap := by
+    fin_cases i <;> norm_num [next] <;> ring
+  rw [hd,hr]
+  split_ifs
+  · exact hwrap.symm
+  · rfl
 
 /-- Seven directions with separation at least pi/3 cannot occur. -/
 lemma seven_directions_impossible (c : Fin 7 → Direction)
@@ -109,8 +117,8 @@ lemma seven_directions_impossible (c : Fin 7 → Direction)
   norm_num at hb
   linarith [pi_upper_22]
 
-/-- At the optimum the tested point is inside exactly one square, not on all
-seven exterior sides. It is not asserted to equal that square's center. -/
+/-- Exactly one square contains the tested point at the optimum. The center
+of that square is not assumed to equal the tested point. -/
 theorem exists_containing (S : Fin 7 → UnitSquare) (o : Point)
     (hp : Packing S o radius) : ∃ i, openSquare (S i) o := by
   classical
