@@ -90,13 +90,16 @@ lemma label_nonneg : 0 ≤ label a u := by
   exact le_min (le_min (by dsimp [axial]; positivity) h.side_pos.le)
     (by positivity)
 
-lemma label_le_axial : label a u ≤ axial u :=
+omit h in
+lemma label_le_axial (_h : Admissible a u) : label a u ≤ axial u :=
   (min_le_left _ _).trans (min_le_left _ _)
 
-lemma label_le_side : label a u ≤ side a u :=
+omit h in
+lemma label_le_side (_h : Admissible a u) : label a u ≤ side a u :=
   (min_le_left _ _).trans (min_le_right _ _)
 
-lemma label_le_quarter : label a u ≤ Real.pi/4 := min_le_right _ _
+omit h in
+lemma label_le_quarter (_h : Admissible a u) : label a u ≤ Real.pi/4 := min_le_right _ _
 
 lemma label_pos (hu : 0 < u) : 0 < label a u := by
   unfold label axial
@@ -124,7 +127,8 @@ lemma radial_label_bound : a ≤ 1 + 2*Real.pi/15 - (4/5)*label a u := by
   rw [side_identity_radial] at ht
   linarith [h.remainder_nonneg]
 
-lemma selected : label a u = axial u ∨ label a u = side a u ∨
+omit h in
+lemma selected (_h : Admissible a u) : label a u = axial u ∨ label a u = side a u ∨
     label a u = Real.pi/4 := by
   by_cases hA : axial u ≤ side a u
   · by_cases hc : axial u ≤ Real.pi/4

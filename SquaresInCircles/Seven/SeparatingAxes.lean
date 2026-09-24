@@ -42,7 +42,9 @@ lemma octagon_first_quadrant {c s : ℝ} (hc : 0 < c) (hs : 0 ≤ s)
   · have hc1 : c=1 := by nlinarith
     subst s; subst c
     have hh := two_weighted_strict hx hy hn hxD hyD
-    simpa [dot,octagonSupport,abs_of_nonneg hx,abs_of_nonneg hy] using hh
+    simp only [dot,octagonSupport,abs_of_nonneg hx,abs_of_nonneg hy,one_mul,zero_mul,
+      add_zero,zero_add,neg_zero] at hh ⊢
+    linarith
   · have hsp : 0 < s := lt_of_le_of_ne hs (Ne.symm hs0)
     by_cases hw : -s*n.1+c*n.2 ≤ 0
     · let a := s*n.1-c*n.2
@@ -57,13 +59,13 @@ lemma octagon_first_quadrant {c s : ℝ} (hc : 0 < c) (hs : 0 ≤ s)
       have hlt := two_weighted_strict ha hy hab hxD hpD
       have he₁ : a*d.1+n.2*(c*d.1+s*d.2) = s*dot n d := by
         dsimp [a,dot]; ring
-      have he₂ : ((1+c+s)/2)*(a+n.2) = s*octagonSupport c s n := by
+      have he₂ : a*((1+c+s)/2)+n.2*((1+c+s)/2) = s*octagonSupport c s n := by
         simp only [octagonSupport,abs_of_nonneg hx,abs_of_nonneg hy,
           abs_of_nonneg hp,abs_of_nonpos hw]
         dsimp [a]
         linear_combination -(n.2/2)*hunit
       rw [he₁,he₂] at hlt
-      exact (mul_lt_mul_left hsp).mp hlt
+      exact lt_of_mul_lt_mul_left hlt hsp.le
     · have hw0 : 0 ≤ -s*n.1+c*n.2 := le_of_lt (lt_of_not_ge hw)
       let b := c*n.2-s*n.1
       have hb : 0 ≤ b := by dsimp [b]; linarith
@@ -77,13 +79,13 @@ lemma octagon_first_quadrant {c s : ℝ} (hc : 0 < c) (hs : 0 ≤ s)
       have hlt := two_weighted_strict hx hb hab hpD hyD
       have he₁ : n.1*(c*d.1+s*d.2)+b*d.2 = c*dot n d := by
         dsimp [b,dot]; ring
-      have he₂ : ((1+c+s)/2)*(n.1+b) = c*octagonSupport c s n := by
+      have he₂ : n.1*((1+c+s)/2)+b*((1+c+s)/2) = c*octagonSupport c s n := by
         simp only [octagonSupport,abs_of_nonneg hx,abs_of_nonneg hy,
           abs_of_nonneg hp,abs_of_nonneg hw0]
         dsimp [b]
         linear_combination -(n.1/2)*hunit
       rw [he₁,he₂] at hlt
-      exact (mul_lt_mul_left hc).mp hlt
+      exact lt_of_mul_lt_mul_left hlt hc.le
 
 def qturn (p : Point) : Point := (-p.2,p.1)
 def qturns : ℕ → Point → Point

@@ -21,22 +21,27 @@ def transitionFDD (t : ℝ) : ℝ :=
   (3/4)*targetSq/(Z t)^3+(a0-1/2)*Real.sin (transitionAngle t)-Y0*Real.cos (transitionAngle t)
 
 private lemma angle_derivative (t : ℝ) : HasDerivAt transitionAngle (-1) t := by
-  convert (((hasDerivAt_const t gap).sub (hasDerivAt_id t)).add_const s0) using 1 <;>
-    dsimp [transitionAngle] <;> ring
+  convert (((hasDerivAt_const t gap).sub (hasDerivAt_id t)).add_const s0) using 1
+  · rfl
+  · ring
 
 lemma hasDerivAt_transitionF {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     HasDerivAt transitionF (transitionFD t) t := by
   have hd := (((hasDerivAt_Y ht).const_sub 1).sub
     ((angle_derivative t).sin.const_mul (a0-1/2))).add
     ((angle_derivative t).cos.const_mul Y0)
-  convert hd using 1 <;> dsimp [transitionF,transitionFD] <;> ring
+  convert hd using 1
+  · rfl
+  · dsimp [transitionFD]; ring
 
 lemma hasDerivAt_transitionFD {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     HasDerivAt transitionFD (transitionFDD t) t := by
   have hd := (((hasDerivAt_Y_prime ht).neg).add
     ((angle_derivative t).cos.const_mul (a0-1/2))).add
     ((angle_derivative t).sin.const_mul Y0)
-  convert hd using 1 <;> dsimp [transitionFD,transitionFDD] <;> ring
+  convert hd using 1
+  · funext y; dsimp [transitionFD]; ring
+  · dsimp [transitionFDD]; ring
 
 lemma transition_curvature {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ td) :
     (3:ℝ)/8 < transitionFDD t := by
@@ -72,7 +77,7 @@ lemma transition_curvature {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ td) :
 
 lemma transitionF_pos {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ td) : 0 < transitionF t := by
   have hs := transition_coarse
-  have sub (x : ℝ) (hx : x ∈ Icc (2/5) td) : x ∈ Icc s0 td := ⟨by linarith,hx.2⟩
+  have sub (x : ℝ) (hx : x ∈ Icc (2/5) td) : x ∈ Icc s0 td := ⟨by linarith [hx.1],hx.2⟩
   have htest : testLabel ∈ Icc (2/5) td := by
     dsimp [testLabel]
     exact ⟨by norm_num,td_bounds.1.le⟩
@@ -98,15 +103,18 @@ lemma transitionDiagonalF_pos {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
     0 < transitionDiagonalF t := by
   have hs := transition_coarse
   have hmono : MonotoneOn transitionDiagonalF (Icc td (Real.pi/4)) := by
-    apply monoOn_of_hasDeriv_nonneg (by dsimp [transitionDiagonalF,diagonal,transitionAngle]; fun_prop)
+    apply monoOn_of_hasDeriv_nonneg
+    · unfold transitionDiagonalF diagonal transitionAngle; fun_prop
     · intro x hx
       have ha := angle_derivative x
       have hdiag : HasDerivAt diagonal (-(12/5)) x := by
         convert ((((hasDerivAt_const x (2*Real.pi+7)).sub
-          ((hasDerivAt_id x).const_mul 12))).div_const 5) using 1 <;>
-          dsimp [diagonal] <;> ring
+          ((hasDerivAt_id x).const_mul 12))).div_const 5) using 1
+        · rfl
+        · ring
       convert (((hdiag.const_sub (1/2)).sub (ha.sin.const_mul (a0-1/2))).add
-        (ha.cos.const_mul Y0)) using 1 <;> ring
+        (ha.cos.const_mul Y0)) using 1
+      rfl
     · intro x hx
       have hang : 0 ≤ transitionAngle x ∧ transitionAngle x ≤ Real.pi/2 := by
         dsimp [transitionAngle,gap]
@@ -115,7 +123,7 @@ lemma transitionDiagonalF_pos {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
       have hcos := cos_nonneg_quarter ⟨by linarith [hang.1,Real.pi_pos],hang.2⟩
       have hy0 : 0 ≤ Y0 := by dsimp [u0] at hs; linarith
       have ha0 : 0 ≤ a0-1/2 := by linarith
-      positivity
+      linarith [mul_nonneg ha0 hcos,mul_nonneg hy0 hsin]
   have he : transitionDiagonalF td=transitionF td := by
     have hh := side_at_diagonal.2
     dsimp [sideU] at hh
@@ -132,11 +140,11 @@ lemma transition_actual_pos {a u : ℝ} (h : Admissible a u)
   have htop := (side_segment h hT).2.1
   by_cases hc : label a u ≤ td
   · have hp := transitionF_pos ⟨ht,hc⟩
-    simp only [sideTopU,if_pos hc] at htop
+    simp only [sideTopU,ite_eq_left hc] at htop
     dsimp [transitionF,transitionAngle,sideU] at hp htop
     linarith
   · have hp := transitionDiagonalF_pos ⟨(lt_of_not_ge hc).le,h.label_le_quarter⟩
-    simp only [sideTopU,if_neg hc] at htop
+    simp only [sideTopU,ite_eq_right hc] at htop
     dsimp [transitionDiagonalF,transitionAngle] at hp
     linarith
 
@@ -153,12 +161,13 @@ lemma diagonalSlope_gt {x : ℝ}
   let dd : ℝ → ℝ := fun y => -diagonalSlope y
   have d1 (y : ℝ) : HasDerivAt f (df y) y := by
     convert (((Real.hasDerivAt_sin y).const_mul (51/40)).add
-      ((Real.hasDerivAt_cos y).const_mul (11/40))).sub_const (6/5) using 1 <;>
-      dsimp [f,df,diagonalSlope] <;> ring
+      ((Real.hasDerivAt_cos y).const_mul (11/40))).sub_const (6/5) using 1
+    · rfl
+    · dsimp [df]; ring
   have d2 (y : ℝ) : HasDerivAt df (dd y) y := by
     convert (((Real.hasDerivAt_cos y).const_mul (51/40)).sub
-      ((Real.hasDerivAt_sin y).const_mul (11/40))) using 1 <;>
-      dsimp [df,dd,diagonalSlope] <;> ring
+      ((Real.hasDerivAt_sin y).const_mul (11/40))) using 1
+    dsimp [dd,diagonalSlope]; ring
   have dsign (y : ℝ) (hy : y ∈ Icc (Real.pi/3) (7*Real.pi/12-2/5)) : dd y ≤ 0 := by
     have hy0 : 0 ≤ y := by linarith [hy.1,Real.pi_pos]
     have hyp : y ≤ Real.pi/2 := by linarith [hy.2,pi_upper_22]
@@ -188,22 +197,26 @@ lemma diagonalSlope_gt {x : ℝ}
 
 lemma diagonalK_pos {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) : 0 < diagonalK t := by
   have hm : MonotoneOn diagonalK (Icc (2/5) (Real.pi/4)) := by
-    apply monoOn_of_hasDeriv_nonneg (by dsimp [diagonalK]; fun_prop)
+    apply monoOn_of_hasDeriv_nonneg
+    · unfold diagonalK; fun_prop
     · intro x hx
       have ha : HasDerivAt (fun y : ℝ => 7*Real.pi/12-y) (-1) x := by
-        convert (hasDerivAt_const x (7*Real.pi/12)).sub (hasDerivAt_id x) using 1 <;> ring
+        convert (hasDerivAt_const x (7*Real.pi/12)).sub (hasDerivAt_id x) using 1
+        · rfl
+        · ring
       convert (((((hasDerivAt_const x (Real.pi/6)).sub (hasDerivAt_id x)).const_mul (6/5)).add
-        (ha.cos.const_mul (51/40))).sub (ha.sin.const_mul (11/40))) using 1 <;>
-        dsimp [diagonalK,diagonalSlope] <;> ring
+        (ha.cos.const_mul (51/40))).sub (ha.sin.const_mul (11/40))) using 1
+      rfl
     · intro x hx
       have hh := diagonalSlope_gt
         (x := 7*Real.pi/12-x) ⟨by linarith [hx.2],by linarith [hx.1]⟩
+      dsimp [diagonalSlope] at hh
       linarith
   have hbase : 0 < diagonalK (2/5) := by
     let e := 2/5-Real.pi/12
     have he : 27/200 < e ∧ e < 3/20 := by dsimp [e]; constructor <;> linarith [pi_lower_157,pi_upper_22]
     have hs := Real.sin_ge_sub_cube (show 0 ≤ e by linarith)
-    have he3 : e^3 ≤ (3/20:ℝ)^3 := by gcongr; linarith
+    have he3 : e^3 ≤ (3/20:ℝ)^3 := pow_le_pow_left₀ (by linarith [he.1]) he.2.le 3
     have heL : 29/210 ≤ e := by dsimp [e]; linarith [pi_upper_22]
     have hsL : 27/200 < Real.sin e := by nlinarith
     have hid : Real.cos (7*Real.pi/12-2/5)=Real.sin e := by

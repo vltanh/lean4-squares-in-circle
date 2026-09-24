@@ -56,14 +56,14 @@ lemma marker_point_signed {a b : ℝ} (h : Admissible a |b|) :
     |Real.sin (signedLabel a b)-b| ≤ 1/2 := by
   have hh := marker_point_magnitude h
   by_cases hb : b < 0
-  · simp only [signedLabel, if_pos hb, Real.cos_neg, Real.sin_neg]
+  · simp only [signedLabel, ite_eq_left hb, Real.cos_neg, Real.sin_neg]
     refine ⟨hh.1,?_⟩
     have hid : -Real.sin (label a |b|)-b = -(Real.sin (label a |b|)-|b|) := by
       rw [abs_of_neg hb]
       ring
     rw [hid,abs_neg]
     exact hh.2
-  · simpa only [signedLabel, if_neg hb, abs_of_nonneg (le_of_not_gt hb)] using hh
+  · simpa only [signedLabel, ite_eq_right hb, abs_of_nonneg (le_of_not_gt hb)] using hh
 
 lemma point_le_support {a b x y : ℝ}
     (hx : |x-a| ≤ 1/2) (hy : |y-b| ≤ 1/2) (z : ℝ) :
@@ -136,7 +136,7 @@ lemma support_lower {a b : ℝ} (h : Admissible a |b|) (z : ℝ) :
   dsimp [support]
   linarith
 
-lemma outward_support_pos {a b A B : ℝ}
+lemma outward_support_pos {a A B : ℝ}
     (ha : 1/2 ≤ a) (hB : Admissible A |B|) (z : ℝ) :
     0 < a+1/2+support A B z := by
   have hlow := support_lower hB z

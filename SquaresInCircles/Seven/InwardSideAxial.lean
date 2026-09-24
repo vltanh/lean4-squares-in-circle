@@ -62,7 +62,7 @@ private lemma inward_side_axial_identity {a u A v : ℝ}
 
 /-- The clearance lower bound needed when the relative turn is negative. -/
 lemma inward_side_axial_transverse {a u A v z : ℝ}
-    (h : Admissible a u) (h' : Admissible A v)
+    (h : Admissible a u)
     (hT : label a u = side a u) (hA : label A v = axial v)
     (he : label a u-label A v-Real.pi/6 = -z) :
     (4/5)*z-3/4 ≤ v-1/2 := by
@@ -94,7 +94,7 @@ theorem inward_side_axial_lower {a u A v : ℝ}
       dsimp [z]
       constructor <;> linarith [he.1]
     have hez : e = -z := by dsimp [z]; ring
-    have hv := inward_side_axial_transverse h h' hT hA hez
+    have hv := inward_side_axial_transverse h hT hA hez
     have hh := inward_negative_turn_bound h'.2.2.1 hv hz
     rw [hez,abs_neg,abs_of_nonneg hz.1]
     dsimp [inwardExpression]

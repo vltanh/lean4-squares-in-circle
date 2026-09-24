@@ -30,8 +30,8 @@ private lemma targetH_support {A v t : ℝ} (h : Admissible A v)
   have hc0 := cos_nonneg_quarter ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
   have he : 2*Real.pi-gap-t+label A v=2*Real.pi-(gap+t-label A v) := by ring
   rw [he]
-  simp only [support,Real.cos_sub,Real.sin_sub,Real.cos_two_pi,Real.sin_two_pi,
-    one_mul,zero_mul,sub_zero,zero_sub,abs_neg,abs_of_nonneg hs0,abs_of_nonneg hc0,targetH]
+  simp only [support,cos_two_pi_sub,Real.sin_two_pi_sub,abs_neg,abs_of_nonneg hs0,
+    abs_of_nonneg hc0,targetH]
   ring
 
 private lemma targetH_pos {A v t : ℝ} (h : Admissible A v)
@@ -48,7 +48,7 @@ private lemma targetH_pos {A v t : ℝ} (h : Admissible A v)
   have he : 2*Real.pi-gap-t+label A v-(label A v-1/2)=2*Real.pi-(gap+t-1/2) := by ring
   rw [he,cos_two_pi_sub,targetH_support h hT ht] at hm
   have hp : 0 < Real.cos (gap+t-1/2) := Real.cos_pos_of_mem_Ioo
-    ⟨by dsimp [gap]; linarith [ht.1,Real.pi_pos],
+    ⟨by dsimp [gap]; linarith [ht.1,pi_lower_157],
      by dsimp [gap]; linarith [ht.2,pi_upper_22]⟩
   exact hp.trans_le hm
 
@@ -62,16 +62,18 @@ private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
   have hc0 := cos_nonneg_quarter ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
   have hsin0 := Real.sin_nonneg_of_nonneg_of_le_pi hd.1.le (by linarith [hd.2,Real.pi_pos])
   have hline : A ≥ Boundary.tieA s := by
-    have hh := Boundary.side_segment h hT
-    change _ ≥ Boundary.tieA s
-    change A=Boundary.tieA s+(4/9)*(v-(4/5)*s) at hh.2.2
-    linarith [hh.1]
+    obtain ⟨h1,-,h3⟩ := Boundary.side_segment h hT
+    have h1' : (4/5)*s ≤ v := h1
+    have h3' : A=Boundary.tieA s+(4/9)*(v-(4/5)*s) := h3
+    linarith
   have hvbound : v ≤ 1/2+(6/5)*(s-Real.pi/6) := by
     have hh := side_identity_transverse A v
     rw [← hT] at hh
     change s=_ at hh
     linarith [h.remainder_nonneg]
-  change 1 < (A+1/2)*Real.cos d+(1/2-v)*Real.sin d
+  have hH : targetH A v (label A v) 0=(A+1/2)*Real.cos d+(1/2-v)*Real.sin d := by
+    dsimp only [targetH,d,s]; rw [add_zero]
+  rw [hH]
   by_cases hs1 : s ≤ Real.pi/6
   · have hA : 19/20 < A := by dsimp [Boundary.tieA] at hline; linarith [pi_lower_157]
     have hv : v ≤ 1/2 := by linarith
@@ -80,7 +82,7 @@ private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
       have hh := Real.one_sub_sq_div_two_le_cos (x := d)
       nlinarith
     have hm := mul_nonneg (show 0 ≤ 1/2-v by linarith) hsin0
-    have hc : (29/20:ℝ)*(151/200) < (A+1/2)*Real.cos d := by gcongr <;> linarith
+    have hc : (29/20:ℝ)*(151/200) < (A+1/2)*Real.cos d := by gcongr; linarith
     nlinarith
   · by_cases hs2 : s ≤ 2/3
     · have hA : 4/5 < A := by dsimp [Boundary.tieA] at hline; linarith [pi_lower_157]
@@ -98,7 +100,7 @@ private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
           ⟨by linarith [Real.pi_pos],by linarith [Real.pi_pos]⟩ hd6
         simpa only [Real.sin_pi_div_six] using hh
       have hm := mul_nonneg (show 0 ≤ 7/10-v by linarith) hsin0
-      have hc : (13/10:ℝ)*(17/20) < (A+1/2)*Real.cos d := by gcongr <;> linarith
+      have hc : (13/10:ℝ)*(17/20) < (A+1/2)*Real.cos d := by gcongr; linarith
       nlinarith
     · have hA := side_selected_a_gt h hT
       have hv := h.u_lt
@@ -108,14 +110,14 @@ private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
         nlinarith
       have hsin : Real.sin d < 8/21 := (Real.sin_le hd.1.le).trans_lt hdlim
       have hm := mul_nonneg (show 0 ≤ 31/40-v by linarith) hsin0
-      have hc : (6/5:ℝ)*(409/441) < (A+1/2)*Real.cos d := by gcongr <;> linarith
+      have hc : (6/5:ℝ)*(409/441) < (A+1/2)*Real.cos d := by gcongr; linarith
       nlinarith
 
 private def quarterProfile (d : ℝ) : ℝ :=
   (3/2)*Real.cos (5*Real.pi/12-d)-d*((4/5)*Real.cos (5*Real.pi/12-d)+(6/5)*Real.sin (5*Real.pi/12-d))
 
 private def quarterProfileD (d : ℝ) : ℝ :=
-  (7/10)*Real.sin (5*Real.pi/12-d)-(4/5)*Real.cos (5*Real.pi/12-d)-
+  (3/10)*Real.sin (5*Real.pi/12-d)-(4/5)*Real.cos (5*Real.pi/12-d)-
     d*((4/5)*Real.sin (5*Real.pi/12-d)-(6/5)*Real.cos (5*Real.pi/12-d))
 
 private def quarterProfileDD (d : ℝ) : ℝ :=
@@ -126,17 +128,19 @@ private lemma quarter_profile_gt {d : ℝ} (hd : -1/6 ≤ d ∧ d ≤ Real.pi/12
     (1:ℝ)/3 < quarterProfile d := by
   let f : ℝ → ℝ := fun x => quarterProfile x-1/3
   have d1 (x : ℝ) : HasDerivAt f (quarterProfileD x) x := by
-    have harg : HasDerivAt (fun y : ℝ => 5*Real.pi/12-y) (-1) x := by
-      convert (hasDerivAt_const x (5*Real.pi/12)).sub (hasDerivAt_id x) using 1 <;> ring
-    convert (((harg.cos.const_mul (3/2)).sub
-      ((hasDerivAt_id x).mul ((harg.cos.const_mul (4/5)).add (harg.sin.const_mul (6/5))))).sub_const (1/3)) using 1 <;>
-      dsimp [f,quarterProfile,quarterProfileD] <;> ring
+    have harg : HasDerivAt (fun y : ℝ => 5*Real.pi/12-y) (-1) x :=
+      (hasDerivAt_id' x).const_sub _
+    exact (((harg.cos.const_mul (3/2)).fun_sub
+      ((hasDerivAt_id' x).fun_mul ((harg.cos.const_mul (4/5)).fun_add
+        (harg.sin.const_mul (6/5))))).sub_const (1/3)).congr_deriv
+      (by simp only [quarterProfileD]; ring)
   have d2 (x : ℝ) : HasDerivAt quarterProfileD (quarterProfileDD x) x := by
-    have harg : HasDerivAt (fun y : ℝ => 5*Real.pi/12-y) (-1) x := by
-      convert (hasDerivAt_const x (5*Real.pi/12)).sub (hasDerivAt_id x) using 1 <;> ring
-    convert (((harg.sin.const_mul (7/10)).sub (harg.cos.const_mul (4/5))).sub
-      ((hasDerivAt_id x).mul ((harg.sin.const_mul (4/5)).sub (harg.cos.const_mul (6/5))))) using 1 <;>
-      dsimp [quarterProfileD,quarterProfileDD] <;> ring
+    have harg : HasDerivAt (fun y : ℝ => 5*Real.pi/12-y) (-1) x :=
+      (hasDerivAt_id' x).const_sub _
+    exact (((harg.sin.const_mul (3/10)).fun_sub (harg.cos.const_mul (4/5))).fun_sub
+      ((hasDerivAt_id' x).fun_mul ((harg.sin.const_mul (4/5)).fun_sub
+        (harg.cos.const_mul (6/5))))).congr_deriv
+      (by simp only [quarterProfileDD]; ring)
   have hdd (x : ℝ) (hx : x ∈ Icc (-1/6) (Real.pi/12)) : quarterProfileDD x ≤ 0 := by
     let z := 5*Real.pi/12-x
     have hz : Real.pi/3 ≤ z ∧ z ≤ Real.pi/2 := by
@@ -166,7 +170,7 @@ private lemma quarter_profile_gt {d : ℝ} (hd : -1/6 ≤ d ∧ d ≤ Real.pi/12
     have he : 9/100 < e ∧ e < 1/10 := by dsimp [e]; constructor <;> linarith [pi_lower_157,pi_upper_22]
     have hs := Real.sin_ge_sub_cube (show 0 ≤ e by linarith)
     have hc := Real.one_sub_sq_div_two_le_cos (x := e)
-    have he3 : e^3 ≤ (1/10:ℝ)^3 := by gcongr; linarith
+    have he3 : e^3 ≤ (1/10:ℝ)^3 := pow_le_pow_left₀ (by linarith) he.2.le 3
     have hid : quarterProfile (-1/6)=(49/30)*Real.sin e+(1/5)*Real.cos e := by
       have hang : 5*Real.pi/12-(-1/6)=Real.pi/2-e := by dsimp [e]; ring
       dsimp [quarterProfile]
@@ -188,7 +192,7 @@ private lemma quarter_profile_gt {d : ℝ} (hd : -1/6 ≤ d ∧ d ≤ Real.pi/12
     nlinarith
   have hh := positive_of_second_nonpos hd
     (by dsimp [f,quarterProfile]; fun_prop)
-    (by dsimp [quarterProfileD]; fun_prop)
+    (by unfold quarterProfileD; fun_prop)
     (fun x _ => d1 x) (fun x _ => d2 x) hdd hlo hhi
   dsimp [f] at hh
   linarith
@@ -238,18 +242,17 @@ theorem fixed_gap_inward_side_target {a u A v : ℝ}
   let df : ℝ → ℝ := fun t => 4/5-(A+1/2)*Real.sin (gap+t-s)+(1/2-v)*Real.cos (gap+t-s)
   let ddf : ℝ → ℝ := fun t => -targetH A v s t
   have hd (t : ℝ) : HasDerivAt f (df t) t := by
-    have ha : HasDerivAt (fun x : ℝ => gap+x-s) 1 t := by
-      convert ((hasDerivAt_const t gap).add (hasDerivAt_id t)).sub_const s using 1 <;> ring
-    convert (((hasDerivAt_const t (1/2-(1+2*Real.pi/15))).add
-      ((hasDerivAt_id t).const_mul (4/5))).add
-      ((ha.cos.const_mul (A+1/2)).add (ha.sin.const_mul (1/2-v)))) using 1 <;>
-      dsimp [f,df,targetH] <;> ring
+    have ha : HasDerivAt (fun x : ℝ => gap+x-s) 1 t :=
+      ((hasDerivAt_id' t).const_add gap).sub_const s
+    exact (((hasDerivAt_const t (1/2-(1+2*Real.pi/15))).fun_add
+      ((hasDerivAt_id' t).const_mul (4/5))).fun_add
+      ((ha.cos.const_mul (A+1/2)).fun_add (ha.sin.const_mul (1/2-v)))).congr_deriv
+      (by simp only [df]; ring)
   have hdd (t : ℝ) : HasDerivAt df (ddf t) t := by
-    have ha : HasDerivAt (fun x : ℝ => gap+x-s) 1 t := by
-      convert ((hasDerivAt_const t gap).add (hasDerivAt_id t)).sub_const s using 1 <;> ring
-    convert (((hasDerivAt_const t (4/5)).sub (ha.sin.const_mul (A+1/2))).add
-      (ha.cos.const_mul (1/2-v))) using 1 <;>
-      dsimp [df,ddf,targetH] <;> ring
+    have ha : HasDerivAt (fun x : ℝ => gap+x-s) 1 t :=
+      ((hasDerivAt_id' t).const_add gap).sub_const s
+    exact (((hasDerivAt_const t (4/5)).fun_sub (ha.sin.const_mul (A+1/2))).fun_add
+      (ha.cos.const_mul (1/2-v))).congr_deriv (by simp only [ddf,targetH]; ring)
   have hm (t : ℝ) (ht : t ∈ Icc 0 (Real.pi/4)) : ddf t ≤ 0 := by
     have hh := targetH_pos h' hT ht
     dsimp [ddf,s]

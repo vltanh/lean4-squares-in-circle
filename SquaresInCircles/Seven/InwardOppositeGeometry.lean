@@ -29,17 +29,17 @@ lemma inward_opposite_formula {a u A v : ℝ}
     constructor <;> linarith
   have hc : 0 ≤ Real.cos e := cos_nonneg_quarter
     ⟨by linarith [hr.1,Real.pi_pos],by linarith [hr.2,Real.pi_pos]⟩
-  have he : 2*Real.pi-gap-label a u-label A v=3*Real.pi/2-e := by
+  have he : 2*Real.pi-gap-label a u+-label A v=3*Real.pi/2-e := by
     dsimp [e,gap]; ring
   rw [pairSupport_two]
   simp only [TransverseSign.coe,one_mul,neg_one_mul]
   rw [he]
   have hcos : Real.cos (3*Real.pi/2-e) = -Real.sin e := by
     rw [show 3*Real.pi/2-e=Real.pi+(Real.pi/2-e) by ring]
-    simp [Real.cos_add,Real.sin_add,Real.cos_pi_div_two_sub]
+    simp [Real.cos_add,Real.cos_pi_div_two_sub]
   have hsin : Real.sin (3*Real.pi/2-e) = -Real.cos e := by
     rw [show 3*Real.pi/2-e=Real.pi+(Real.pi/2-e) by ring]
-    simp [Real.cos_add,Real.sin_add,Real.sin_pi_div_two_sub]
+    simp [Real.sin_add,Real.sin_pi_div_two_sub]
   simp only [support,hcos,hsin,abs_neg,abs_of_nonneg hc,inwardOpposite]
   ring
 
@@ -81,8 +81,8 @@ lemma inward_opposite_negative_turn {a u A v : ℝ}
   have hprod := mul_nonneg hz.1 (sub_nonneg.mpr hfactor)
   rw [inward_opposite_formula h h',inward_opposite_side_identity hT hA rfl]
   have hez : label a u+label A v-Real.pi/6 = -z := by dsimp [z]; ring
-  rw [hez,Real.sin_neg,Real.cos_neg,abs_neg,abs_of_nonneg hs0,
-    abs_neg,abs_of_nonneg hz.1]
+  rw [hez,Real.sin_neg,Real.cos_neg,abs_neg z,abs_neg (Real.sin z),abs_of_nonneg hs0,
+    abs_of_nonneg hz.1]
   nlinarith
 
 namespace Boundary
@@ -139,18 +139,18 @@ lemma sideA_displacement {t s : ℝ}
     sideA t-sideA s ≤ (12/13)*(s-t) := by
   let f : ℝ → ℝ := fun x => sideA x+(12/13)*x
   have hm : MonotoneOn f (Icc t s) := by
-    apply monoOn_of_hasDeriv_nonneg
+    apply monoOn_of_hasDeriv_nonneg (d := fun x => 12/13-Y x/Z x)
       (fun x hx => by
         have hh := (hasDerivAt_X ⟨ht.trans hx.1,hx.2.trans hs⟩).sub_const (1/2)
         exact (hh.add ((hasDerivAt_id x).const_mul (12/13))).continuousAt.continuousWithinAt)
     · intro x hx
-      convert ((hasDerivAt_X ⟨by linarith,by linarith⟩).sub_const (1/2)).add
-        ((hasDerivAt_id x).const_mul (12/13)) using 1 <;>
-        dsimp [f,sideA] <;> ring
+      exact (((hasDerivAt_X ⟨by linarith [hx.1],by linarith [hx.2]⟩).sub_const (1/2)).fun_add
+        ((hasDerivAt_id' x).const_mul (12/13))).congr_deriv (by ring)
     · intro x hx
-      have hb := circle_bounds ⟨by linarith,by linarith⟩
-      have he := (circle_identities ⟨by linarith,by linarith⟩).2.2
-      have hZ := Z_pos ⟨by linarith,by linarith⟩
+      have hx' : s0 ≤ x ∧ x ≤ td := ⟨by linarith [hx.1],by linarith [hx.2]⟩
+      have hb := circle_bounds hx'
+      have he := (circle_identities hx').2.2
+      have hZ := Z_pos hx'
       have hle : Y x/Z x ≤ 12/13 := (div_le_iff₀ hZ).mpr (by linarith [hb.2.2.1])
       linarith
   have h := hm ⟨le_rfl,hts⟩ ⟨hts,le_rfl⟩ hts
@@ -163,9 +163,9 @@ lemma target_at_upper_side (t : ℝ) (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
   rw [hlabel]
   symm
   by_cases hs : t ≤ td
-  · simp only [sideTopA,sideTopU,if_pos hs]
+  · simp only [sideTopA,sideTopU,ite_eq_left hs]
     exact circle_label ⟨ht.1,hs⟩
-  · simp only [sideTopA,sideTopU,if_neg hs]
+  · simp only [sideTopA,sideTopU,ite_eq_right hs]
     exact (diagonal_state ⟨(lt_of_not_ge hs).le,ht.2⟩).2.2
 
 lemma side_radial_upper {a u : ℝ} (h : Admissible a u)

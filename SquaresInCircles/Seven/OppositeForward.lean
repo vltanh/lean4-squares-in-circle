@@ -16,7 +16,7 @@ namespace SquaresInCircles.Seven
 lemma pairSupport_forward_opposite {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) :
     pairSupport a u A v .negative .positive 1 gap =
-      sideSideSupport a u A v (label a u+label A v-gap) := by
+      sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
   have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
     have h0 := h.label_nonneg
@@ -39,7 +39,7 @@ lemma pairSupport_forward_opposite {a u A v : ℝ}
   have hs' : Real.sin (3*Real.pi/2+w)=-Real.cos w := by
     rw [show 3*Real.pi/2+w=Real.pi+(Real.pi/2+w) by ring]
     simp [Real.cos_add,Real.sin_add]
-  change _ = sideSideSupport a u A v w
+  change _ = sideSideSupport u A v w
   simp only [support,hc',hs',abs_neg,abs_of_nonneg hc,sideSideSupport]
   ring
 
@@ -53,9 +53,9 @@ lemma forward_turn_nonneg {w : ℝ} (hw : 0 ≤ w ∧ w ≤ Real.pi/6) :
   have hm := mul_nonneg hw.1 hp
   nlinarith
 
-lemma opposite_support_positive_turn {a u A v w : ℝ}
+lemma opposite_support_positive_turn {u A v w : ℝ}
     (hA : 1/2 ≤ A) (hv : 0 ≤ v) (hw : 0 ≤ w ∧ w ≤ Real.pi/6) :
-    1-u-v+Real.sin w-(1/2)*(1-Real.cos w) ≤ sideSideSupport a u A v w := by
+    1-u-v+Real.sin w-(1/2)*(1-Real.cos w) ≤ sideSideSupport u A v w := by
   have hs : 0 ≤ Real.sin w := Real.sin_nonneg_of_nonneg_of_le_pi hw.1
     (by linarith [hw.2,Real.pi_pos])
   have hc : 0 ≤ 1-Real.cos w := sub_nonneg.mpr (Real.cos_le_one w)
@@ -65,10 +65,10 @@ lemma opposite_support_positive_turn {a u A v w : ℝ}
   rw [abs_of_nonneg hs]
   nlinarith
 
-lemma opposite_support_negative_turn {a u A v z : ℝ}
+lemma opposite_support_negative_turn {u A v z : ℝ}
     (h' : Admissible A v) (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
     1-u-v-(A-1/2)*Real.sin z-(1/2)*(1-Real.cos z) ≤
-      sideSideSupport a u A v (-z) := by
+      sideSideSupport u A v (-z) := by
   have hs : 0 ≤ Real.sin z := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
     (by linarith [hz.2,Real.pi_pos])
   have hc : 0 ≤ 1-Real.cos z := sub_nonneg.mpr (Real.cos_le_one z)
@@ -98,7 +98,7 @@ lemma opposite_axial_scalar {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
 lemma opposite_axial_axial_pos {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hA : label a u=axial u) (hB : label A v=axial v) :
-    0 < sideSideSupport a u A v (label a u+label A v-gap) := by
+    0 < sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
   have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
     have h0 := h.label_nonneg
@@ -112,9 +112,9 @@ lemma opposite_axial_axial_pos {a u A v : ℝ}
     rw [hA,hB]
     dsimp [axial]
     ring
-  change 0 < sideSideSupport a u A v w
+  change 0 < sideSideSupport u A v w
   by_cases hpos : 0 ≤ w
-  · have hl := opposite_support_positive_turn h'.2.2.1 h'.1 ⟨hpos,hw.2⟩
+  · have hl := opposite_support_positive_turn (u := u) h'.2.2.1 h'.1 ⟨hpos,hw.2⟩
     have hr := forward_turn_nonneg ⟨hpos,hw.2⟩
     dsimp [gap] at he
     linarith [pi_upper_22]
@@ -122,7 +122,7 @@ lemma opposite_axial_axial_pos {a u A v : ℝ}
     have hz : 0 ≤ z ∧ z ≤ Real.pi/3 := by
       dsimp [z]
       constructor <;> linarith [hw.1]
-    have hl := opposite_support_negative_turn (a := a) (u := u) h' hz
+    have hl := opposite_support_negative_turn (u := u) h' hz
     have hr := opposite_axial_scalar hz
     have hs : 0 ≤ Real.sin z := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
       (by linarith [hz.2,Real.pi_pos])
@@ -153,17 +153,17 @@ lemma mixed_linear_bound {a u : ℝ} (h : Admissible a u) :
       exact mul_nonneg radius_nonneg (Real.sqrt_nonneg _)
     have hsq : (radius*Real.sqrt (((3/5 : ℝ)^2+(11/15)^2)))^2 =
         (Real.sqrt 2626/30)^2 := by
-      rw [mul_pow,radius_sq,hs,div_pow,hs']
+      rw [mul_pow,radius_sq,hs,div_pow (Real.sqrt 2626),hs']
       norm_num
     nlinarith [Real.sqrt_nonneg (2626 : ℝ)]
-  norm_num only [neg_sq] at hh
+  simp only [neg_sq] at hh
   have hn : -radius*Real.sqrt (((3/5 : ℝ)^2+(11/15)^2)) = -(Real.sqrt 2626/30) := by
     nlinarith [he]
   rw [hn] at hh
   nlinarith
 
 lemma mixed_clearance_bound {a u A v : ℝ}
-    (h : Admissible a u) (h' : Admissible A v)
+    (h' : Admissible A v)
     (hA : label a u=axial u) (hT : label A v=side A v) :
     mixedMargin-(4/5)*(label a u+label A v-gap) ≤ 1-u-v := by
   have hl := mixed_linear_bound h'
@@ -172,17 +172,17 @@ lemma mixed_clearance_bound {a u A v : ℝ}
   linarith
 
 lemma mixed_clearance_bound_swap {a u A v : ℝ}
-    (h : Admissible a u) (h' : Admissible A v)
+    (h : Admissible a u)
     (hT : label a u=side a u) (hA : label A v=axial v) :
     mixedMargin-(4/5)*(label a u+label A v-gap) ≤ 1-u-v := by
-  have hh := mixed_clearance_bound h' h hA hT
+  have hh := mixed_clearance_bound h hA hT
   linarith
 
-lemma mixed_positive_turn {a u A v w : ℝ}
+lemma mixed_positive_turn {u A v w : ℝ}
     (h' : Admissible A v) (hw : 0 ≤ w ∧ w ≤ Real.pi/6)
     (hclear : mixedMargin-(4/5)*w ≤ 1-u-v) :
-    0 < sideSideSupport a u A v w := by
-  have hl := opposite_support_positive_turn h'.2.2.1 h'.1 hw
+    0 < sideSideSupport u A v w := by
+  have hl := opposite_support_positive_turn (u := u) h'.2.2.1 h'.1 hw
   have hr := forward_turn_nonneg hw
   linarith [mixedMargin_gt]
 
@@ -195,18 +195,15 @@ lemma side_axial_far_profile {z : ℝ} (hz : 1/3 ≤ z ∧ z ≤ 7/10) :
   have hc1 : Real.sqrt 3-1 < 11/15 := by linarith [sqrt_three_bounds.2]
   have hm : MonotoneOn B (Icc (1/3) (7/10)) := by
     apply monotoneOn_of_deriv_nonneg (convex_Icc _ _) (by dsimp [B]; fun_prop)
+    · exact Differentiable.differentiableOn (by dsimp [B]; fun_prop)
     · intro x hx
-      dsimp [B]
-      fun_prop
-    · intro x hx
-      have hx' : 1/3 ≤ x ∧ x ≤ 7/10 := interior_subset hx
+      have hx' : x ∈ Icc (1/3 : ℝ) (7/10) := interior_subset hx
       have hsin := Real.sin_le (show 0 ≤ x by linarith [hx'.1])
       have hcos := mul_le_mul_of_nonneg_left (Real.cos_le_one x) hc0
       have hd : deriv B x = 6/5-(Real.sqrt 3-1)*Real.cos x-(1/2)*Real.sin x := by
         simp (disch := fun_prop) [B]
-        ring
       rw [hd]
-      linarith
+      linarith [hx'.2]
   have hb : 0 < B (1/3) := by
     have hsin := sin_upper_five (show (0 : ℝ) ≤ 1/3 by norm_num)
     have hcos := Real.one_sub_sq_div_two_le_cos (x := (1/3 : ℝ))
@@ -220,7 +217,7 @@ lemma side_axial_far_profile {z : ℝ} (hz : 1/3 ≤ z ∧ z ≤ 7/10) :
 lemma opposite_axial_side_pos {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hA : label a u=axial u) (hT : label A v=side A v) :
-    0 < sideSideSupport a u A v (label a u+label A v-gap) := by
+    0 < sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
   have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
     have h0 := h.label_nonneg
@@ -229,9 +226,9 @@ lemma opposite_axial_side_pos {a u A v : ℝ}
     have h3 := h'.label_le_quarter
     dsimp [w,gap]
     constructor <;> linarith
-  have hclear := mixed_clearance_bound h h' hA hT
+  have hclear := mixed_clearance_bound h' hA hT
   change mixedMargin-(4/5)*w ≤ 1-u-v at hclear
-  change 0 < sideSideSupport a u A v w
+  change 0 < sideSideSupport u A v w
   by_cases hpos : 0 ≤ w
   · exact mixed_positive_turn h' ⟨hpos,hw.2⟩ hclear
   · let z := -w
@@ -241,7 +238,7 @@ lemma opposite_axial_side_pos {a u A v : ℝ}
       have ha := h.label_nonneg
       dsimp [z,w,gap]
       linarith [pi_upper_22]
-    have hl := opposite_support_negative_turn (a := a) (u := u) h' hz
+    have hl := opposite_support_negative_turn (u := u) h' hz
     have hsin0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
       (by linarith [hz.2,Real.pi_pos])
     have hsin := Real.sin_le hz.1
@@ -257,7 +254,7 @@ lemma opposite_axial_side_pos {a u A v : ℝ}
 lemma opposite_side_axial_pos {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u=side a u) (hA : label A v=axial v) :
-    0 < sideSideSupport a u A v (label a u+label A v-gap) := by
+    0 < sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
   have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
     have h0 := h.label_nonneg
@@ -266,9 +263,9 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
     have h3 := h'.label_le_quarter
     dsimp [w,gap]
     constructor <;> linarith
-  have hclear := mixed_clearance_bound_swap h h' hT hA
+  have hclear := mixed_clearance_bound_swap h hT hA
   change mixedMargin-(4/5)*w ≤ 1-u-v at hclear
-  change 0 < sideSideSupport a u A v w
+  change 0 < sideSideSupport u A v w
   by_cases hpos : 0 ≤ w
   · exact mixed_positive_turn h' ⟨hpos,hw.2⟩ hclear
   · let z := -w
@@ -281,7 +278,7 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
     have he : w = -z := by dsimp [z]; ring
     rw [he]
     rw [he] at hclear
-    have hl := opposite_support_negative_turn (a := a) (u := u) h' hz
+    have hl := opposite_support_negative_turn (u := u) h' hz
     have hsin0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
       (by linarith [hz.2,Real.pi_pos])
     have hA1 := h'.a_le_sqrt_three

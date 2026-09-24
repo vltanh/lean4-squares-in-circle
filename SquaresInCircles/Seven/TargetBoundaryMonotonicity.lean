@@ -41,7 +41,7 @@ lemma axial_circle_bounds {s : ℝ} (hs : 0 ≤ s ∧ s ≤ s0) :
   have hstate := circle_state ⟨hu.1,huR⟩
   have ho := circle_order hu.1 hu.2 (by linarith [transition_coarse.2.2.2.1,rd_bounds.1])
   rw [circle_u0] at ho
-  have he : axialX s=circle ((4/5)*s)+1/2 := by dsimp [axialX,circle]; congr 2 <;> ring
+  have he : axialX s=circle ((4/5)*s)+1/2 := by dsimp [axialX,circle]; ring_nf
   have hey : axialY s=(4/5)*s+1/2 := by dsimp [axialY]; ring
   have hnorm := circle_eq ⟨hu.1,huR⟩
   rw [he,hey]
@@ -51,8 +51,9 @@ lemma axial_circle_bounds {s : ℝ} (hs : 0 ≤ s ∧ s ≤ s0) :
     by dsimp [u0] at hu; linarith,by simpa [add_comm] using hnorm⟩
 
 lemma hasDerivAt_axialY (s : ℝ) : HasDerivAt axialY (4/5) s := by
-  convert ((hasDerivAt_id s).const_mul (4/5)).const_add (1/2) using 1 <;>
-    dsimp [axialY] <;> ring
+  convert ((hasDerivAt_id s).const_mul (4/5)).const_add (1/2) using 1
+  · rfl
+  · ring
 
 lemma hasDerivAt_axialX {s : ℝ} (hs : 0 ≤ s ∧ s ≤ s0) :
     HasDerivAt axialX (-(4/5)*axialY s/axialX s) s := by
@@ -91,13 +92,14 @@ lemma ratio_derivative_lt_one {s : ℝ} (hs : 0 ≤ s ∧ s ≤ s0) : ratioD s <
     linarith
   have hrad : 0 < 13-4*(axialX s)^2 := by nlinarith [hb.2.2.1,hy2]
   have hpoly := axialRatioPolynomial_pos ⟨hb.1.le,hb.2.1.le⟩
-  have hden : 0 < 5*axialX s*(5*axialX s-4)^2*(13-4*(axialX s)^2) := by positivity
+  have hden : 0 < 5*axialX s*(5*axialX s-4)^2*(13-4*(axialX s)^2) :=
+    mul_pos (mul_pos (by linarith [hb.1]) (pow_pos (by linarith [hb.1]) 2)) hrad
   have hid : 1-ratioD s = axialRatioPolynomial (axialX s)/
       (5*axialX s*(5*axialX s-4)^2*(13-4*(axialX s)^2)) := by
     dsimp [ratioD]
     rw [hy2]
     dsimp [axialRatioPolynomial]
-    field_simp [hx,show 5*axialX s-4 ≠ 0 by linarith [hb.1],
+    field_simp [hx,show axialX s*5-4 ≠ 0 by linarith [hb.1],
       ne_of_gt hrad,show 13/4-(axialX s)^2 ≠ 0 by nlinarith]
     ring
   have hp := div_pos hpoly hden
@@ -130,9 +132,9 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
     constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,pi_upper_22,Real.pi_pos]
   have hEder (s : ℝ) (hs : s ∈ Icc 0 s0) :
       HasDerivAt E ((1-ratioD s)*Real.cos (gap-t+s)+ratio s*Real.sin (gap-t+s)) s := by
-    have hd : HasDerivAt (fun x : ℝ => gap-t+x) 1 s := by
-      convert (hasDerivAt_id s).const_add (gap-t) using 1 <;> ring
-    convert hd.sin.sub ((hasDerivAt_ratio hs).mul hd.cos) using 1 <;> dsimp [E] <;> ring
+    have hd : HasDerivAt (fun x : ℝ => gap-t+x) 1 s := (hasDerivAt_id s).const_add (gap-t)
+    convert hd.sin.sub ((hasDerivAt_ratio hs).mul hd.cos) using 1
+    ring
   have hEmono : MonotoneOn E (Icc 0 s0) := monoOn_of_hasDeriv_nonneg
     (fun s hs => (hEder s hs).continuousAt.continuousWithinAt)
     (fun s hs => hEder s ⟨hs.1.le,hs.2.le⟩)
@@ -141,16 +143,17 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
       have hn := ratio_nonneg ⟨hs.1.le,hs.2.le⟩
       have ha := hangle s ⟨hs.1.le,hs.2.le⟩
       have hc := cos_nonneg_quarter ⟨by linarith [ha.1,Real.pi_pos],ha.2.le⟩
-      have hh := Real.sin_nonneg_of_nonneg_of_le_pi
+      have hh := Real.sin_nonneg_of_nonneg_of_le_pi (x := gap-t+s)
         (by linarith [ha.1,Real.pi_pos]) (by linarith [ha.2,Real.pi_pos])
-      positivity)
+      exact add_nonneg (mul_nonneg (by linarith) hc) (mul_nonneg hn hh))
   have hE0 : 0 < E 0 := by
     have ha := hangle 0 ⟨le_rfl,by linarith [transition_coarse.2.2.2.2.1]⟩
     have hs := sin_le_sin_half (x := Real.pi/12) (y := gap-t)
       (by constructor <;> linarith [Real.pi_pos])
       (by constructor <;> linarith [ha.1,ha.2,Real.pi_pos]) (by simpa using ha.1)
     have hl := Real.sin_ge_sub_cube (show 0 ≤ Real.pi/12 by positivity)
-    have hc : (Real.pi/12)^3 ≤ (11/42:ℝ)^3 := by gcongr; linarith [pi_upper_22]
+    have hc : (Real.pi/12)^3 ≤ (11/42:ℝ)^3 :=
+      pow_le_pow_left₀ (by positivity) (by linarith [pi_upper_22]) 3
     have hR := ratio_nonneg (s := 0) ⟨le_rfl,by linarith [transition_coarse.2.2.2.2.1]⟩
     have hm := mul_le_mul_of_nonneg_left (Real.cos_le_one (gap-t)) hR
     dsimp [E]
@@ -161,8 +164,7 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
   have hder (s : ℝ) (hs : s ∈ Icc 0 s0) :
       HasDerivAt (circleTarget t)
         (-(axialY s*(axialX s-4/5)/axialX s)*E s) s := by
-    have hd : HasDerivAt (fun x : ℝ => gap-t+x) 1 s := by
-      convert (hasDerivAt_id s).const_add (gap-t) using 1 <;> ring
+    have hd : HasDerivAt (fun x : ℝ => gap-t+x) 1 s := (hasDerivAt_id s).const_add (gap-t)
     have hx := hasDerivAt_axialX hs
     have hy := hasDerivAt_axialY s
     have hb := axial_circle_bounds hs
@@ -171,7 +173,7 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
     · dsimp [E,ratio]
       field_simp [show axialX s ≠ 0 by linarith [hb.1],
         show axialY s ≠ 0 by linarith [hb.2.2.1],
-        show axialX s-4/5 ≠ 0 by linarith [hb.1]]
+        show axialX s*5-4 ≠ 0 by linarith [hb.1]]
       ring
   apply antiOn_of_hasDeriv_nonpos
     (fun s hs => (hder s hs).continuousAt.continuousWithinAt)
@@ -179,7 +181,8 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
   intro s hs
   have hb := axial_circle_bounds ⟨hs.1.le,hs.2.le⟩
   have hp := hEpos s ⟨hs.1.le,hs.2.le⟩
-  have hcoef : 0 ≤ axialY s*(axialX s-4/5)/axialX s := by positivity
+  have hcoef : 0 ≤ axialY s*(axialX s-4/5)/axialX s :=
+    div_nonneg (mul_nonneg (by linarith [hb.2.2.1]) (by linarith [hb.1])) (by linarith [hb.1])
   exact mul_nonpos_of_nonpos_of_nonneg (neg_nonpos.mpr hcoef) hp.le
 
 lemma circleTarget_transition (t : ℝ) :
@@ -188,7 +191,7 @@ lemma circleTarget_transition (t : ℝ) :
   have hx : axialX s0=a0+1/2 := by
     have hh := circle_u0
     dsimp [axialX]
-    rw [he]
+    rw [he,add_comm (1/2:ℝ) u0]
     dsimp [circle] at hh
     linarith
   have hy : axialY s0=Y0 := by dsimp [axialY,s0,u0]; ring
@@ -275,19 +278,23 @@ lemma lineTarget_low_min {t s : ℝ}
     (hs : s0 ≤ s ∧ s ≤ Real.pi/4) (hcut : s ≤ switchLabel t) :
     circleTarget t s0 ≤ lineTarget t s := by
   have hm : MonotoneOn (lineTarget t) (Icc s0 s) := by
-    apply monoOn_of_hasDeriv_nonneg (by dsimp [lineTarget,tieA]; fun_prop)
+    apply monoOn_of_hasDeriv_nonneg
+    · unfold lineTarget tieA; fun_prop
     · intro x hx
-      have hd : HasDerivAt (fun y : ℝ => gap-t+y) 1 x := by
-        convert (hasDerivAt_id x).const_add (gap-t) using 1 <;> ring
+      have hd : HasDerivAt (fun y : ℝ => gap-t+y) 1 x := (hasDerivAt_id x).const_add (gap-t)
       have ha : HasDerivAt tieA (-(44/45)) x := by
         convert (hasDerivAt_const x ((2*Real.pi+7)/9)).sub
-          ((hasDerivAt_id x).const_mul (44/45)) using 1 <;> dsimp [tieA] <;> ring
+          ((hasDerivAt_id x).const_mul (44/45)) using 1
+        · rfl
+        · ring
       convert (((ha.sub_const (1/2)).neg.mul hd.sin).add
-        ((((hasDerivAt_id x).const_mul (4/5)).add_const (1/2)).mul hd.cos)) using 1 <;>
-        dsimp [lineTarget] <;> ring
+        ((((hasDerivAt_id x).const_mul (4/5)).add_const (1/2)).mul hd.cos)) using 1
+      funext y; dsimp [lineTarget]
     · intro x hx
-      exact (lineTarget_derivative_positive ht
-        ⟨hx.1.le,by linarith [hx.2,hs.2]⟩ (by linarith [hx.2,hcut])).le
+      have hp := lineTarget_derivative_positive ht
+        ⟨hx.1.le,by linarith [hx.2,hs.2]⟩ (by linarith [hx.2,hcut])
+      simp only [Pi.neg_apply,id]
+      linarith
   rw [← lineTarget_transition]
   exact hm ⟨le_rfl,hs.1⟩ ⟨hs.1,le_rfl⟩ hs.1
 

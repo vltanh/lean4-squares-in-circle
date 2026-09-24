@@ -23,10 +23,8 @@ theorem six_exterior_squared_lower
 
 theorem six_exterior_lower
     (S : Fin 6 → UnitSquare) (o : Point) (R : ℝ)
-    (hp : Packing S o R) (hext : ∀i,¬openSquare (S i) o) : radius≤R := by
-  apply radius_lower_of_squared hp.1
-  rw [radius_sq]
-  exact six_exterior_squared_lower S o R hp hext
+    (hp : Packing S o R) (hext : ∀i,¬openSquare (S i) o) : radius≤R :=
+  le_of_sq_le_sq (by rw [radius_sq]; exact six_exterior_squared_lower S o R hp hext) hp.1
 
 /-- No geometric or certificate hypothesis is added to the packing predicate. -/
 theorem squared_lower

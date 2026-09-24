@@ -38,9 +38,9 @@ lemma small_gap_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
     have hsecond := marker_arc_support (sign_admissible h' t) hr
       (cardinalAngle k+Real.pi-g-p+r)
     have e1 : cardinalAngle k-(p+g/2+e)=z-e := by dsimp [z]; ring
-    have e2 : cardinalAngle k+Real.pi-g-p+r-(r-g/2+e)=Real.pi+(z-e) := by dsimp [z]; ring
+    have e2 : cardinalAngle k+Real.pi-g-p+r-(r-g/2+e)=(z-e)+Real.pi := by dsimp [z]; ring
     rw [e1] at hfirst
-    rw [e2,Real.cos_pi_add] at hsecond
+    rw [e2,Real.cos_add_pi] at hsecond
     exact ⟨hfirst,hsecond⟩
   by_contra hn
   have hsum : h1+h2≤0 := le_of_not_gt hn
@@ -75,7 +75,6 @@ lemma sign_strictlyAdmissible {a u : ℝ} (h : StrictlyAdmissible a u) (s : Tran
 
 lemma support_add_pi (a b z : ℝ) : support a b (z+Real.pi)=support (-a) (-b) z := by
   simp [support,Real.cos_add,Real.sin_add,abs_neg]
-  ring
 
 lemma support_add_half_pi (a b z : ℝ) : support a b (z+Real.pi/2)=support b (-a) z := by
   simp [support,Real.cos_add,Real.sin_add,abs_neg]
@@ -102,8 +101,8 @@ lemma parallel_zero_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fi
   have hu := h.admissible.u_lt
   have hv := h'.admissible.u_lt
   fin_cases k
-  · simp only [Matrix.cons_val_zero]
-    linarith [h'.2.2.1]
+  · norm_num
+    linarith [h.2.2.1]
   · by_contra hn
     cases s <;> cases t <;> norm_num [TransverseSign.coe] at hn he ⊢
     · linarith [h.1]
@@ -115,7 +114,7 @@ lemma parallel_zero_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fi
       linarith
     · linarith [h'.1]
   · norm_num
-    linarith [h.2.2.1]
+    linarith [h'.2.2.1]
   · cases s <;> cases t <;> norm_num [TransverseSign.coe] at he ⊢
     · linarith [h'.1]
     · linarith [hg.1]
@@ -157,7 +156,7 @@ lemma cardinal_target_relative {d : ℝ} (k : Fin 4)
     (h : Real.sin (cardinalAngle k+Real.pi-d)=0 ∨
       Real.cos (cardinalAngle k+Real.pi-d)=0) :
     Real.sin d=0 ∨ Real.cos d=0 := by
-  fin_cases k
+  obtain rfl | rfl | rfl | rfl : k=0 ∨ k=1 ∨ k=2 ∨ k=3 := by fin_cases k <;> simp
   · simpa [cardinalAngle,Real.sin_pi_sub,Real.cos_pi_sub,or_comm] using h
   · have he : cardinalAngle (1:Fin 4)+Real.pi-d=Real.pi+(Real.pi/2-d) := by norm_num [cardinalAngle]; ring
     rw [he] at h

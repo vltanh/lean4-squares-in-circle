@@ -34,9 +34,9 @@ lemma positive_sum (n : ℕ) (c : Fin (n+1) → ℝ)
       simpa [basis] using hc (Fin.last n)
     exact hp.trans_le (Finset.single_le_sum (fun i _ => hnon i)
       (Finset.mem_univ (Fin.last n)))
-  · have h1 : 0 < 1-x := by linarith [hx.2]
+  · have h1 : 0 < 1-x := sub_pos.mpr (lt_of_le_of_ne hx.2 he)
     have hp : 0 < c 0*basis n 0 x := by
-      simp only [basis,Fin.val_zero,Nat.choose_zero,Nat.cast_one,pow_zero,
+      simp only [basis,Fin.val_zero,Nat.choose_zero_right,Nat.cast_one,pow_zero,
         one_mul,mul_one,Nat.sub_zero]
       exact mul_pos (hc 0) (pow_pos h1 n)
     exact hp.trans_le (Finset.single_le_sum (fun i _ => hnon i)
@@ -74,7 +74,7 @@ lemma axialSmallQ_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 35/32) : 0 < axialSmallQ
     fin_cases i <;> norm_num [axialSmallCoeffs]
   have hp := positive_sum 9 axialSmallCoeffs hc hx
   have he : axialSmallQ z = ∑ i,axialSmallCoeffs i*basis 9 i x := by
-    simp [axialSmallQ,axialSmallCoeffs,basis,Fin.sum_univ_succ,x]
+    simp [axialSmallQ,axialSmallCoeffs,basis,Fin.sum_univ_succ,x,Nat.choose]
     ring
   rw [he]
   exact hp
@@ -100,7 +100,7 @@ lemma axialLargeP_pos {z : ℝ} (hz : 35/32 ≤ z ∧ z ≤ 11/7) : 0 < axialLar
     fin_cases i <;> norm_num [axialLargeCoeffs]
   have hp := positive_sum 7 axialLargeCoeffs hc hx
   have he : axialLargeP z = ∑ i,axialLargeCoeffs i*basis 7 i x := by
-    simp [axialLargeP,axialLargeCoeffs,basis,sin7,cos4,Fin.sum_univ_succ,x]
+    simp [axialLargeP,axialLargeCoeffs,basis,sin7,cos4,Fin.sum_univ_succ,x,Nat.choose]
     ring
   rw [he]
   exact hp
@@ -121,7 +121,7 @@ lemma shortSideH_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 1/6) : 0 < shortSideH z :
     fin_cases i <;> norm_num [shortSideCoeffs]
   have hp := positive_sum 6 shortSideCoeffs hc hx
   have he : shortSideH z = ∑ i,shortSideCoeffs i*basis 6 i x := by
-    simp [shortSideH,shortSideCoeffs,basis,Fin.sum_univ_succ,x]
+    simp [shortSideH,shortSideCoeffs,basis,Fin.sum_univ_succ,x,Nat.choose]
     ring
   rw [he]
   exact hp
@@ -143,7 +143,7 @@ lemma largeAxialP_pos {z : ℝ} (hz : 1/3 ≤ z ∧ z ≤ 11/7) : 0 < largeAxial
     fin_cases i <;> norm_num [largeAxialCoeffs]
   have hp := positive_sum 7 largeAxialCoeffs hc hx
   have he : largeAxialP z = ∑ i,largeAxialCoeffs i*basis 7 i x := by
-    simp [largeAxialP,largeAxialCoeffs,basis,sin7,cos6,cos4,Fin.sum_univ_succ,x]
+    simp [largeAxialP,largeAxialCoeffs,basis,sin7,cos6,cos4,Fin.sum_univ_succ,x,Nat.choose]
     ring
   rw [he]
   exact hp
@@ -176,7 +176,7 @@ lemma smallAxial_discriminant_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 1/3) :
   have he : (smallAxialL z)^2-(13/4)*smallAxialU z =
       ∑ i,smallAxialCoeffs i*basis 14 i x := by
     simp [smallAxialL,smallAxialU,smallAxialCoeffs,basis,
-      sin7,sin5,cos6,cos4,Fin.sum_univ_succ,x]
+      sin7,sin5,cos6,cos4,Fin.sum_univ_succ,x,Nat.choose]
     ring
   rw [he]
   exact hp

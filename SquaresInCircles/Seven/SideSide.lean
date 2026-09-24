@@ -82,7 +82,7 @@ lemma sideSide_margin_pos {w : ℝ}
       nlinarith [Real.sin_sq_add_cos_sq w]
     linarith
   · let z := -w
-    have hz : 0 < z := by dsimp [z]; linarith
+    have hz : 0 < z := by dsimp [z]; linarith [lt_of_le_of_ne (not_lt.mp h) hne]
     have hzu : z ≤ Real.pi/3 := by dsimp [z]; linarith [hw.1]
     have hz9 : z < 9/8 := by linarith
     have hc := cos_ge_half ⟨hz.le,hzu⟩
@@ -133,12 +133,12 @@ lemma sideSideL_ge_norm {w : ℝ} (hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6) :
     rfl
   nlinarith
 
-def sideSideSupport (a u A v w : ℝ) : ℝ :=
+def sideSideSupport (u A v w : ℝ) : ℝ :=
   1/2-u+A*Real.sin w-v*Real.cos w+(|Real.sin w|+Real.cos w)/2
 
 lemma sideSide_support_identity {a u A v w : ℝ}
     (hw : w = side a u+side A v-gap) :
-    sideSideSupport a u A v w = sideSideL w+39/20 +
+    sideSideSupport u A v w = sideSideL w+39/20 +
       ((-9/10)*(a+1/2)+(-3/5)*(u+1/2)) +
       (Real.sin w-9/10)*(A+1/2)+(2/5-Real.cos w)*(v+1/2) := by
   unfold sideSideSupport sideSideL
@@ -160,7 +160,7 @@ lemma sideSide_support_nonneg {a u A v w : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hw : w = side a u+side A v-gap)
     (hrange : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6) :
-    0 ≤ sideSideSupport a u A v w := by
+    0 ≤ sideSideSupport u A v w := by
   have hfirst := dot_lower_candidate (p := -9/10) (r := -3/5) h.2.2.2
   have hsecond := dot_lower_candidate (p := Real.sin w-9/10)
     (r := 2/5-Real.cos w) h'.2.2.2
@@ -175,7 +175,7 @@ lemma sideSide_support_nonneg {a u A v w : ℝ}
 theorem sideSide_support_pos {a u A v : ℝ}
     (h : StrictlyAdmissible a u) (h' : Admissible A v)
     (hsel : label a u = side a u) (hsel' : label A v = side A v) :
-    0 < sideSideSupport a u A v (label a u+label A v-gap) := by
+    0 < sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
   have hw : w = side a u+side A v-gap := by simp only [w,hsel,hsel']
   have hrange : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
@@ -197,7 +197,7 @@ theorem sideSide_support_pos {a u A v : ℝ}
     (r := 2/5-Real.cos w) h'.2.2.2
   change -radius*Real.sqrt (sideSideRadicand w) ≤ _ at hsecond
   have hnorm := sideSideL_ge_norm hrange
-  change 0 < sideSideSupport a u A v w
+  change 0 < sideSideSupport u A v w
   rw [sideSide_support_identity hw]
   linarith
 

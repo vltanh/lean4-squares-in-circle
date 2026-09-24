@@ -58,7 +58,7 @@ lemma smallTargetRad_expand (z : ℝ) :
 lemma smallAxialL_gt_half {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 1/3) :
     (1:ℝ)/2 < smallAxialL z := by
   have hz2 : z^2 ≤ (1/3:ℝ)^2 := by nlinarith
-  have hz3 : z^3 ≤ (1/3:ℝ)^3 := by gcongr
+  have hz3 : z^3 ≤ (1/3:ℝ)^3 := pow_le_pow_left₀ hz.1 hz.2 3
   have hp4 := mul_nonneg (pow_nonneg hz.1 4)
     (show 0 ≤ 1/24-z^2/720 by nlinarith)
   have hp5 := mul_nonneg (pow_nonneg hz.1 5)
@@ -148,7 +148,7 @@ lemma axial_target_large_support {A v z : ℝ}
   have hunit : Real.cos z^2+(1-Real.sin z)^2 =
       2*(Real.cos (z/2)-Real.sin (z/2))^2 := by
     have hsin : Real.sin z=2*Real.sin (z/2)*Real.cos (z/2) := by
-      rw [show z=2*(z/2) by ring,Real.sin_two_mul]
+      rw [← Real.sin_two_mul]; ring_nf
     nlinarith [Real.sin_sq_add_cos_sq z,Real.sin_sq_add_cos_sq (z/2)]
   have hrad : radius*Real.sqrt ((-Real.cos z)^2+(-(1-Real.sin z))^2) =
       Real.sqrt (13/2)*(Real.cos (z/2)-Real.sin (z/2)) := by

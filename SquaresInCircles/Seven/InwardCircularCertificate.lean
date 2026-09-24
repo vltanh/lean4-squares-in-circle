@@ -34,7 +34,7 @@ lemma circle_quadratic_upper {v : ℝ} (hv : 0 ≤ v ∧ v ≤ 3/10) :
     linarith [sqrt_three_bounds.2]
   have p1 := mul_nonneg hv.1 hcoeff1
   have p2 := mul_nonneg (sq_nonneg v) hcoeff2.le
-  have p3 : 0 ≤ 2*a*b*v^3 := by dsimp [a,b]; positivity
+  have p3 : 0 ≤ 2*a*b*v^3 := mul_nonneg (by dsimp [a,b]; norm_num) (pow_nonneg hv.1 3)
   have p4 : 0 ≤ b^2*v^4 := by positivity
   have hid : B^2-(3-v-v^2)=v*(1-2*Real.sqrt 3*a)+
       v^2*(1-2*Real.sqrt 3*b+a^2)+2*a*b*v^3+b^2*v^4 := by
@@ -107,16 +107,16 @@ lemma line_to_circle_turn_margin {z : ℝ}
   let dd : ℝ → ℝ := fun x => -(44/45)*Real.sin x-(4/5)*Real.cos x
   have hd (x : ℝ) : HasDerivAt f (df x) x := by
     convert (((Real.hasDerivAt_sin x).const_mul (44/45)).add
-      ((Real.hasDerivAt_cos x).const_mul (4/5))).sub_const (12/13) using 1 <;>
-      dsimp [f,df] <;> ring
+      ((Real.hasDerivAt_cos x).const_mul (4/5))).sub_const (12/13) using 1
+    dsimp [df]; ring
   have hdd (x : ℝ) : HasDerivAt df (dd x) x := by
     convert ((Real.hasDerivAt_cos x).const_mul (44/45)).sub
-      ((Real.hasDerivAt_sin x).const_mul (4/5)) using 1 <;>
-      dsimp [df,dd] <;> ring
+      ((Real.hasDerivAt_sin x).const_mul (4/5)) using 1
+    dsimp [dd]; ring
   have hsign (x : ℝ) (hx : x ∈ Icc (19/100) (Real.pi/3)) : dd x ≤ 0 := by
-    have hs := Real.sin_nonneg_of_nonneg_of_le_pi
+    have hs := Real.sin_nonneg_of_nonneg_of_le_pi (x := x)
       (by linarith [hx.1]) (by linarith [hx.2,Real.pi_pos])
-    have hc := cos_nonneg_quarter
+    have hc := cos_nonneg_quarter (x := x)
       ⟨by linarith [hx.1,Real.pi_pos],by linarith [hx.2,Real.pi_pos]⟩
     dsimp [dd]
     linarith

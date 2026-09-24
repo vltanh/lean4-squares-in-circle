@@ -110,12 +110,13 @@ lemma side_remainder_quadratic {a u : ℝ} (h : Admissible a u)
   nlinarith [sq_nonneg W,sq_nonneg D]
 
 lemma cos_nonneg_quarter {x : ℝ} (hx : -Real.pi/2 ≤ x ∧ x ≤ Real.pi/2) :
-    0 ≤ Real.cos x := Real.cos_nonneg_of_mem_Icc hx
+    0 ≤ Real.cos x := Real.cos_nonneg_of_mem_Icc ⟨by linarith [hx.1],hx.2⟩
 
 lemma sin_le_sin_half {x y : ℝ}
     (hx : -Real.pi/2 ≤ x ∧ x ≤ Real.pi/2)
     (hy : -Real.pi/2 ≤ y ∧ y ≤ Real.pi/2) (hxy : x ≤ y) :
-    Real.sin x ≤ Real.sin y := Real.strictMonoOn_sin.monotoneOn hx hy hxy
+    Real.sin x ≤ Real.sin y :=
+  Real.strictMonoOn_sin.monotoneOn ⟨by linarith [hx.1],hx.2⟩ ⟨by linarith [hy.1],hy.2⟩ hxy
 
 lemma cos_le_sin_of_quarter {x : ℝ}
     (hx : Real.pi/4 ≤ x ∧ x ≤ Real.pi/2) : Real.cos x ≤ Real.sin x := by
@@ -141,8 +142,7 @@ lemma sin_add_cos_le_three_halves (x : ℝ) : Real.sin x+Real.cos x < 3/2 := by
 lemma trig_sum_monotone : MonotoneOn (fun x : ℝ => Real.cos x+Real.sin x)
     (Icc 0 (Real.pi/4)) := by
   apply monotoneOn_of_deriv_nonneg (convex_Icc _ _) (by fun_prop)
-  · intro x hx
-    fun_prop
+  · exact Differentiable.differentiableOn (by fun_prop)
   · intro x hx
     have hm := interior_subset hx
     have hd : deriv (fun t : ℝ => Real.cos t+Real.sin t) x =
@@ -166,11 +166,9 @@ lemma forward_positive_profile {t : ℝ} (ht : 0 ≤ t ∧ t ≤ 5/16) :
   let f : ℝ → ℝ := fun x => 1/2+(4/5)*x+Real.cos (Real.pi/6-x)+Real.sin (Real.pi/6-x)
   have hmono : MonotoneOn f (Icc 0 (5/16)) := by
     apply monotoneOn_of_deriv_nonneg (convex_Icc _ _) (by dsimp [f]; fun_prop)
+    · exact Differentiable.differentiableOn (by dsimp [f]; fun_prop)
     · intro x hx
-      dsimp [f]
-      fun_prop
-    · intro x hx
-      have hx' : 0 ≤ x ∧ x ≤ 5/16 := interior_subset hx
+      have hx' : x ∈ Icc (0 : ℝ) (5/16) := interior_subset hx
       have hz : 21/100 < Real.pi/6-x ∧ Real.pi/6-x ≤ Real.pi/2 := by
         constructor <;> linarith [hx'.1,hx'.2,pi_lower_157,Real.pi_pos]
       have hsin := sin_le_sin_half

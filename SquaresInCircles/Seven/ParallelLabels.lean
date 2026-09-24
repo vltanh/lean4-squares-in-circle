@@ -82,11 +82,11 @@ theorem opposite_transverse_labels_gt {a x A y : ℝ}
 
 lemma signedLabel_nonneg {a b : ℝ} (h : Admissible a |b|) (hb : 0 ≤ b) :
     0 ≤ signedLabel a b := by
-  simpa only [signedLabel, if_neg (not_lt_of_ge hb)] using h.label_nonneg
+  simpa only [signedLabel, ite_eq_right (not_lt_of_ge hb)] using h.label_nonneg
 
 lemma signedLabel_nonpos {a b : ℝ} (h : Admissible a |b|) (hb : b < 0) :
     signedLabel a b ≤ 0 := by
-  simp only [signedLabel, if_pos hb]
+  simp only [signedLabel, ite_eq_left hb]
   linarith [h.label_nonneg]
 
 /-- One horizontal-separator alternative for a quarter-turned pair.
@@ -101,7 +101,7 @@ theorem quarter_difference_of_horizontal {a b A B : ℝ}
       have hy : Admissible A B := by simpa only [abs_of_nonneg hB] using h'
       have ht : 3*a+2*b < 4 := by
         simpa only [abs_of_nonneg hb] using h.tangent
-      simp only [signedLabel, if_neg (not_lt_of_ge hb), if_neg (not_lt_of_ge hB),
+      simp only [signedLabel, ite_eq_right (not_lt_of_ge hb), ite_eq_right (not_lt_of_ge hB),
         abs_of_nonneg hb, abs_of_nonneg hB]
       rcases hy.selected with hA | hT | hcap
       · rw [hA]
@@ -126,7 +126,7 @@ theorem quarter_difference_of_horizontal {a b A B : ℝ}
         simpa only [abs_of_nonneg hb] using h.tangent
       have hl := hx.label_le_side
       have hr := hy.label_le_axial
-      simp only [signedLabel, if_neg (not_lt_of_ge hb), if_pos hB',
+      simp only [signedLabel, ite_eq_right (not_lt_of_ge hb), ite_eq_left hB',
         abs_of_nonneg hb, abs_of_neg hB']
       dsimp [side, axial] at hl hr
       linarith
@@ -134,7 +134,7 @@ theorem quarter_difference_of_horizontal {a b A B : ℝ}
       have hx := signedLabel_nonpos hw hb'
       have hr := h'.label_le_axial
       have ha := hw.a_lt_five_fourths
-      simp only [signedLabel, if_pos hB', abs_of_neg hB'] at *
+      simp only [signedLabel, ite_eq_left hB', abs_of_neg hB'] at *
       dsimp [axial] at hr
       linarith [pi_lower]
 

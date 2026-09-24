@@ -7,7 +7,7 @@ namespace SquaresInCircles.Seven
 inductive TransverseSign where
   | positive
   | negative
-  deriving DecidableEq, Fintype
+  deriving DecidableEq
 
 def TransverseSign.coe : TransverseSign → ℝ
   | .positive => 1
@@ -48,14 +48,13 @@ lemma support_three_half_pi (a b : ℝ) : support a b (3*Real.pi/2) = -b+1/2 := 
   norm_num [support,Real.cos_add,Real.sin_add]
 
 lemma support_two_pi (a b z : ℝ) : support a b (z+2*Real.pi) = support a b z := by
-  simp [support,Real.cos_add,Real.sin_add,Real.cos_two_mul,Real.sin_two_mul]
+  simp [support,Real.cos_add_two_pi,Real.sin_add_two_pi]
 
 lemma cos_two_pi_sub (z : ℝ) : Real.cos (2*Real.pi-z) = Real.cos z := by
-  simp [Real.cos_sub,Real.cos_two_mul,Real.sin_two_mul]
+  simp [Real.cos_sub]
 
 lemma cos_five_half_pi_sub (z : ℝ) : Real.cos (5*Real.pi/2-z) = Real.sin z := by
-  rw [show 5*Real.pi/2-z = (Real.pi/2-z)+2*Real.pi by ring]
-  simp [Real.cos_add,Real.sin_add,Real.cos_two_mul,Real.sin_two_mul,
+  rw [show 5*Real.pi/2-z = (Real.pi/2-z)+2*Real.pi by ring,Real.cos_add_two_pi,
     Real.cos_pi_div_two_sub]
 
 lemma pairSupport_zero (a u A v gamma : ℝ) (s t : TransverseSign) :
@@ -80,7 +79,7 @@ lemma pairSupport_two (a u A v gamma : ℝ) (s t : TransverseSign) :
     pairSupport a u A v s t 2 gamma =
       1/2-a+support A (t.coe*v)
         (2*Real.pi-gamma-s.coe*label a u+t.coe*label A v) := by
-  have hk : cardinalAngle (2 : Fin 4) = Real.pi := by norm_num [cardinalAngle]; ring
+  have hk : cardinalAngle (2 : Fin 4) = Real.pi := by norm_num [cardinalAngle]
   rw [pairSupport,hk,support_pi]
   congr 1
   · ring

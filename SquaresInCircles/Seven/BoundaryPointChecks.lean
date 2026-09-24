@@ -111,7 +111,7 @@ lemma test_radical_bounds :
   have hs := Z_sq test_mem
   have hp := Z_pos test_mem
   have hpi := pi_bounds
-  dsimp [D,testLabel,N,targetSq] at hs
+  dsimp [D,testLabel,N,targetSq] at hs hp ⊢
   constructor <;> nlinarith
 
 lemma test_coordinate_bounds :
@@ -119,7 +119,7 @@ lemma test_coordinate_bounds :
     (121362:ℝ)/100000 < Y testLabel ∧ Y testLabel < 121365/100000 := by
   have hz := test_radical_bounds
   have hp := pi_bounds
-  dsimp [X,Y,D,N,testLabel]
+  dsimp [X,Y,D,N,testLabel] at hz ⊢
   exact ⟨by linarith,by linarith,by linarith,by linarith⟩
 
 lemma test_angle_bounds : (691397:ℝ)/1000000 ≤ testAngle ∧ testAngle ≤ 691411/1000000 := by
@@ -153,7 +153,8 @@ lemma test_value_lower : (3:ℝ)/4000 < testValue := by
     gcongr <;> linarith
   have hlo : (79136:ℝ)/100000*(77034/100000) < Y0*Real.cos testAngle := by
     have hy0 : (79136:ℝ)/100000 < Y0 := by dsimp [u0] at ha; linarith
-    gcongr <;> linarith
+    gcongr
+    linarith
   dsimp [testValue]
   linarith
 
@@ -168,9 +169,11 @@ lemma test_slope_bound : |testSlope| < (1:ℝ)/400 := by
     gcongr <;> linarith
   have hp3 : (79136:ℝ)/100000*(63761/100000) < Y0*Real.sin testAngle := by
     have hy0 : (79136:ℝ)/100000 < Y0 := by dsimp [u0] at ha; linarith
-    gcongr <;> linarith
+    gcongr
+    linarith
   have hp4 : Y0*Real.sin testAngle < (79137:ℝ)/100000*(63763/100000) := by
     have hy0 : Y0 < (79137:ℝ)/100000 := by dsimp [u0] at ha; linarith
+    have hy1 : 0 ≤ Y0 := by dsimp [u0] at ha; linarith
     gcongr <;> linarith
   have hlo : (133307:ℝ)/100000/(13545832/10000000) < X testLabel/Z testLabel := by
     apply (div_lt_div_iff₀ (by norm_num) (Z_pos test_mem)).mpr
@@ -180,6 +183,7 @@ lemma test_slope_bound : |testSlope| < (1:ℝ)/400 := by
     nlinarith
   rw [abs_lt]
   dsimp [testSlope]
+  rw [neg_div]
   constructor <;> linarith
 
 lemma diagonal_angle_bounds :
@@ -209,7 +213,7 @@ lemma diagonal_value_lower : (1:ℝ)/250 < diagonalValue := by
     gcongr <;> linarith
   have hlo : (79136:ℝ)/100000*(81111/100000) < Y0*Real.cos diagonalAngle := by
     have hy : (79136:ℝ)/100000 < Y0 := by dsimp [u0] at ha; linarith
-    gcongr <;> linarith
+    gcongr
   dsimp [diagonalValue]
   linarith
 

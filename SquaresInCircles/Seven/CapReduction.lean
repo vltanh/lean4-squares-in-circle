@@ -82,7 +82,6 @@ def capWeights (a u : ℝ) : Fin 3 → ℝ :=
 
 lemma capWeights_sum (a u : ℝ) : ∑ i, capWeights a u i = 1 := by
   simp [capWeights,Fin.sum_univ_succ]
-  ring
 
 lemma capWeights_nonneg {a u : ℝ} (h : Admissible a u)
     (hcap : label a u = Real.pi/4) (i : Fin 3) : 0 ≤ capWeights a u i := by
@@ -90,9 +89,11 @@ lemma capWeights_nonneg {a u : ℝ} (h : Admissible a u)
   have hD := capDen_pos
   fin_cases i
   · have he : capWeights a u 0 = (7-Real.pi-9*a+4*u)/capDen := by
-      dsimp [capWeights,capDen]
+      dsimp [capWeights]
       field_simp [ne_of_gt capDen_pos]
+      dsimp [capDen]
       ring
+    change 0 ≤ capWeights a u 0
     rw [he]
     exact div_nonneg (by linarith [hc.2]) hD.le
   · dsimp [capWeights]
@@ -111,7 +112,7 @@ lemma capWeights_center (a u : ℝ) :
 lemma capWeights_some_pos {a u : ℝ} (h : Admissible a u)
     (hcap : label a u = Real.pi/4) : ∃ i,0 < capWeights a u i := by
   by_contra hn
-  push_neg at hn
+  push Not at hn
   have he (i : Fin 3) : capWeights a u i = 0 :=
     le_antisymm (hn i) (capWeights_nonneg h hcap i)
   have hs := capWeights_sum a u
@@ -123,7 +124,7 @@ lemma support_barycentric (w x y : Fin 3 → ℝ) (hw : ∑ i,w i=1) (c z : ℝ)
       ∑ i,w i*support (x i) (c*y i) z := by
   have hconst := congrArg (fun t : ℝ =>
     t*((|Real.cos z|+|Real.sin z|)/2)) hw
-  simp only [Fin.sum_univ_succ] at hw hconst ⊢
+  simp only [Fin.sum_univ_three] at hw hconst ⊢
   dsimp [support]
   nlinarith [hconst]
 
@@ -139,7 +140,7 @@ lemma cap_pair_first {a u : ℝ} (hcap : label a u = Real.pi/4)
   have hc := congrArg (fun w : ℝ => w * support A (t.coe*v)
     (cardinalAngle k+Real.pi-g-s.coe*(Real.pi/4)+t.coe*label A v))
     (capWeights_sum a u)
-  simp only [pairSupport,hcap,capVertex_label,Fin.sum_univ_succ] at hm hc ⊢
+  simp only [pairSupport,hcap,capVertex_label,Fin.sum_univ_three] at hm hc ⊢
   nlinarith [hm,hc]
 
 lemma cap_pair_second {A v : ℝ} (hcap : label A v = Real.pi/4)
@@ -154,7 +155,7 @@ lemma cap_pair_second {A v : ℝ} (hcap : label A v = Real.pi/4)
   rw [(capWeights_center A v).1,(capWeights_center A v).2] at hm
   have hc := congrArg (fun w : ℝ => w*support a (s.coe*u) (cardinalAngle k))
     (capWeights_sum A v)
-  simp only [pairSupport,hcap,capVertex_label,Fin.sum_univ_succ] at hm hc ⊢
+  simp only [pairSupport,hcap,capVertex_label,Fin.sum_univ_three] at hm hc ⊢
   nlinarith [hm,hc]
 
 private lemma cap_weighted_pos {a u : ℝ} (h : Admissible a u)

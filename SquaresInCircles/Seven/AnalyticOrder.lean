@@ -23,8 +23,9 @@ lemma tangent_lower_of_mono_derivative {l u x t : ℝ} {f d : ℝ → ℝ}
       (continuousOn_const.mul (continuousOn_id.sub continuousOn_const))
   have hgd (y : ℝ) (hy : y ∈ Icc l u) : HasDerivAt g (d y-d t) y := by
     convert ((hd y hy).sub_const (f t)).sub
-      (((hasDerivAt_id y).sub_const t).const_mul (d t)) using 1 <;>
-      simp [g]
+      (((hasDerivAt_id y).sub_const t).const_mul (d t)) using 1
+    · rfl
+    · ring
   have hz : g t=0 := by dsimp [g]; ring
   by_cases hxt : t ≤ x
   · have hsub : Icc t x ⊆ Icc l u := by intro y hy; constructor <;> linarith [hx.1,hx.2,ht.1,ht.2,hy.1,hy.2]
@@ -63,11 +64,13 @@ lemma quadratic_tangent_lower {l u x t m : ℝ} {f d dd : ℝ → ℝ}
     dsimp [dg]
     exact hdf.sub (continuousOn_const.mul continuousOn_id)
   have hgd (y : ℝ) (hy : y ∈ Icc l u) : HasDerivAt g (dg y) y := by
-    convert (hd y hy).sub (((hasDerivAt_id y).pow 2).const_mul (m/2)) using 1 <;>
-      dsimp [g,dg] <;> ring
+    convert (hd y hy).sub (((hasDerivAt_id y).pow 2).const_mul (m/2)) using 1
+    · rfl
+    · dsimp [dg]; ring
   have hdgd (y : ℝ) (hy : y ∈ Icc l u) : HasDerivAt dg (dd y-m) y := by
-    convert (hdd y hy).sub ((hasDerivAt_id y).const_mul m) using 1 <;>
-      dsimp [dg] <;> ring
+    convert (hdd y hy).sub ((hasDerivAt_id y).const_mul m) using 1
+    · rfl
+    · ring
   have hmono : MonotoneOn dg (Icc l u) := monoOn_of_hasDeriv_nonneg hdgc
     (fun y hy => hdgd y ⟨hy.1.le,hy.2.le⟩)
     (fun y hy => sub_nonneg.mpr (hm y ⟨hy.1.le,hy.2.le⟩))

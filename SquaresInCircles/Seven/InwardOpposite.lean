@@ -30,10 +30,10 @@ lemma inward_opposite_side_positive_turn {a u A v : ℝ}
     ⟨by rw [hsEq]; exact h'.label_nonneg,by rw [hsEq]; exact h'.label_le_quarter⟩
   have ha := side_radial_upper h hT
   have hb := axial_upper h' hA
-  have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.le (by linarith [hzu,Real.pi_pos])
+  have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi (x := z) hz.le (by linarith [hzu,Real.pi_pos])
   have hm := mul_nonneg (sub_nonneg.mpr hb) hs0
   rw [inward_opposite_formula h h']
-  change 0<inwardOpposite a A v z
+  change 0 < inwardOpposite a A v z
   dsimp [oppositeUpper] at hp
   rw [hvEq] at hp
   dsimp [inwardOpposite] at *
@@ -100,9 +100,9 @@ lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
     dsimp [axial] at hh
     exact ⟨h'.1,by linarith⟩
   have hzu : z≤Real.pi/3 := by dsimp [z]; linarith [h.label_le_quarter,h'.label_le_quarter]
-  have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.le (by linarith [hzu,Real.pi_pos])
+  have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi (x := z) hz.le (by linarith [hzu,Real.pi_pos])
   rw [inward_opposite_formula h h']
-  change 0<inwardOpposite a A v z
+  change 0 < inwardOpposite a A v z
   by_cases ht0 : s0≤t
   · have hu0 : u0≤u := by rw [hu]; dsimp [s0] at ht0; linarith
     have hur : u≤rd := by linarith [huDom.2,pi_upper_22,rd_bounds.1]
@@ -115,10 +115,10 @@ lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
     have hp := inward_opposite_side_positive_turn ha h' hside hB
       (by rw [hat]; exact hz)
     rw [inward_opposite_formula ha h',hat] at hp
-    change 0<inwardOpposite (tieA t) A v z at hp
+    change 0 < inwardOpposite (tieA t) A v z at hp
     dsimp [inwardOpposite] at *
     linarith
-  · have htu : t≤s0 := (lt_of_not_ge ht0).le
+  · have htu : t ≤ s0 := (lt_of_not_ge ht0).le
     have huu : u≤u0 := by rw [hu]; dsimp [s0] at htu; linarith
     let vp := (4/5)*z+2*Real.pi/15-u0
     have hvEq : v=(4/5)*z+2*Real.pi/15-u := by
@@ -128,7 +128,7 @@ lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
     have hvp : 0≤vp ∧ vp≤v := by
       dsimp [vp]
       constructor
-      · linarith [hz,transition_coarse.2.2.2.1,pi_lower_157]
+      · linarith [show 0<z from hz,transition_coarse.2.2.2.1,pi_lower_157]
       · rw [hvEq]; linarith
     have hvpDom : 0≤vp ∧ vp≤Real.pi/5 := ⟨hvp.1,hvp.2.trans hvDom.2⟩
     obtain ⟨hb,hbA⟩ := axialTop_state hvpDom
@@ -153,7 +153,7 @@ lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
         change t+label A v-Real.pi/6<2/3
         linarith [htu,h'.label_le_quarter,transition_coarse.2.2.2.2.2,pi_upper_22]
       have hh := Real.one_sub_sq_div_two_le_cos (x := z)
-      nlinarith
+      nlinarith [show 0<z from hz]
     have hd : v-vp=u0-u := by rw [hvEq]; dsimp [vp]; ring
     have hmul := mul_nonneg (sub_nonneg.mpr huu) (show 0≤Real.cos z-1/2 by linarith)
     dsimp [inwardOpposite] at hp ⊢
@@ -175,7 +175,7 @@ lemma inward_opposite_side_target_reduction {a u A v : ℝ}
       pairSupport a u A v .positive .negative 2 gap := by
   let s := label A v
   let z := label a u+s-Real.pi/6
-  have hs : s0≤s ∧ s≤Real.pi/4 :=
+  have hs : s0 ≤ s ∧ s≤Real.pi/4 :=
     ⟨(side_state_transition_bounds h' hT).2.2,h'.label_le_quarter⟩
   obtain ⟨hb,hlabel,hside⟩ := tie_state hs
   have hz : -1/6<z ∧ z≤Real.pi/3 := by
@@ -204,7 +204,7 @@ lemma inward_opposite_side_target_reduction {a u A v : ℝ}
   have he : A=tieA s+(4/9)*(v-(4/5)*s) := hseg.2.2
   have hmul := mul_nonneg (show 0≤v-(4/5)*s by linarith [hseg.1]) hcoef.le
   rw [inward_opposite_formula h hb,inward_opposite_formula h h',hlabel]
-  change inwardOpposite a (tieA s) ((4/5)*s) z≤inwardOpposite a A v z
+  change inwardOpposite a (tieA s) ((4/5)*s) z ≤ inwardOpposite a A v z
   rw [he]
   dsimp [inwardOpposite]
   nlinarith
@@ -223,7 +223,7 @@ theorem fixed_gap_inward_opposite_active {a u A v : ℝ}
   rcases hb with hA | hT
   · exact axialTarget A v h' hA
   · let s := label A v
-    have hs : s0≤s ∧ s≤Real.pi/4 :=
+    have hs : s0 ≤ s ∧ s≤Real.pi/4 :=
       ⟨(side_state_transition_bounds h' hT).2.2,h'.label_le_quarter⟩
     obtain ⟨hB,hlabel,hside⟩ := tie_state hs
     have hBA : label (tieA s) ((4/5)*s)=axial ((4/5)*s) := by rw [hlabel]; dsimp [axial]; ring

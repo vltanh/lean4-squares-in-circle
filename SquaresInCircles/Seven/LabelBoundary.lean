@@ -186,7 +186,7 @@ lemma side_at_diagonal : sideA td=rd ∧ sideU td=rd := by
   have hr := rd_bounds
   have hs : (rd+1/2)^2=targetSq/2 := by
     dsimp [rd,targetSq]
-    simpa using Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)
+    rw [sub_add_cancel,Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)]; norm_num
   have ht : s0 ≤ td ∧ td ≤ td := ⟨by linarith [transition_coarse.2.2.2.2.2,td_bounds.1],le_rfl⟩
   have hz := Z_sq ht
   have hp := Z_pos ht
@@ -208,15 +208,12 @@ lemma circle_bounds {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
   have hc := circle_identities ht
   have h0 := transition_coarse
   have hr := rd_bounds
-  have ht0 : s0 ≤ s0 ∧ s0 ≤ td := ⟨le_rfl,le_trans ht.1 ht.2⟩
-  have hzbase := Z_sq ht0
   have hbase := side_at_transition
   have hdle : D t ≤ D s0 := by dsimp [D]; linarith [ht.1]
   have hdz : D td ≤ D t := by dsimp [D]; linarith [ht.2]
   have hzle : Z s0 ≤ Z t := by
-    have hdb := D_range ht0
-    have hzb := Z_pos ht0
-    nlinarith
+    have hsq := pow_le_pow_left₀ (by linarith [hd.1]) hdle 2
+    exact Real.sqrt_le_sqrt (by linarith)
   have hY0 : Y0 ≤ Y t := by
     have hy0 : Y s0=Y0 := by
       have hh := hbase.2
@@ -227,42 +224,43 @@ lemma circle_bounds {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     dsimp [Y,N]
     linarith
   have hYpos : 0 < Y t := by dsimp [u0] at h0; linarith
-  have hXpos : 0 < X t := by dsimp [X,N]; positivity
+  have hXpos : 0 < X t := by dsimp [X,N]; linarith [hd.1]
   have hXY : Y t ≤ X t := by
     have hrd : (rd+1/2)^2=targetSq/2 := by
       dsimp [rd,targetSq]
-      simpa using Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)
+      rw [sub_add_cancel,Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)]; norm_num
     rw [D_td] at hdz
     have hprod := mul_nonneg (sub_nonneg.mpr hdz)
       (show 0 ≤ D t+(5/12)*(rd+1/2) by linarith)
     have hcomp : 5*Z t ≤ 13*D t := by
-      dsimp [N] at hz
-      nlinarith
+      have hsq : (5*Z t)^2 ≤ (13*D t)^2 := by dsimp [N,targetSq] at hz hrd; linarith
+      exact (sq_le_sq₀ (by linarith) (by linarith [hd.1])).mp hsq
     dsimp [X,Y,N]
     linarith
   have hXlower : (5:ℝ)/4 < X t := by
     have hYY := mul_nonneg (sub_nonneg.mpr hXY) (add_nonneg hXpos.le hYpos.le)
     dsimp [targetSq] at hc
-    nlinarith
+    exact lt_of_pow_lt_pow_left₀ 2 hXpos.le (by linarith [hc.1])
   have hXupper : X t ≤ X0 := by
     have hp := transition_circle
     have hprod := mul_nonneg (sub_nonneg.mpr hY0)
       (show 0 ≤ Y t+Y0 by dsimp [u0] at h0; linarith)
     have hX00 : 0 < X0 := by dsimp [a0] at h0; linarith
-    nlinarith
+    exact (sq_le_sq₀ hXpos.le hX00.le).mp (by linarith [hc.1])
   have hZlower : 1 < Z t := by
     have hb : (79:ℝ)/100 < Y0 := by dsimp [u0] at h0; linarith
     linarith [hc.2.2]
   have hsum : X t+Y t < 51/20 := by
     have hh := sq_nonneg (X t-Y t)
     dsimp [targetSq] at hc
-    nlinarith
+    exact lt_of_pow_lt_pow_left₀ 2 (by norm_num) (by linarith [hc.1])
   have hZupper : Z t < 7/5 := by linarith [hc.2.2]
   exact ⟨hYpos,hY0,hXY,hXlower,hXupper,hZlower,hZupper⟩
 
 lemma hasDerivAt_D (t : ℝ) : HasDerivAt D (-1) t := by
-  convert (hasDerivAt_const t (Real.pi/6+19/24)).sub (hasDerivAt_id t) using 1 <;>
-    simp [D]
+  convert (hasDerivAt_const t (Real.pi/6+19/24)).sub (hasDerivAt_id t) using 1
+  · rfl
+  · ring
 
 lemma hasDerivAt_Z {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     HasDerivAt Z (D t/Z t) t := by
@@ -277,6 +275,8 @@ lemma hasDerivAt_Z {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
 
 lemma hasDerivAt_X {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     HasDerivAt X (-Y t/Z t) t := by
+  have hz0 := (Z_pos ht).ne'
+  have hN : N ≠ 0 := by norm_num [N]
   have hd := (((hasDerivAt_D t).const_mul (3/4)).add
     ((hasDerivAt_Z ht).div_const 3)).div_const N
   convert hd using 1
@@ -287,10 +287,12 @@ lemma hasDerivAt_X {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
 
 lemma hasDerivAt_Y {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     HasDerivAt Y (X t/Z t) t := by
+  have hz0 := (Z_pos ht).ne'
+  have hN : N ≠ 0 := by norm_num [N]
   have hd := (((hasDerivAt_D t).div_const 3).neg.add
     ((hasDerivAt_Z ht).const_mul (3/4))).div_const N
   convert hd using 1
-  · rfl
+  · funext x; simp only [Y,Pi.add_apply,Pi.neg_apply]; ring
   · dsimp [X]
     field_simp
     ring
@@ -301,7 +303,7 @@ lemma hasDerivAt_Y_prime {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
   have hd := (hasDerivAt_X ht).div (hasDerivAt_Z ht) hz0
   have hc := circle_identities ht
   have hid : Y t*Z t+X t*D t=(3/4)*targetSq := by
-    nlinarith [hc.1,hc.2.1,hc.2.2]
+    linear_combination (3/4)*hc.1-X t*hc.2.1-Y t*hc.2.2
   convert hd using 1
   field_simp [hz0]
   nlinarith
@@ -312,8 +314,9 @@ lemma hasDerivAt_X_prime {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
   have hd := (hasDerivAt_Y ht).neg.div (hasDerivAt_Z ht) hz0
   have hc := circle_identities ht
   have hid : X t*Z t-Y t*D t=(1/3)*targetSq := by
-    nlinarith [hc.1,hc.2.1,hc.2.2]
+    linear_combination (1/3)*hc.1-X t*hc.2.2+Y t*hc.2.1
   convert hd using 1
+  simp only [Pi.neg_apply]
   field_simp [hz0]
   nlinarith
 

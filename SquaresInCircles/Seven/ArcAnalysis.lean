@@ -9,7 +9,6 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 The continuum estimate below is proved by a single positive-power identity,
 not by checking an interval mesh. The derivatives are of explicit functions.
 -/
-set_option maxHeartbeats 1200000
 noncomputable section
 open Set
 namespace SquaresInCircles.Seven
@@ -58,7 +57,7 @@ lemma asin_le_cubic {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/5) :
   let t := x+x^3/4
   have hx3 : 0 ≤ x^3 := pow_nonneg hx.1 _
   have hsmall := mul_nonneg hx.1 (show 0 ≤ 9/25-x^2 by nlinarith [hx.2])
-  have ht0 : 0 ≤ t := by dsimp [t]; positivity
+  have ht0 : 0 ≤ t := by dsimp only [t]; linarith
   have ht : t ≤ (109/100 : ℝ)*x := by dsimp [t]; nlinarith
   have ht3 : t^3 ≤ ((109/100 : ℝ)*x)^3 := by gcongr
   have hs := Real.sin_ge_sub_cube ht0
@@ -74,7 +73,7 @@ lemma asin_upper_remainder {y : ℝ} (hy : -1/2 ≤ y ∧ y ≤ 11/40) :
     Real.arcsin y ≤ y+1331/256000 := by
   by_cases h : 0 ≤ y
   · have hb := asin_le_cubic ⟨h,by linarith [hy.2]⟩
-    have hc : y^3 ≤ (11/40 : ℝ)^3 := by gcongr
+    have hc : y^3 ≤ (11/40 : ℝ)^3 := pow_le_pow_left₀ h hy.2 3
     nlinarith
   · have hb := asin_le_self_nonpos ⟨by linarith [hy.1],by linarith⟩
     linarith
@@ -143,8 +142,8 @@ lemma arcEnvelope_hasDeriv {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/4) :
   have hp := arc_radicands hx
   have hB : Real.sqrt (targetSq-(x+1)^2) ≠ 0 :=
     ne_of_gt (Real.sqrt_pos.mpr hp.2)
-  have hd : HasDerivAt (fun y : ℝ => targetSq-(y+1)^2) (-2*(x+1)) x := by
-    convert (((hasDerivAt_id x).add_const 1).pow 2).const_sub targetSq using 1 <;> ring
+  have hd : HasDerivAt (fun y : ℝ => targetSq-(y+1)^2) (-(2*(x+1))) x := by
+    simpa using (((hasDerivAt_id x).add_const 1).pow 2).const_sub targetSq
   have hs := (hd.sqrt (ne_of_gt hp.2)).const_mul (1/3 : ℝ)
   have ha := Real.hasDerivAt_arcsin (x := x) (by linarith [hx.1]) (by linarith [hx.2])
   have h := ((hs.const_add (Real.pi/6+1/24)).add ha).sub
@@ -158,28 +157,41 @@ lemma arcEnvelope_hasDeriv {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/4) :
 lemma arcEnvelopeDeriv_hasDeriv {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/4) :
     HasDerivAt arcEnvelopeDeriv (arcEnvelopeSecond x) x := by
   have hp := arc_radicands hx
-  let A := Real.sqrt (1-x^2)
-  let B := Real.sqrt (targetSq-(x+1)^2)
+  set A := Real.sqrt (1-x^2) with hAdef
+  set B := Real.sqrt (targetSq-(x+1)^2) with hBdef
   have hA : 0 < A := Real.sqrt_pos.mpr hp.1
   have hB : 0 < B := Real.sqrt_pos.mpr hp.2
-  have hA2 : A^2=1-x^2 := Real.sq_sqrt hp.1.le
   have hB2 : B^2=targetSq-(x+1)^2 := Real.sq_sqrt hp.2.le
   have dA : HasDerivAt (fun y : ℝ => Real.sqrt (1-y^2)) (-x/A) x := by
-    have h := (((hasDerivAt_id x).pow 2).const_sub (1 : ℝ)).sqrt (ne_of_gt hp.1)
-    convert h using 1 <;> dsimp [A] <;> field_simp <;> ring
+    have h1 : HasDerivAt (fun y : ℝ => 1-y^2) (-(2*x)) x := by
+      simpa using (hasDerivAt_pow 2 x).const_sub 1
+    have h := h1.sqrt (ne_of_gt hp.1)
+    rw [← hAdef] at h
+    refine h.congr_deriv ?_
+    field_simp
   have dB : HasDerivAt (fun y : ℝ => Real.sqrt (targetSq-(y+1)^2)) (-(x+1)/B) x := by
-    have h := ((((hasDerivAt_id x).add_const 1).pow 2).const_sub targetSq).sqrt
-      (ne_of_gt hp.2)
-    convert h using 1 <;> dsimp [B] <;> field_simp <;> ring
-  have hi := (hasDerivAt_const x (1 : ℝ)).div dA (ne_of_gt hA)
-  have hj := ((hasDerivAt_id x).add_const 1).div (dB.const_mul 3)
-    (by positivity : 3*B ≠ 0)
-  have h := (hi.sub_const (3/4 : ℝ)).sub hj
-  convert h using 1
-  · ext y; dsimp [arcEnvelopeDeriv]; ring
-  · change x/A^3-targetSq/(3*B^3) = _
-    field_simp [ne_of_gt hA,ne_of_gt hB]
-    nlinarith [hB2]
+    have h1 : HasDerivAt (fun y : ℝ => targetSq-(y+1)^2) (-(2*(x+1))) x := by
+      simpa using (((hasDerivAt_id x).add_const 1).pow 2).const_sub targetSq
+    have h := h1.sqrt (ne_of_gt hp.2)
+    rw [← hBdef] at h
+    refine h.congr_deriv ?_
+    field_simp
+  have hi : HasDerivAt (fun y : ℝ => 1/Real.sqrt (1-y^2)) (x/A^3) x := by
+    have h := (hasDerivAt_const x (1 : ℝ)).div dA (ne_of_gt hA)
+    rw [← hAdef] at h
+    refine h.congr_deriv ?_
+    field_simp
+    ring
+  have hj : HasDerivAt (fun y : ℝ => (y+1)/(3*Real.sqrt (targetSq-(y+1)^2)))
+      (targetSq/(3*B^3)) x := by
+    have h := ((hasDerivAt_id x).add_const 1).div (dB.const_mul 3)
+      (by positivity : 3*B ≠ 0)
+    rw [← hBdef] at h
+    refine h.congr_deriv ?_
+    simp only [id]
+    field_simp
+    linarith
+  exact (hi.sub_const (3/4 : ℝ)).sub hj
 
 lemma arcEnvelopeSecond_neg {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/4) :
     arcEnvelopeSecond x < 0 := by
@@ -205,7 +217,6 @@ lemma arcEnvelopeSecond_neg {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/4) :
       (3*x*B^3-targetSq*A^3)/(3*A^3*B^3) := by
     change x/A^3-targetSq/(3*B^3) = _
     field_simp [ne_of_gt hA,ne_of_gt hB]
-    ring
   rw [hrepr]
   exact div_neg_of_neg_of_pos (by linarith) (by positivity)
 

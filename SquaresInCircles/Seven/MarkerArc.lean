@@ -16,11 +16,15 @@ lemma axial_minus_asin_lower {u : ℝ} (hu : 0 ≤ u ∧ u ≤ 31/40) :
   let f : ℝ → ℝ := fun y => 5*(y+1/2)/4-Real.arcsin y
   have hmono : MonotoneOn f (Icc (-1/2 : ℝ) (1/2)) := by
     apply monoOn_of_hasDeriv_nonneg (d := fun y => 5/4-1/Real.sqrt (1-y^2))
-    · dsimp [f]; fun_prop
+    · fun_prop
     · intro y hy
       have ha := Real.hasDerivAt_arcsin (x := y) (by linarith [hy.1]) (by linarith [hy.2])
       have h := (((hasDerivAt_id y).add_const (1/2 : ℝ)).const_mul (5/4 : ℝ)).sub ha
-      convert h using 1 <;> dsimp [f] <;> ring
+      convert h using 1
+      · funext z
+        simp only [f,Pi.sub_apply,id]
+        ring
+      · ring
     · intro y hy
       have hp : 0 < 1-y^2 := by nlinarith [hy.1,hy.2]
       have hr : 0 < Real.sqrt (1-y^2) := Real.sqrt_pos.mpr hp
@@ -33,7 +37,11 @@ lemma axial_minus_asin_lower {u : ℝ} (hu : 0 ≤ u ∧ u ≤ 31/40) :
     (show (-1/2 : ℝ) ∈ Icc (-1/2 : ℝ) (1/2) by norm_num)
     (show u-1/2 ∈ Icc (-1/2 : ℝ) (1/2) by constructor <;> linarith [hu.1,hu.2])
     (by linarith [hu.1])
-  simpa [f,axial,Real.arcsin_neg,asin_half] using hm
+  have hneg : Real.arcsin (-1/2 : ℝ) = -(Real.pi/6) := by
+    rw [neg_div,Real.arcsin_neg,asin_half]
+  simp only [f,hneg] at hm
+  dsimp [axial]
+  linarith
 
 lemma marker_lower_endpoint {a u : ℝ} (h : Admissible a u) :
     Real.arcsin (u-1/2)+801/1600 < label a u := by
@@ -92,7 +100,7 @@ lemma asin_tangent_three_fifths {x : ℝ} (hx : 1/2 ≤ x ∧ x ≤ 1) :
     have h := (Real.hasDerivAt_arcsin (x := y)
       (by linarith [hy.1]) (by linarith [hy.2])).sub
       ((hasDerivAt_id y).const_mul (5/4 : ℝ))
-    simpa [f] using h
+    exact h.congr_deriv (by ring)
   by_cases hxc : x ≤ 3/5
   · have hm : AntitoneOn f (Icc (1/2 : ℝ) (3/5)) := by
       apply antiOn_of_hasDeriv_nonpos

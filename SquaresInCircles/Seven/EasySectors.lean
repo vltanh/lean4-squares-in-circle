@@ -15,18 +15,18 @@ lemma marker_arc_signed {a b x : ℝ} (h : Admissible a |b|)
     (hx : |x-signedLabel a b| ≤ 801/1600) :
     |Real.cos x-a| ≤ 1/2 ∧ |Real.sin x-b| ≤ 1/2 := by
   by_cases hb : b < 0
-  · have ht : |-x-label a |b|| ≤ 801/1600 := by
+  · have ht : |-x-label a (|b|)| ≤ 801/1600 := by
       have he : -x-label a |b| = -(x-(-label a |b|)) := by ring
       rw [he,abs_neg]
-      simpa only [signedLabel,if_pos hb] using hx
+      simpa only [signedLabel,ite_eq_left hb] using hx
     have hm := marker_arc h ht
     rw [Real.cos_neg,Real.sin_neg] at hm
     refine ⟨hm.1,?_⟩
     have he : -Real.sin x-|b| = -(Real.sin x-b) := by rw [abs_of_neg hb]; ring
     rw [he,abs_neg] at hm
     exact hm.2
-  · simpa only [signedLabel,if_neg hb,abs_of_nonneg (le_of_not_gt hb)] using
-      marker_arc h (by simpa only [signedLabel,if_neg hb] using hx)
+  · simpa only [signedLabel,ite_eq_right hb,abs_of_nonneg (le_of_not_gt hb)] using
+      marker_arc h (by simpa only [signedLabel,ite_eq_right hb] using hx)
 
 lemma marker_arc_support {a b x : ℝ} (h : Admissible a |b|)
     (hx : |x-signedLabel a b| ≤ 801/1600) (z : ℝ) :

@@ -49,7 +49,7 @@ theorem six_markers_impossible (c : Fin 6 → Direction)
     (fun p _ => hb p)
   have hrpi : r < Real.pi/2 := by
     have hh := hrb (0,0) (Finset.mem_univ _)
-    simpa only [b, if_pos rfl] using hh
+    simpa only [b, ite_eq_left rfl] using hh
   have hnonneg : 0 ≤ r := by linarith [Real.pi_pos]
   have hballs : Pairwise (fun i j =>
       Disjoint (Metric.closedBall (c i) r) (Metric.closedBall (c j) r)) := by
@@ -65,7 +65,7 @@ theorem six_markers_impossible (c : Fin 6 → Direction)
         _ = _ := by ring
     have hh := hrb (i,j) (Finset.mem_univ _)
     have hh' : r < dist (c i) (c j)/2 := by
-      simpa only [b, if_neg hij] using hh
+      simpa only [b, ite_eq_right hij] using hh
     linarith
   have hbudget := closed_arc_budget (n := 6) c (fun _ => r)
     (fun _ => ⟨hnonneg, by linarith [Real.pi_pos]⟩) hballs

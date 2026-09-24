@@ -1,5 +1,6 @@
 import SquaresInCircles.Seven.InwardCircularCertificate
 import SquaresInCircles.Seven.TargetBoundaryMonotonicity
+import SquaresInCircles.Seven.CapReduction
 
 /-!
 # Finite boundary reduction of the positive inward-opposite turn
@@ -25,14 +26,14 @@ def diagonalJunction (z : ℝ) : ℝ :=
 lemma sideTopA_diagonal {t : ℝ} (ht : td ≤ t) : sideTopA t=diagonal t := by
   by_cases he : t=td
   · subst t
-    simp only [sideTopA,if_pos le_rfl]
+    simp only [sideTopA,ite_eq_left le_rfl]
     rw [side_at_diagonal.1]
     dsimp [diagonal,td]
     ring
-  · simp only [sideTopA,if_neg (show ¬t≤td by linarith)]
+  · simp only [sideTopA,ite_eq_right (show ¬t≤td from fun h => he (le_antisymm h ht))]
 
 lemma sideTopA_td : sideTopA td=rd := by
-  simp only [sideTopA,if_pos le_rfl]
+  simp only [sideTopA,ite_eq_left le_rfl]
   exact side_at_diagonal.1
 
 lemma opposite_upper_circular {z t : ℝ}
@@ -100,7 +101,9 @@ lemma diagonal_junction_pos {z : ℝ}
     dsimp [diagonalAngle]
     linarith [hs.1]
   have hmono : MonotoneOn diagonalJunction (Icc diagonalAngle z) := by
-    apply monoOn_of_hasDeriv_nonneg (by dsimp [diagonalJunction,inwardOpposite,tieA,otherV,otherLabel]; fun_prop)
+    apply monoOn_of_hasDeriv_nonneg (d := fun x => (43/90-(4/5)*otherLabel x td)*Real.sin x+
+      (13/10-tieA (otherLabel x td))*Real.cos x)
+    · unfold diagonalJunction inwardOpposite tieA otherV otherLabel; fun_prop
     · intro x hx
       have hx0 : 0 < x := lt_of_lt_of_le diagonal_angle_bounds.1 hx.1.le
       have hxpi : x < Real.pi := by linarith [hx.2,hz.2,Real.pi_pos]
@@ -114,39 +117,39 @@ lemma diagonal_junction_pos {z : ℝ}
       have hevent : (fun y => diagonalJunction y) =ᶠ[nhds x]
           (fun y => 1/2-rd-(tieA (otherLabel y td)-1/2)*Real.sin y+
           (otherV y td+1/2)*Real.cos y) := by
-        filter_upwards [((Real.continuous_sin.tendsto x).eventually (gt_mem_nhds hsin))] with y hy
+        filter_upwards [((Real.continuous_sin.tendsto x).eventually (lt_mem_nhds hsin))] with y hy
         dsimp [diagonalJunction,inwardOpposite]
         rw [abs_of_pos hy]
         ring
       have ha : HasDerivAt (fun y => tieA (otherLabel y td)) (-(44/45)) x := by
-        convert ((hasDerivAt_const x ((2*Real.pi+7)/9)).sub
-          ((((hasDerivAt_id x).add_const (Real.pi/6)).sub_const td).const_mul (44/45))) using 1 <;>
-          dsimp [tieA,otherLabel] <;> ring
+        exact ((hasDerivAt_const x ((2*Real.pi+7)/9)).fun_sub
+          ((((hasDerivAt_id' x).add_const (Real.pi/6)).sub_const td).const_mul (44/45))).congr_deriv
+          (by ring)
       have hv : HasDerivAt (fun y => otherV y td) (4/5) x := by
-        convert ((((hasDerivAt_id x).add_const (Real.pi/6)).sub_const td).const_mul (4/5)) using 1 <;>
-          dsimp [otherV,otherLabel] <;> ring
-      have hd := (((hasDerivAt_const x (1/2-rd)).sub
-        ((ha.sub_const (1/2)).mul (Real.hasDerivAt_sin x))).add
-        ((hv.add_const (1/2)).mul (Real.hasDerivAt_cos x)))
+        exact ((((hasDerivAt_id' x).add_const (Real.pi/6)).sub_const td).const_mul (4/5)).congr_deriv
+          (by ring)
+      have hd := (((hasDerivAt_const x (1/2-rd)).fun_sub
+        ((ha.sub_const (1/2)).fun_mul (Real.hasDerivAt_sin x))).fun_add
+        ((hv.add_const (1/2)).fun_mul (Real.hasDerivAt_cos x)))
       have hd' : HasDerivAt
           (fun y => 1/2-rd-(tieA (otherLabel y td)-1/2)*Real.sin y+
           (otherV y td+1/2)*Real.cos y)
           ((43/90-(4/5)*otherLabel x td)*Real.sin x+
           (13/10-tieA (otherLabel x td))*Real.cos x) x := by
-        convert hd using 1 <;> dsimp [otherV] <;> ring
-      exact hd'.congr_of_eventuallyEq hevent.symm
+        exact hd.congr_deriv (by dsimp [otherV]; ring)
+      exact hd'.congr_of_eventuallyEq hevent
     · intro x hx
       let s := otherLabel x td
       have hsx : s0 ≤ s ∧ s ≤ Real.pi/4 := by
         dsimp [s,otherLabel,diagonalAngle] at *
-        constructor <;> linarith [hs.1,hs.2]
+        constructor <;> linarith [hs.1,hs.2,hx.1,hx.2]
       have ht := transition_coarse
       have hC : 1/2 ≤ Real.cos x := by
         have hh := Real.strictAntiOn_cos.antitoneOn
           (show x∈Icc 0 Real.pi by constructor <;> linarith [hx.1,diagonal_angle_bounds.1,hx.2,hz.2,Real.pi_pos])
           (show Real.pi/3∈Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos]) (by linarith [hx.2,hz.2])
         simpa only [Real.cos_pi_div_three] using hh
-      have hS0 := Real.sin_nonneg_of_nonneg_of_le_pi
+      have hS0 := Real.sin_nonneg_of_nonneg_of_le_pi (x := x)
         (by linarith [hx.1,diagonal_angle_bounds.1]) (by linarith [hx.2,hz.2,Real.pi_pos])
       have hSC : Real.sin x≤(9/4)*Real.cos x := by linarith [Real.sin_le_one x]
       have ha : tieA s<9/8 := by
@@ -181,7 +184,7 @@ lemma opposite_upper_junction {z : ℝ}
     (hz : 0<z ∧ z≤Real.pi/3)
     (hs : 0≤otherLabel z td ∧ otherLabel z td≤Real.pi/4) :
     0<oppositeUpper z td := by
-  by_cases hc : otherLabel z td≤s0
+  by_cases hc : otherLabel z td ≤ s0
   · exact opposite_upper_circular hz.1
       ⟨by linarith [transition_coarse.2.2.2.2.2,td_bounds.1],le_rfl⟩ ⟨hs.1,hc⟩
   · have hs' : s0≤otherLabel z td := (lt_of_not_ge hc).le
@@ -200,7 +203,7 @@ lemma opposite_upper_junction {z : ℝ}
 
 lemma diagonal_source_reduction {z t l : ℝ}
     (hz : 0≤z ∧ z≤Real.pi/3)
-    (ht : td≤l ∧ l≤t) (hpi : t≤Real.pi/4)
+    (ht : td≤l ∧ l≤t)
     (hs : 0≤otherLabel z t ∧ otherLabel z l≤Real.pi/4) :
     oppositeUpper z l≤oppositeUpper z t := by
   have hvl : 0≤otherV z t ∧ otherV z t≤otherV z l ∧ otherV z l≤Real.pi/5 := by
@@ -208,7 +211,7 @@ lemma diagonal_source_reduction {z t l : ℝ}
     exact ⟨by linarith,by linarith,by linarith⟩
   have hA := axialTop_displacement hvl.1 hvl.2.1 hvl.2.2
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi hz.1 (by linarith [hz.2,Real.pi_pos])
-  have hC := cos_nonneg_quarter ⟨by linarith [hz.1,Real.pi_pos],by linarith [hz.2,Real.pi_pos]⟩
+  have hC := cos_nonneg_quarter (x := z) ⟨by linarith [hz.1,Real.pi_pos],by linarith [hz.2,Real.pi_pos]⟩
   have hp := mul_le_mul_of_nonneg_right hA hS
   have hd : 0≤t-l := sub_nonneg.mpr ht.2
   have hvd : otherV z l-otherV z t=(4/5)*(t-l) := by dsimp [otherV,otherLabel]; ring
@@ -242,7 +245,7 @@ lemma circular_source_line_reduction {z t r : ℝ}
   have hp := mul_nonneg (sub_nonneg.mpr ht.2) (sub_nonneg.mpr hm.le)
   dsimp [oppositeUpper,inwardOpposite]
   rw [htline,hrline]
-  simp only [sideTopA,if_pos (ht.2.trans hr),if_pos hr]
+  simp only [sideTopA,ite_eq_left (ht.2.trans hr),ite_eq_left hr]
   dsimp [tieA,otherV,otherLabel]
   nlinarith
 
@@ -262,7 +265,7 @@ theorem opposite_upper_pos {z t : ℝ}
       dsimp [otherLabel]
       linarith
     have hsl0 : 0≤otherLabel z l := by dsimp [otherLabel] at *; linarith [hs.1]
-    have hcomp := diagonal_source_reduction ⟨hz.1.le,hz.2⟩ ⟨hld,hlt⟩ ht.2 ⟨hs.1,hsl⟩
+    have hcomp := diagonal_source_reduction ⟨hz.1.le,hz.2⟩ ⟨hld,hlt⟩ ⟨hs.1,hsl⟩
     have hbase : 0<oppositeUpper z l := by
       by_cases hc : z-Real.pi/12≤td
       · have he : l=td := max_eq_left hc
@@ -273,7 +276,7 @@ theorem opposite_upper_pos {z t : ℝ}
           (by rw [he]; dsimp [otherLabel]; ring)
     exact hbase.trans_le hcomp
   · have htc : t≤td := (lt_of_not_ge hdiag).le
-    by_cases hcircle : otherLabel z t≤s0
+    by_cases hcircle : otherLabel z t ≤ s0
     · exact opposite_upper_circular hz.1 ⟨ht.1,htc⟩ ⟨hs.1,hcircle⟩
     · let r := min td (z+Real.pi/6-s0)
       have htr : t≤r := le_min htc (by dsimp [otherLabel] at hcircle; linarith)
@@ -330,7 +333,7 @@ theorem inward_opposite_side_axial_property {a u A v : ℝ}
     have hb := Boundary.axial_upper h' hA
     have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1.le (by linarith [hz.2,Real.pi_pos])
     have hm := mul_nonneg (sub_nonneg.mpr hb) hs0
-    have hcompare : Boundary.oppositeUpper z (label a u)≤inwardOpposite a A v z := by
+    have hcompare : Boundary.oppositeUpper z (label a u) ≤ inwardOpposite a A v z := by
       dsimp [Boundary.oppositeUpper]
       rw [hvEq]
       dsimp [inwardOpposite]

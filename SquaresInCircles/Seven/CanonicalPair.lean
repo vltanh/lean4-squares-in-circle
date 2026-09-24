@@ -44,6 +44,7 @@ lemma pair_support_axis_values (a u A v g : ℝ) (s t : TransverseSign) :
   have h0 : support A (t.coe*v) (Real.pi-d)=
       -A*Real.cos d+t.coe*v*Real.sin d+(|Real.cos d|+|Real.sin d|)/2 := by
     simp only [support,Real.cos_pi_sub,Real.sin_pi_sub,abs_neg]
+    ring
   have h1 : support A (t.coe*v) (3*Real.pi/2-d)=
       -A*Real.sin d-t.coe*v*Real.cos d+(|Real.sin d|+|Real.cos d|)/2 :=
     support_three_half_sub A (t.coe*v) d
@@ -70,7 +71,7 @@ lemma pair_support_axis_values (a u A v g : ℝ) (s t : TransverseSign) :
     ring
   constructor
   · rw [pairSupport,he]
-    have hk : cardinalAngle (2:Fin 4)=Real.pi := by norm_num [cardinalAngle]; ring
+    have hk : cardinalAngle (2:Fin 4)=Real.pi := by norm_num [cardinalAngle]
     rw [hk,support_pi,show Real.pi+Real.pi-d=2*Real.pi-d by ring,h2]
     dsimp [pairWidth,centerDX,d]
     ring
@@ -116,14 +117,16 @@ lemma all_four_axes_inside {a u A v g : ℝ} (s t : TransverseSign)
   have hx : Real.cos d*centerDX a u A v g s t+Real.sin d*centerDY a u A v g s t =
       -centerDX A v a u g t.flip s.flip := by
     dsimp [centerDX,centerDY]
-    rw [reverse_reflected_phase,TransverseSign.coe_flip,TransverseSign.coe_flip]
+    rw [reverse_reflected_phase]
+    simp only [TransverseSign.coe_flip]
     change Real.cos d*(A*Real.cos d-t.coe*v*Real.sin d-a)+
       Real.sin d*(A*Real.sin d+t.coe*v*Real.cos d-s.coe*u)=_
     nlinarith [congrArg (fun x : ℝ => A*x) hu]
   have hy : -Real.sin d*centerDX a u A v g s t+Real.cos d*centerDY a u A v g s t =
       centerDY A v a u g t.flip s.flip := by
     dsimp [centerDX,centerDY]
-    rw [reverse_reflected_phase,TransverseSign.coe_flip,TransverseSign.coe_flip]
+    rw [reverse_reflected_phase]
+    simp only [TransverseSign.coe_flip]
     change -Real.sin d*(A*Real.cos d-t.coe*v*Real.sin d-a)+
       Real.cos d*(A*Real.sin d+t.coe*v*Real.cos d-s.coe*u)=_
     nlinarith [congrArg (fun x : ℝ => t.coe*v*x) hu]

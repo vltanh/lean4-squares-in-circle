@@ -53,8 +53,8 @@ theorem fixed_gap_forward_positive {a u A v : ℝ}
     ring
   rw [he]
   by_cases ht : 5/16 ≤ t
-  · have hl := support_lower
-      (by simpa only [abs_of_nonneg h'.1] using h') (Real.pi+z)
+  · have hl := support_lower (a := A) (b := v)
+      (by rw [abs_of_nonneg h'.1]; exact h') (Real.pi+z)
     linarith [htu,sqrt_three_bounds.2]
   · have ht' : 0 ≤ t ∧ t ≤ 5/16 := ⟨ht0,(lt_of_not_ge ht).le⟩
     have hz : 0 ≤ z ∧ z ≤ Real.pi/2 := by
@@ -83,7 +83,6 @@ theorem fixed_gap_forward_positive {a u A v : ℝ}
       have hm := trig_sum_monotone hw ⟨hz.1,hquarter'⟩
         (show Real.pi/6-t ≤ z by dsimp [z]; linarith)
       have hf := forward_positive_profile ht'
-      dsimp [phi] at hd
       nlinarith
 
 end SquaresInCircles.Seven

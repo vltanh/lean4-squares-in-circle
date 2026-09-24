@@ -9,7 +9,8 @@ support is then an axial transverse support, and the side-label inequality
 forces it to exceed the target's nearest-corner distance.
 -/
 noncomputable section
-open Set
+open Set Filter
+open scoped Topology
 namespace SquaresInCircles.Seven
 
 lemma first_octant_polar {x y : ℝ} (hx : 0<x) (hy : 0<y) (hxy : y≤x) :
@@ -85,10 +86,12 @@ lemma stationary_nearest_corner {A v z X Y H : ℝ} (t : TransverseSign)
   have hCneg : Real.cos z<0 := by
     by_contra hn
     have hCp : 0<Real.cos z := lt_of_le_of_ne (le_of_not_gt hn) (Ne.symm hC)
-    rw [if_pos hCp] at hX
+    rw [ite_eq_left hCp] at hX
     have hm := mul_neg_of_neg_of_pos hneg hCp
     linarith [h.2.2.1]
-  have hXX : X=A-1/2 := by simpa only [if_neg (not_lt_of_ge hCneg.le)] using hX
+  have hXX : X=A-1/2 := by
+    rw [ite_eq_right (not_lt_of_ge hCneg.le)] at hX
+    linarith
   have hA : 1/2<A := by
     have hm := mul_pos_of_neg_of_neg hneg hCneg
     linarith
@@ -98,46 +101,49 @@ lemma stationary_nearest_corner {A v z X Y H : ℝ} (t : TransverseSign)
       have hSn : Real.sin z<0 := by
         by_contra hn
         have hSp : 0<Real.sin z := lt_of_le_of_ne (le_of_not_gt hn) (Ne.symm hS)
-        rw [if_pos hSp] at hY
+        rw [ite_eq_left hSp] at hY
         have hm := mul_neg_of_neg_of_pos hneg hSp
         linarith [h.1]
-      rw [if_neg (not_lt_of_ge hSn.le)] at hY
+      rw [ite_eq_right (not_lt_of_ge hSn.le)] at hY
       have hm := mul_pos_of_neg_of_neg hneg hSn
       exact ⟨by linarith,by linarith⟩
     · simp only [TransverseSign.coe,neg_one_mul] at hY ⊢
       have hSp : 0<Real.sin z := by
         by_contra hn
         have hSn : Real.sin z<0 := lt_of_le_of_ne (le_of_not_gt hn) hS
-        rw [if_neg (not_lt_of_ge hSn.le)] at hY
+        rw [ite_eq_right (not_lt_of_ge hSn.le)] at hY
         have hm := mul_pos_of_neg_of_neg hneg hSn
         linarith [h.1]
-      rw [if_pos hSp] at hY
+      rw [ite_eq_left hSp] at hY
       have hm := mul_neg_of_neg_of_pos hneg hSp
       exact ⟨by linarith,by linarith⟩
   obtain ⟨d,b,hd,hb,hbq,hd2,hdc,hds⟩ := first_octant_polar
     (x := A-1/2) (y := v-1/2) (by linarith) (by linarith [hYY.2]) (by linarith [h.2.1])
   have hnorm : X^2+Y^2=H^2 := by
     rw [hXC,hYS]
-    nlinarith [congrArg (fun x : ℝ => H^2*x) hu]
+    linear_combination H^2*hu
   have hH' : H=-d := by
     rw [hXX,hYY.1] at hnorm
-    cases t <;> norm_num [TransverseSign.coe] at hnorm <;> nlinarith
+    have ht : t.coe^2=1 := by cases t <;> norm_num [TransverseSign.coe]
+    have hsq : (H+d)*(H-d)=0 := by linear_combination -hnorm-hd2+(v-1/2)^2*ht
+    rcases mul_eq_zero.mp hsq with he | he <;> linarith
   have hcos : Real.cos z= -Real.cos b := by
     rw [hXX,hH'] at hXC
-    have hm : d*(Real.cos z+Real.cos b)=0 := by nlinarith
-    exact (mul_eq_zero.mp hm).resolve_left (ne_of_gt hd) |> (by intro hh; linarith)
+    have hm : d*(Real.cos z+Real.cos b)=0 := by linear_combination hXC+hdc
+    have hh := (mul_eq_zero.mp hm).resolve_left (ne_of_gt hd)
+    linarith
   have hsin : Real.sin z= -t.coe*Real.sin b := by
     rw [hYY.1,hH'] at hYS
-    have hm : d*(Real.sin z+t.coe*Real.sin b)=0 := by nlinarith
+    have hm : d*(Real.sin z+t.coe*Real.sin b)=0 := by linear_combination hYS+t.coe*hds
     have hh := (mul_eq_zero.mp hm).resolve_left (ne_of_gt hd)
     linarith
   have hsum : d<A+v-1 := by
     have hprod := mul_pos (show 0<A-1/2 by linarith) (show 0<v-1/2 by linarith [hYY.2])
-    nlinarith
+    nlinarith only [hprod,hd2,hd,hA,hYY.2]
   have hp := h.2.2.2
   have hdhalf : d<1/2 := by
     dsimp [phi,targetSq] at hp
-    nlinarith
+    nlinarith only [hp,hd2,hsum,hd]
   exact ⟨d,b,hd,hdhalf,hb,hbq,by linarith,by linarith,hH',hcos,hsin⟩
 
 lemma corner_source_margin {a u A v g d b : ℝ} (s t : TransverseSign) (k : Fin 4)
@@ -149,7 +155,7 @@ lemma corner_source_margin {a u A v g d b : ℝ} (s t : TransverseSign) (k : Fin
     (hS : Real.sin (cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v)= -t.coe*Real.sin b) :
     d<support a (s.coe*u) (cardinalAngle k) := by
   have hsb : 0<Real.sin b := Real.sin_pos_of_pos_of_lt_pi hb.1 (by linarith [hb.2,Real.pi_pos])
-  have hvh : 1/2<v := by rw [hv]; nlinarith [mul_pos hd.1 hsb]
+  have hvh : 1/2<v := by rw [hv]; linarith [mul_pos hd.1 hsb]
   have hsmin := corner_label_gt h' hvh
   let p := label a u
   let r := label A v
@@ -170,10 +176,10 @@ lemma corner_source_margin {a u A v g d b : ℝ} (s t : TransverseSign) (k : Fin
       dsimp [N,C,p,r]; ring
     have hcos : Real.cos (N-C)=1 := by
       rw [hangle,Real.cos_sub,hC,hS]
-      cases t <;> simp only [TransverseSign.coe,one_mul,neg_one_mul,Real.cos_add,Real.sin_add,
+      cases t <;> simp only [TransverseSign.coe,one_mul,Real.cos_add,Real.sin_add,
         Real.cos_pi,Real.sin_pi,Real.cos_neg,Real.sin_neg,zero_mul,one_mul,neg_mul,
-        neg_neg,zero_sub,zero_add,mul_neg,add_zero] <;>
-        nlinarith [Real.sin_sq_add_cos_sq b]
+        neg_neg,zero_add,mul_neg] <;>
+        linear_combination Real.sin_sq_add_cos_sq b
     have hh := cos_one_between
       ⟨by linarith [hNrange.1,hCrange.2,Real.pi_pos],
        by linarith [hNrange.2,hCrange.1,Real.pi_pos]⟩ hcos
@@ -206,29 +212,27 @@ lemma corner_source_margin {a u A v g d b : ℝ} (s t : TransverseSign) (k : Fin
             exact hfalse.elim
         have hup : u=(4/5)*p := by dsimp [p]; rw [hax]; dsimp [axial]; ring
         let K := (3/4)*Real.cos b-(1/3)*Real.sin b
-        have hcospos := Real.cos_pos_of_mem_Ioo
+        have hcospos : 0<Real.cos b := Real.cos_pos_of_mem_Ioo
           ⟨by linarith [hb.1,Real.pi_pos],by linarith [hb.2,Real.pi_pos]⟩
         have hsc := sin_le_cos_of_small ⟨hb.1.le,hb.2⟩
         have hK : 0<K := by dsimp [K]; linarith
         have hbound : d*K≤3/8-p-b := by
           have hh := h'.label_le_side
-          change r≤side A v at hh
+          change r ≤ side A v at hh
           rw [hA,hv] at hh
-          dsimp [side,K]
-          nlinarith
+          dsimp [side,K] at hh ⊢
+          linarith
         have hcosL : 1-b≤Real.cos b := by
           have hh := Real.one_sub_sq_div_two_le_cos (x := b)
           have hb1 : b<1 := by linarith [hb.2,pi_upper_22]
-          nlinarith
+          linarith [mul_pos hb.1 (sub_pos.mpr hb1)]
         have hsinU := Real.sin_le hb.1.le
         have hKL : 3/4-(13/12)*b≤K := by dsimp [K]; linarith
         have hhpos : 0<1/2-(4/5)*p := by linarith [hp12,pi_upper_22]
         have hmult := mul_le_mul_of_nonneg_left hKL hhpos.le
         have hcross := mul_nonneg hp0 hb.1.le
-        have hstrict : 3/8-p-b < (1/2-(4/5)*p)*K := by nlinarith
-        have hd' : d<1/2-(4/5)*p := by
-          apply (mul_lt_mul_right hK).mp
-          exact hbound.trans_lt hstrict
+        have hstrict : 3/8-p-b < (1/2-(4/5)*p)*K := by linarith
+        have hd' : d<1/2-(4/5)*p := lt_of_mul_lt_mul_right (hbound.trans_lt hstrict) hK.le
         norm_num [cardinalAngle,support,TransverseSign.coe]
         rw [hup]
         linarith
@@ -256,8 +260,9 @@ theorem smooth_leftmost_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k 
   let X := A+(if 0<Real.cos z then (1:ℝ) else -1)/2
   let Y := t.coe*v+(if 0<Real.sin z then (1:ℝ) else -1)/2
   let H := X*Real.cos z+Y*Real.sin z
-  have hCe : Real.cos z≠0 := by dsimp [z,Z]; convert hC using 1 <;> congr 1 <;> ring
-  have hSe : Real.sin z≠0 := by dsimp [z,Z]; convert hS using 1 <;> congr 1 <;> ring
+  have hphase : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v=z := by dsimp [z,Z]; ring
+  have hCe : Real.cos z≠0 := by rwa [← hphase]
+  have hSe : Real.sin z≠0 := by rwa [← hphase]
   have hcEv := absolute_sign_eventually
     (f := fun y => Real.cos (Z-y)) (by fun_prop) hCe
   have hsEv := absolute_sign_eventually
@@ -276,12 +281,13 @@ theorem smooth_leftmost_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k 
   change H<0 at hneg
   obtain ⟨d,b,hd,hdhalf,hb,hbq,hA,hv,hH,hcos,hsin⟩ :=
     stationary_nearest_corner t h' hCe hSe rfl rfl hstat rfl hneg
-  have hphase : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v=z := by dsimp [z,Z]; ring
   have hsource := corner_source_margin s t k h h' ⟨hg.1.le,hg.2.le⟩
     ⟨hd,hdhalf⟩ ⟨hb,hbq⟩ hA hv (by rw [hphase]; exact hcos) (by rw [hphase]; exact hsin)
   have heq := hevent.eq_of_nhds
-  change pairSupport a u A v s t k g=support a (s.coe*u) (cardinalAngle k)+H at heq
-  rw [heq,hH]
+  change pairSupport a u A v s t k g=
+    support a (s.coe*u) (cardinalAngle k)+X*Real.cos z+Y*Real.sin z at heq
+  have hH' : X*Real.cos z+Y*Real.sin z=-d := hH
+  rw [heq]
   linarith
 
 end SquaresInCircles.Seven

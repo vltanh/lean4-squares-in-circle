@@ -54,7 +54,7 @@ lemma trig_direction_injective {x y : ℝ}
   linarith
 
 lemma cardinal_range (k : Fin 4) : 0≤cardinalAngle k ∧ cardinalAngle k≤3*Real.pi/2 := by
-  fin_cases k <;> norm_num [cardinalAngle] <;> linarith [Real.pi_pos]
+  fin_cases k <;> norm_num [cardinalAngle] <;> (try constructor) <;> linarith [Real.pi_pos]
 
 lemma cardinal_sine_cosine (k : Fin 4) :
     Real.sin (cardinalAngle k)=0 ∨ Real.cos (cardinalAngle k)=0 := by
@@ -114,12 +114,11 @@ lemma sinusoid_leftmost_minimum {f : ℝ → ℝ} {l u x c A B Z : ℝ}
   have hlocal : IsLocalMin f x := by
     filter_upwards [Ioo_mem_nhds hx.1 hx.2] with y hy
     exact hmin y ⟨hy.1.le,hy.2.le⟩
-  have harg : HasDerivAt (fun y : ℝ => Z-y) (-1) x := by
-    convert (hasDerivAt_const x Z).sub (hasDerivAt_id x) using 1 <;> ring
+  have harg : HasDerivAt (fun y : ℝ => Z-y) (-1) x := (hasDerivAt_id' x).const_sub Z
   have hg : HasDerivAt g (A*Real.sin (Z-x)-B*Real.cos (Z-x)) x := by
-    convert (((harg.cos.const_mul A).const_add c).add (harg.sin.const_mul B)) using 1 <;>
-      dsimp [g] <;> ring
-  have hf := hg.congr_of_eventuallyEq hevent.symm
+    convert (((harg.cos.const_mul A).const_add c).add (harg.sin.const_mul B)) using 1
+    ring
+  have hf := hg.congr_of_eventuallyEq hevent
   have hstationary : A*Real.sin (Z-x)-B*Real.cos (Z-x)=0 :=
     hlocal.hasDerivAt_eq_zero hf
   refine ⟨hstationary,?_⟩
@@ -141,7 +140,7 @@ lemma sinusoid_leftmost_minimum {f : ℝ → ℝ} {l u x c A B Z : ℝ}
     have he : Z-(x-e)=(Z-x)+e := by ring
     dsimp [g]
     rw [he,Real.cos_add,Real.sin_add]
-    nlinarith
+    linear_combination (-Real.sin e)*hstationary
   have hprod := mul_nonpos_of_nonneg_of_nonpos hnon
     (sub_nonpos.mpr (Real.cos_le_one e))
   linarith
@@ -150,10 +149,10 @@ lemma absolute_sign_eventually {f : ℝ → ℝ} (hf : Continuous f) {x : ℝ}
     (hx : f x≠0) :
     ∀ᶠ y in 𝓝 x, |f y|=(if 0<f x then (1:ℝ) else -1)*f y := by
   by_cases hpos : 0<f x
-  · filter_upwards [(hf.tendsto x).eventually (gt_mem_nhds hpos)] with y hy
-    simp only [if_pos hpos,one_mul,abs_of_pos hy]
+  · filter_upwards [(hf.tendsto x).eventually (lt_mem_nhds hpos)] with y hy
+    simp only [ite_eq_left hpos,one_mul,abs_of_pos hy]
   · have hneg : f x<0 := lt_of_le_of_ne (le_of_not_gt hpos) hx
-    filter_upwards [(hf.tendsto x).eventually (lt_mem_nhds hneg)] with y hy
-    simp only [if_neg hpos,neg_one_mul,abs_of_neg hy]
+    filter_upwards [(hf.tendsto x).eventually (gt_mem_nhds hneg)] with y hy
+    simp only [ite_eq_right hpos,neg_one_mul,abs_of_neg hy]
 
 end SquaresInCircles.Seven

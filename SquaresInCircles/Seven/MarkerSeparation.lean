@@ -72,7 +72,6 @@ theorem marker_separation : MarkerSeparationStatement := by
   have hdabs : |d|≤gap := by
     have he : dist (chartMarker C) (chartMarker D)=|d| := by
       rw [dist_comm,direction_dist]
-      rfl
     simpa only [he] using hdist
   have hdangle : (d:Direction)=chartMarker D-chartMarker C :=
     Real.Angle.coe_toReal _

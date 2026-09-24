@@ -40,8 +40,8 @@ lemma forward_negative_target_lower {a u A v : ℝ} (sgn : TransverseSign)
   have hangle : 3*Real.pi/2-gap-sgn.coe*label a u-label A v=Real.pi-e := by
     dsimp [e,gap]
     ring
-  rw [pairSupport_one]
-  simp only [TransverseSign.coe,neg_one_mul]
+  rw [pairSupport_one,show TransverseSign.negative.coe = -1 from rfl]
+  simp only [neg_one_mul,← sub_eq_add_neg]
   rw [hangle]
   simp only [support,Real.cos_pi_sub,Real.sin_pi_sub,abs_neg,abs_of_nonneg hc]
   change rawTarget A v e (sgn.coe*label a u) ≤ _
@@ -57,7 +57,7 @@ lemma side_transition_trade {A v : ℝ} (h : Admissible A v)
   have hp := h.2.2.2
   have ht : X0*(A-a0)+Y0*(v-u0) ≤ 0 := by
     dsimp [phi,a0,u0] at hp ⊢
-    nlinarith [sq_nonneg (A-a0),sq_nonneg (v-u0)]
+    nlinarith [sq_nonneg (A+1/2-X0),sq_nonneg (v+1/2-Y0)]
   have hratio : (12/25)*X0 < Y0 := by
     dsimp [a0,u0] at hc
     linarith
