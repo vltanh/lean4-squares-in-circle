@@ -163,4 +163,26 @@ lemma center_ne_of_strict_octagon (S T : UnitSquare) (o : Point)
   rw [hc] at hsep
   linarith [(abs_lt.mp h).2]
 
+lemma closed_dot_bound (S : UnitSquare) (n : Point) {p : Point}
+    (hp : closedSquare S p) : |dot n (sub p S.center)| ≤ width S n := by
+  rw [← frame_dot S]
+  change |frameX S n*localX S p+frameY S n*localY S p| ≤ width S n
+  have ha := abs_add_le (frameX S n*localX S p) (frameY S n*localY S p)
+  rw [abs_mul,abs_mul] at ha
+  have hx := mul_le_mul_of_nonneg_left hp.1 (abs_nonneg (frameX S n))
+  have hy := mul_le_mul_of_nonneg_left hp.2 (abs_nonneg (frameY S n))
+  dsimp [width]
+  linarith
+
+lemma closed_open_disjoint (S T : UnitSquare)
+    (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p))
+    {p : Point} (hS : closedSquare S p) : ¬ openSquare T p := by
+  obtain ⟨e⟩ := support_separator S T hd
+  intro hT
+  have h₁ := (abs_le.mp (closed_dot_bound S e.normal hS)).2
+  have h₂ := (abs_lt.mp (dot_open_bound_of_ne T e.nonzero hT)).1
+  have hsep := e.separates
+  simp only [dot_sub_right] at *
+  linarith
+
 end SquaresInCircles

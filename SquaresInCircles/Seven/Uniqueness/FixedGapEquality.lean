@@ -1,11 +1,10 @@
 import SquaresInCircles.Seven.Uniqueness.ScalarEquality
 
 /-!
-# Equality in the exhaustive fixed-angle partition
+# Zeros at the gap `π/3`
 
-Unlike strict optimality, this theorem identifies every possible zero. The
-capped-label reduction preserves zero sets through a positive weighted term;
-no assumption of strict containment is made.
+Every zero of a support sum at the gap `π/3` is a contact. Capped labels
+reduce to active ones through a positive weight.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -82,7 +81,7 @@ private lemma zero_of_weighted_sum {w f : Fin 3 → ℝ}
   have he : w i * f i = 0 := le_antisymm hle (mul_nonneg (hw i) (hf i))
   exact (mul_eq_zero.mp he).resolve_left (ne_of_gt hi)
 
-/-- Closed containment, all signs, all axes, all active labels. -/
+/-- A zero of a support sum at the gap `π/3` is a contact. -/
 theorem fixed_gap_zero {a u A v : ℝ} (s t : TransverseSign) (k : Fin 4)
     (h : Admissible a u) (h' : Admissible A v)
     (hz : pairSupport a u A v s t k gap = 0) : OrderedContact a u A v s t := by
@@ -115,27 +114,6 @@ theorem fixed_gap_zero {a u A v : ℝ} (s t : TransverseSign) (k : Fin 4)
       (capVertex_strict i).admissible h' (capVertex_active i) hzi
     have hn := (contact_label_not_cap (capVertex_strict i).admissible h' hc).1
     exact False.elim (hn (capVertex_label i))
-
-/-- The zero contacts have parallel geometric frames. The representative
-relative frame is either 0 or pi/2; the axial radial coordinates remain free. -/
-lemma contact_phase {a u A v : ℝ} {s t : TransverseSign}
-    (h : Admissible a u) (h' : Admissible A v)
-    (hc : OrderedContact a u A v s t) :
-    relativePhase a u A v gap s t = 0 ∨
-    relativePhase a u A v gap s t = Real.pi/2 := by
-  rcases hc with ⟨rfl,rfl,ha,hb⟩ | ⟨rfl,ha,hb⟩ | ⟨rfl,ha,hb⟩
-  · left
-    rw [relativePhase,ha.1,ha.2,hb.1,hb.2,side_label]
-    dsimp [gap,TransverseSign.coe]
-    ring
-  · right
-    rw [relativePhase,ha.1,ha.2,side_label,axial_label h' hb]
-    dsimp [gap,TransverseSign.coe]
-    ring
-  · right
-    rw [relativePhase,hb.1,hb.2,side_label,axial_label h ha]
-    dsimp [gap,TransverseSign.coe]
-    ring
 
 end Equality
 end SquaresInCircles.Seven

@@ -3,12 +3,11 @@ import SquaresInCircles.Seven.CanonicalPair
 import SquaresInCircles.Seven.Uniqueness.NormalForm
 
 /-!
-# Rigidity of the scalar equality cases
+# Contacts
 
-The zero set is three directed contact types. In a side--axial contact the
-side coordinates are fixed, but the axial radius ranges over the complete
-closed interval [1/2, sqrt(3)-1/2]. This file does not infer equality merely
-from the strict-containment theorem.
+The three kinds of contact between labelled states, and the zeros of the
+sector bounds: in each sector a zero forces a contact. A side state is
+`(1, 1/2)`; an axial state `(a, 0)` keeps `a` free.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -70,7 +69,8 @@ private lemma dual_norm : radius * Real.sqrt ((-9/10 : ℝ)^2+(-3/5)^2) = 39/20 
     norm_num
   nlinarith
 
-/-- The global side--side support bound can vanish only at the parallel contact. -/
+/-- The side–side bound of the forward sector vanishes only at two side
+states. -/
 lemma side_side_zero {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u = side a u) (hT' : label A v = side A v)
@@ -114,7 +114,8 @@ lemma side_side_zero {a u A v : ℝ}
   exact ⟨remainder_zero h (by linarith [h.remainder_nonneg,h'.remainder_nonneg]),
     remainder_zero h' (by linarith [h.remainder_nonneg,h'.remainder_nonneg])⟩
 
-/-- Side/axial inward equality, with either sign on the zero transverse coordinate. -/
+/-- A zero of the inward sector with signs `(+, -)`, side and axial labels, is
+a contact. -/
 lemma inward_opposite_zero {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u = side a u) (hA : label A v = axial v)
@@ -138,8 +139,8 @@ lemma inward_opposite_zero {a u A v : ℝ}
       linarith
     exact ⟨hc,axial_of_transverse_zero h' hv⟩
 
-/-- A side-selected target cannot be a zero of the opposite inward sector:
-its axial tie has strictly positive transverse coordinate. -/
+/-- The inward sector with signs `(+, -)` has no zero with a side label on
+the second square. -/
 lemma inward_side_target_ne_zero {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) (ha : ActiveLabel a u)
     (hT : label A v = side A v)
@@ -165,8 +166,8 @@ lemma inward_side_target_ne_zero {a u A v : ℝ}
     change 9/25 < s at hpos
     linarith [hc.2.1]
 
-/-- The lower expression in the forward negative-target proof, repeated here
-so equality is not inferred by unfolding a private implementation detail. -/
+/-- The lower bound of the forward sector with `t = -1`, in the turn `e` and
+the signed source label `r`. -/
 def forwardRaw (A v e r : ℝ) : ℝ :=
   1/2+(4/5)*r-(A-1/2)*Real.cos e-v*Real.sin e+|Real.sin e|/2
 

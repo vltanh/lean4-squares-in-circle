@@ -2,10 +2,11 @@ import SquaresInCircles.Seven.Uniqueness.Hexagon
 import SquaresInCircles.Common.Angles
 
 /-!
-# The equality contact cycle
+# The ring of six squares
 
-The directed states lower-side, upper-side, axial recur twice around the
-hexagon. All coordinate transports are explicit; the axial radii are free.
+Round the regular hexagon of markers, consecutive squares are contacts, so
+their kinds cycle through lower side, upper side and axial, twice. Read in one
+frame, they are the two side columns and two axial squares at free heights.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -210,7 +211,8 @@ lemma ring_of_ordered_contacts {S : Fin 6 → UnitSquare} {o : Point}
       simp [cycleTurns,ringCenters,turnPoint,hu,bottom]
   simpa only [he] using hrot
 
-/-- Six exterior squares at the critical radius have the exact two-column ring. -/
+/-- Six disjoint exterior squares at the optimal radius form the ring of the
+optimal packing: two side columns, one square above and one below. -/
 theorem six_exterior_ring (S : Fin 6 → UnitSquare) (o : Point)
     (hd : InteriorDisjoint S) (hext : ∀ i, ¬ openSquare (S i) o)
     (hphi : ∀ i, phi (alpha (S i) o) (beta (S i) o) ≤ targetSq) :

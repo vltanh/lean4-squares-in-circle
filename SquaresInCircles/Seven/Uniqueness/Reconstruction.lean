@@ -3,11 +3,10 @@ import SquaresInCircles.Seven.Uniqueness.CentralSquare
 import SquaresInCircles.Seven.Uniqueness.Slots
 
 /-!
-# Global reconstruction of a seven-square equality packing
+# Reconstruction
 
-No central-index, contact graph, parallel-frame, or equality-contact assumption
-is supplied to the final theorem. Each is obtained from ordinary containment
-and pairwise disjoint open interiors. The three middle ordinates are retained.
+The ring of six squares and the square in the middle, in one frame, with the
+heights of the middle column at least 1 apart: the sliding normal form.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -70,7 +69,8 @@ lemma ring_column_slots (c : Column) (i : Fin 6) :
     ringCenters c.top (-c.bottom) i = slidingCenters c (outerSlot i) := by
   fin_cases i <;> simp [ringCenters,slidingCenters,outerSlot]
 
-/-- Reconstruction after a containing label has been obtained from the budget. -/
+/-- An optimal packing in which square `k` contains the disk centre has the
+sliding normal form. -/
 theorem normal_form_of_containing (S : Fin 7 → UnitSquare) (o : Point)
     (hp : Packing S o radius) (k : Fin 7) (hk : openSquare (S k) o) :
     SlidingNormalForm S o := by

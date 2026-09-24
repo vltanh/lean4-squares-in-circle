@@ -32,7 +32,7 @@ arcs need it, and so does uniqueness, because the polygon alone is not rigid.
 
 *Lean: [`Four.attainment`](../../SquaresInCircles/Four/Construction.lean#L35),
 [`Four.optimality`](../../SquaresInCircles/Four/Optimality.lean#L38),
-[`Four.uniqueness`](../../SquaresInCircles/Four/Uniqueness.lean#L120), in
+[`Four.uniqueness`](../../SquaresInCircles/Four/Uniqueness.lean#L98), in
 [`SquaresInCircles/Four/`](../../SquaresInCircles/Four).*
 
 ## Construction
@@ -237,21 +237,7 @@ is, a vertex at $o$. Proposition 4.7 produces one such square; then no square
 contains $o$, the arcs are exactly quarters, and every square has a vertex at
 $o$.
 
-### Lemma 4.8 (a closed square keeps out of other squares)
-
-If $S$ and $T$ are disjoint and $p \in \overline{S}$, then $p \notin T^\circ$.
-
-*Proof.* With $n$ from [Lemma 5](common.md#lemma-5-supporting-line), every
-$q \in T^\circ$ satisfies
-
-```math
-\langle n, p\rangle \le \langle n, c_S\rangle + w_S(n) \le \langle n, c_T\rangle - w_T(n) < \langle n, q\rangle . \qquad \square
-```
-
-*Lean: [`closed_dot_bound`](../../SquaresInCircles/Four/Uniqueness.lean#L10),
-[`closed_open_disjoint`](../../SquaresInCircles/Four/Uniqueness.lean#L21).*
-
-### Lemma 4.9 (a square with a vertex at the disk centre)
+### Lemma 4.8 (a square with a vertex at the disk centre)
 
 Let $a_S = b_S = \frac12$, and let $\mu_S = \theta_S + \varepsilon_S\frac\pi4$.
 Then
@@ -278,11 +264,11 @@ $o$.
    ([Lemma 21](common.md#lemma-21-sitting-at-a-centre) (2)) moves it to
    $(\frac12, \frac12)$ in the frame $\mu_S - \frac\pi4$. $\square$
 
-*Lean: [`vertexMid`](../../SquaresInCircles/Four/Uniqueness.lean#L80),
-[`vertex_arc`](../../SquaresInCircles/Four/Uniqueness.lean#L83),
-[`vertex_represents`](../../SquaresInCircles/Four/Uniqueness.lean#L97).*
+*Lean: [`vertexMid`](../../SquaresInCircles/Four/Uniqueness.lean#L58),
+[`vertex_arc`](../../SquaresInCircles/Four/Uniqueness.lean#L61),
+[`vertex_represents`](../../SquaresInCircles/Four/Uniqueness.lean#L75).*
 
-### Proposition 4.10 (uniqueness)
+### Proposition 4.9 (uniqueness)
 
 If four pairwise disjoint unit squares lie in the closed disk of radius
 $\sqrt2$ about $o$, the packing has the normal form of $c_1, \dots, c_4$.
@@ -294,26 +280,27 @@ $a_S = b_S = \frac12$.
 1. **Some square has a vertex at $o$.** Otherwise every square would have
    $a_S + b_S < 1$, which Proposition 4.7 excludes.
 2. **No square contains $o$.** The point $o$ lies in the closed square of the
-   square $S$ found in (1). So it lies in no other open square (Lemma 4.8),
+   square $S$ found in (1). So it lies in no other open square
+   ([Lemma 5](common.md#lemma-5-supporting-line) (2)),
    and not in $S^\circ$ either, since $a_S = \frac12$.
 3. **Every square has a vertex at $o$.** All four squares are exterior, so
    each $S$ holds a cap of length at least $\frac\pi2$, and more unless
    $a_S + b_S = 1$ (Lemma 4.4). The angular budget
    ([Lemma 7](common.md#lemma-7-angular-budget)) forces $a_S + b_S = 1$,
    hence $a_S = b_S = \frac12$, for all four.
-4. **The block.** By Lemma 4.9 the squares hold disjoint quarter arcs of
+4. **The block.** By Lemma 4.8 the squares hold disjoint quarter arcs of
    $\Gamma_{1/2}$, centred at their directions $\mu_S$. These are pairwise at
    least $\frac\pi2$ apart
    ([Lemma 8](common.md#lemma-8-disjoint-arcs-have-separated-centres)), so
    they are $\mu_0 + k\frac\pi2$ for some $\mu_0$
    ([Lemma 23](common.md#lemma-23-four-directions)). In the frame
    $\mu_0 - \frac\pi4$ each square sits at $(\frac12, \frac12)$ turned by its
-   $k$ quarter turns (Lemmas 4.9 and 21), which is one of
+   $k$ quarter turns (Lemmas 4.8 and 21), which is one of
    $c_1, \dots, c_4$. [Lemma 22](common.md#lemma-22-from-slots-to-a-normal-form)
    gives the normal form. $\square$
 
-*Lean: [`four_contact_eq`](../../SquaresInCircles/Four/Uniqueness.lean#L32),
-[`four_some_vertex`](../../SquaresInCircles/Four/Uniqueness.lean#L39),
-[`four_no_containing`](../../SquaresInCircles/Four/Uniqueness.lean#L50),
-[`four_all_vertices`](../../SquaresInCircles/Four/Uniqueness.lean#L65),
-[`Four.uniqueness`](../../SquaresInCircles/Four/Uniqueness.lean#L120).*
+*Lean: [`four_contact_eq`](../../SquaresInCircles/Four/Uniqueness.lean#L10),
+[`four_some_vertex`](../../SquaresInCircles/Four/Uniqueness.lean#L17),
+[`four_no_containing`](../../SquaresInCircles/Four/Uniqueness.lean#L28),
+[`four_all_vertices`](../../SquaresInCircles/Four/Uniqueness.lean#L43),
+[`Four.uniqueness`](../../SquaresInCircles/Four/Uniqueness.lean#L98).*

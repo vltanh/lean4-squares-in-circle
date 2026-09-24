@@ -3,20 +3,22 @@ import SquaresInCircles.Seven.Uniqueness.Reconstruction
 /-!
 # Seven squares: uniqueness up to the sliding column
 
-This is an end-to-end source draft, stacked on the analytical optimality PR.
-Neither this development nor that dependency has been compiled or kernel-
-audited here. No classification or fixed-contact assumption appears in the
-public theorem's hypotheses.
+Every packing of seven unit squares in the disk of radius `√13 / 2` is one of
+the sliding packings of `Seven/Construction.lean`, moved by one rotation about
+the disk centre and relabelled; the middle column may sit anywhere in its
+range. Conversely every such normal form is an optimal packing.
 
-The conclusion is membership in the entire three-dimensional simplex of
-middle-column slots, modulo a common Euclidean frame and a permutation. It
-is not uniqueness of a single packing, and it does not equate square records.
+The equality case reruns the lower bound: the markers of the six squares that
+avoid the disk centre form a regular hexagon (`Uniqueness/Hexagon.lean`),
+neighbouring squares touch as in the optimal packing
+(`Uniqueness/ContactCycle.lean`), and the square in the middle is pinned
+between the side columns (`Uniqueness/CentralSquare.lean`).
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
 
-/-- Every radius-sqrt(13)/2 packing is a rotated, translated and relabeled
-member of the full sliding-column family. -/
+/-- Every packing at the optimal radius is a sliding packing, rotated about the
+disk centre and relabelled. -/
 theorem uniqueness (S : Fin 7 → UnitSquare) (o : Point)
     (hp : Packing S o radius) : SlidingNormalForm S o :=
   Equality.classify S o hp
@@ -31,13 +33,8 @@ theorem packing_iff_sliding (S : Fin 7 → UnitSquare) (o : Point) :
     Packing S o radius ↔ SlidingNormalForm S o :=
   ⟨uniqueness S o,SlidingNormalForm.packing⟩
 
-/-- The statement with the radius written as sqrt(13)/2. -/
-theorem uniqueness_sqrt_thirteen_half (S : Fin 7 → UnitSquare) (o : Point)
-    (hp : Packing S o (Real.sqrt 13/2)) : SlidingNormalForm S o := by
-  exact uniqueness S o hp
-
-/-- The parameter set is exactly the four nonnegative slots of fixed total;
-no equal-spacing, contact, or centered-middle-square constraint is inserted. -/
+/-- The same classification by the four gaps of the column: nonnegative, with
+sum `2√3 - 3`. -/
 theorem classification_by_slots (S : Fin 7 → UnitSquare) (o : Point) :
     Packing S o radius ↔
     ∃ g : SlotSimplex, HasNormalForm S o (slidingCenters (columnSlotEquiv.symm g)) := by
@@ -48,13 +45,5 @@ theorem classification_by_slots (S : Fin 7 → UnitSquare) (o : Point) :
     simpa only [Equiv.symm_apply_apply] using hc
   · rintro ⟨g,hg⟩
     exact ⟨columnSlotEquiv.symm g,hg⟩
-
-/-- The lower bound, attainment and equality classification in one interface. -/
-theorem optimality_attainment_and_classification :
-    (∀ (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ), Packing S o R → radius ≤ R) ∧
-    (∀ c : Column, Packing (slidingModel c) (0,0) radius) ∧
-    (∀ (S : Fin 7 → UnitSquare) (o : Point),
-      Packing S o radius ↔ SlidingNormalForm S o) :=
-  ⟨fun S o R hp => optimality S o R hp,sliding_packing,packing_iff_sliding⟩
 
 end SquaresInCircles.Seven

@@ -3,11 +3,11 @@ import SquaresInCircles.Seven.Uniqueness.FixedGapEquality
 import SquaresInCircles.Seven.MarkerSeparation
 
 /-!
-# Pair rigidity in the original square model
+# Contacts of actual squares
 
-The scalar zero set is used only after deriving a nonpositive support from
-ordinary disjoint open interiors. No equality or support condition is added
-to the packing predicate.
+Disjoint exterior squares with closed containment have markers at least `π/3`
+apart, and at exactly `π/3` their states form a contact: a separating axis
+gives a nonpositive support sum.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -146,7 +146,8 @@ lemma ordered_gap_not_below {S T : UnitSquare} {o : Point}
   · exact (not_le_of_gt (all_gap_pos_below (chartSign C) (chartSign D) k hC hD hg)) hk
   · exact (not_le_of_gt (all_gap_pos_below (chartSign D).flip (chartSign C).flip k hD hC hg)) hk
 
-/-- Closed geometric marker separation, including tangent boundary cases. -/
+/-- The pair theorem at the optimal radius: disjoint exterior squares with
+admissible states have markers at least `π/3` apart. -/
 theorem marker_separation_closed {S T : UnitSquare} {o : Point}
     (C : SquareChart S o) (D : SquareChart T o)
     (hC : Admissible C.a C.b) (hD : Admissible D.a D.b)
@@ -170,8 +171,8 @@ theorem marker_separation_closed {S T : UnitSquare} {o : Point}
       ⟨by linarith,by simpa [abs_of_neg (lt_of_not_ge hpos)] using hg⟩ hrev
       (fun p hp => hd p ⟨hp.2,hp.1⟩)
 
-/-- An ordered 60-degree contact between actual squares is one of the three
-geometric equality contacts. -/
+/-- Disjoint exterior squares with admissible states, the marker of `D`
+exactly `π/3` ahead of that of `C`, are a contact. -/
 theorem ordered_chart_contact {S T : UnitSquare} {o : Point}
     (C : SquareChart S o) (D : SquareChart T o)
     (hC : Admissible C.a C.b) (hD : Admissible D.a D.b)

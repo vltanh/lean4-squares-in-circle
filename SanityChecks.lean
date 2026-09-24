@@ -3,7 +3,8 @@ import SquaresInCircles
 /-!
 Regression checks: the radius and centre tables, the exact rational margins the
 proofs rely on, the contact points of the polygon relaxations, the public
-statements, and the sliding packings of seven squares.
+statements, and the sliding packings of seven squares, which are exactly the
+optimal ones.
 -/
 noncomputable section
 open SquaresInCircles
@@ -91,6 +92,12 @@ example (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ)
     (hp : Packing S o R) : optimalRadius 7 ≤ R := optimality 7 (Or.inr rfl) S o R hp
 example (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ)
     (hp : Packing S o R) : Seven.radius ≤ R := Seven.optimality S o R hp
+example (S : Fin 7 → UnitSquare) (o : Point) (hp : Packing S o (optimalRadius 7)) :
+    ∃ c : Seven.Column, HasNormalForm S o (Seven.slidingCenters c) :=
+  sliding_uniqueness S o hp
+example (S : Fin 7 → UnitSquare) (o : Point) :
+    Packing S o Seven.radius ↔ Seven.SlidingNormalForm S o :=
+  Seven.packing_iff_sliding S o
 
 -- The attaining packings, each in its own normal form.
 example : HasNormalForm One.model (0,0) One.centers :=
@@ -103,6 +110,8 @@ example : HasNormalForm Four.model (0,0) Four.centers :=
   Four.uniqueness Four.model (0,0) Four.model_packing
 example : HasNormalForm Five.model (0,0) Five.centers :=
   Five.uniqueness Five.model (0,0) Five.model_packing
+example : ∃ c : Seven.Column, HasNormalForm Seven.model (0,0) (Seven.slidingCenters c) :=
+  Seven.uniqueness Seven.model (0,0) Seven.model_packing
 
 -- Seven squares: every position of the middle column is optimal, for example
 -- the column pushed down by one fifth.
@@ -117,3 +126,27 @@ example : ∃ c : Seven.Column, c.bottom = -6/5 ∧
     nlinarith [Real.sqrt_nonneg (3:ℝ)]
   exact ⟨⟨-6/5,-1/5,4/5,by linarith,by norm_num,by norm_num,by linarith⟩,rfl,
     Seven.sliding_packing _⟩
+example : Seven.slidingCenters Seven.centeredColumn = Seven.centers := rfl
+
+-- Seven squares: the four gaps of the column, and the middle square within 1/4
+-- of the disk centre.
+example (c : Seven.Column) : ∑ i, c.slots i = 2 * Real.sqrt 3 - 3 := c.sum_slots
+example (c : Seven.Column) : |c.middle| < 1/4 := by
+  have h3 := Real.sq_sqrt (show (0:ℝ) ≤ 3 by norm_num)
+  have hs : Real.sqrt 3 < 7/4 := by nlinarith [Real.sqrt_nonneg (3:ℝ)]
+  have hl := c.lower
+  have hu := c.upper
+  unfold Seven.columnLimit at hl hu
+  exact abs_lt.mpr ⟨by linarith [c.gap_lower],by linarith [c.gap_upper]⟩
+
+-- Seven squares: the three contacts of the optimal packing, the two squares of
+-- a side column, a side square and the top square at any admissible height, and
+-- the top square and the next side square.
+example : Seven.Equality.OrderedContact 1 (1/2) 1 (1/2) .negative .positive :=
+  Or.inl ⟨rfl,rfl,⟨rfl,rfl⟩,⟨rfl,rfl⟩⟩
+example {a : ℝ} (ha : 1/2 ≤ a ∧ a ≤ Seven.columnLimit) :
+    Seven.Equality.OrderedContact 1 (1/2) a 0 .positive .negative :=
+  Or.inr (Or.inl ⟨rfl,⟨rfl,rfl⟩,⟨rfl,ha.1,ha.2⟩⟩)
+example {a : ℝ} (ha : 1/2 ≤ a ∧ a ≤ Seven.columnLimit) :
+    Seven.Equality.OrderedContact a 0 1 (1/2) .positive .negative :=
+  Or.inr (Or.inr ⟨rfl,⟨rfl,ha.1,ha.2⟩,⟨rfl,rfl⟩⟩)

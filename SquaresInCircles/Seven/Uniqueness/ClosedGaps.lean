@@ -2,12 +2,11 @@ import SquaresInCircles.Seven.Uniqueness.ClosedParallel
 import SquaresInCircles.Seven.AllGaps
 
 /-!
-# Closed containment: positive supports below the critical gap
+# Closed containment below the gap `π/3`
 
-Approximating canonical coordinates is used ONLY to pass a scalar support
-inequality to the closed domain. It is not claimed to preserve non-overlap.
-At a subcritical angular gap, the leftmost-zero argument gives strictness
-without requiring either square to lie strictly inside the disk.
+Strictly admissible states approximate admissible ones, which carries the
+support inequalities of the lower bound over to closed containment. Below the
+gap `π/3` a leftmost zero then gives strict positivity.
 -/
 noncomputable section
 open Set Filter
@@ -44,7 +43,7 @@ private lemma mix_strict {a u e : ℝ} (h : Admissible a u)
   · have hi := mix_phi a u e
     linarith [he.1]
 
-/-- A scalar continuity extension of the existing strict theorem. -/
+/-- Admissible states: the support sums are nonnegative up to the gap `π/3`. -/
 lemma all_gap_nonneg {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
     (h : Admissible a u) (h' : Admissible A v) (hg : 0 ≤ g ∧ g ≤ gap) :
     0 ≤ pairSupport a u A v s t k g := by
@@ -64,7 +63,7 @@ lemma all_gap_nonneg {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
   have hh : 0 ≤ f 0 := ge_of_tendsto hlim hpos
   simpa [f,mixA,mixU] using hh
 
-/-- Closed containment is enough when the angular gap is strictly subcritical. -/
+/-- Admissible states: the support sums are positive below the gap `π/3`. -/
 theorem all_gap_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
     (h : Admissible a u) (h' : Admissible A v) (hg : 0 ≤ g ∧ g < gap) :
     0 < pairSupport a u A v s t k g := by

@@ -15,14 +15,14 @@ SquaresInCircles/
 └── Seven/                 n = 7
 ```
 
-Every case folder has `Construction.lean` (the radius, the optimal packing and
-its centres) and `Optimality.lean` (the lower bound), and every case but seven
-has `Uniqueness.lean`. Three, four and five squares add the same three helper
-files for the arc argument: `Tangents.lean` (the contact polygon),
+Every case folder has the same three core files: `Construction.lean` (the
+radius, the optimal packing and its centres), `Optimality.lean` (the lower
+bound) and `Uniqueness.lean`. Three, four and five squares add the same three
+helper files for the arc argument: `Tangents.lean` (the contact polygon),
 `Exterior.lean` (arcs of the squares that do not contain the disk centre) and
 `Containing.lean` (the square that does). Seven squares split the pair theorem
-over the files listed [below](#seven). No case imports another: each imports
-only `Common/` and its own folder.
+and the equality case over the files listed [below](#seven). No case imports
+another: each imports only `Common/` and its own folder.
 
 ## `Common/`
 
@@ -53,7 +53,7 @@ only `Common/` and its own folder.
 | `Exterior.lean` | | | caps of at least `120°` and their contact types; some square contains `o` | arcs of at least `90°` at radius `1/2` | arcs over `72°` | |
 | `Containing.lean` | | | deficit, compensation, overlap point | the sweep covers a quarter circle | the sweep covers a `72°` arc | |
 | `Optimality.lean` | half-diagonal bound | centre-distance bound | strict 16-gon infeasibility | strict diamond infeasibility in the disk | a square centred at `o`; strict 12-gon infeasibility | six markers pairwise more than `π/3` apart |
-| `Uniqueness.lean` | centred at `o` | edge to edge, `o` the midpoint | no square contains `o`; the T | `o` a vertex of every square | closed 12-gon rigidity | |
+| `Uniqueness.lean` | centred at `o` | edge to edge, `o` the midpoint | no square contains `o`; the T | `o` a vertex of every square | closed 12-gon rigidity | a regular hexagon of markers; the sliding family |
 
 Each `Construction.lean` also defines the case's `radius`, its `centers` (the
 optimal packing in the frame of its disk centre) and its `model`, the
@@ -61,8 +61,9 @@ axis-parallel squares at those centres.
 
 ## Seven
 
-Seven squares have no uniqueness file, and the lower bound is spread over 43
-files beside `Construction.lean` and `Optimality.lean`. By the steps of
+The lower bound of seven squares is spread over 43 files beside
+`Construction.lean` and `Optimality.lean`, and its equality case over 12 files
+in `Seven/Uniqueness/` beside `Uniqueness.lean`. By the steps of
 [the proof](proof/seven.md), in import order:
 
 | step | files | contents |
@@ -75,3 +76,6 @@ files beside `Construction.lean` and `Optimality.lean`. By the steps of
 | 4. all gaps | `AngularMinima.lean`, `ParallelLabels.lean`, `SmallAndParallelGaps.lean`, `NearestCornerMinimum.lean`, `AllGaps.lean` | leftmost minima; small gaps; parallel squares; smooth minima |
 | 4. actual squares | `SeparatingAxes.lean`, `CanonicalPair.lean`, `MarkerSeparation.lean` | the separating-axis theorem; the pair theorem |
 | 1, 5. conclusion | `ExteriorSelection.lean`, `CircleBudget.lean`, `Optimality.lean` | six exterior squares; six markers; the lower bound |
+| uniqueness: contacts | `Uniqueness/NormalForm.lean`, `Uniqueness/Slots.lean`, `Uniqueness/ScalarEquality.lean`, `Uniqueness/FixedGapEquality.lean` | the sliding normal form; the column as a simplex of gaps; the zeros at the gap `π/3` |
+| uniqueness: closed containment | `Uniqueness/ClosedParallel.lean`, `Uniqueness/ClosedGaps.lean`, `Uniqueness/PairGeometry.lean` | positive support sums below `π/3`; closed marker separation and contacts of actual squares |
+| uniqueness: rebuilding | `Uniqueness/Hexagon.lean`, `Uniqueness/ContactCycle.lean`, `Uniqueness/CenterSection.lean`, `Uniqueness/CentralSquare.lean`, `Uniqueness/Reconstruction.lean`, `Uniqueness.lean` | the regular hexagon; the ring of six squares; the square in the middle; the sliding normal form |

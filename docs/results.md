@@ -4,7 +4,8 @@
 
 The results for all six cases are in the root file `SquaresInCircles.lean`,
 namespace `SquaresInCircles`. Optimality and attainment cover `n = 1, …, 5`
-and `n = 7`, uniqueness `n = 1, …, 5`:
+and `n = 7`, uniqueness `n = 1, …, 5`, and `sliding_uniqueness` classifies
+the optimal packings of seven squares:
 
 ```lean
 theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7)
@@ -17,6 +18,10 @@ theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7) :
 theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
     (S : Fin n → UnitSquare) (o : Point) (hp : Packing S o (optimalRadius n)) :
     HasNormalForm S o (modelCenters n)
+
+theorem sliding_uniqueness (S : Fin 7 → UnitSquare) (o : Point)
+    (hp : Packing S o (optimalRadius 7)) :
+    ∃ c : Seven.Column, HasNormalForm S o (Seven.slidingCenters c)
 ```
 
 `optimality_attainment_uniqueness` conjoins the three for `n ≤ 5`. The
@@ -37,12 +42,15 @@ Each case also stands alone, in namespaces `SquaresInCircles.One`, …,
 | `Three.attainment` | `∃ S o, Packing S o Three.radius` |
 | `Three.uniqueness` | `Packing S o Three.radius → HasNormalForm S o Three.centers` |
 
-`Seven` has `Seven.optimality` and `Seven.attainment` but no uniqueness
-theorem: `Seven.sliding_packing` shows that the middle column of the optimal
-packing can take any position in a range of total slack `2√3 - 3`. Two
-stronger statements are proved on the way. `Seven.six_exterior_squared_lower`
-gives `13/4 ≤ R^2` already for six squares none of which contains the disk
-centre in its interior. `Seven.marker_separation` is the pair theorem of
+For seven squares the optimum is not unique: `Seven.sliding_packing` shows
+that the middle column of the optimal packing can take any position in a range
+of total slack `2√3 - 3`, and `Seven.uniqueness` shows that these are all the
+optimal packings. `Seven.packing_iff_sliding` states both directions, and
+`Seven.classification_by_slots` parametrizes the family by the four gaps of
+the column, nonnegative with sum `2√3 - 3`. Two stronger statements are proved
+on the way. `Seven.six_exterior_squared_lower` gives `13/4 ≤ R^2` already for
+six squares none of which contains the disk centre in its interior.
+`Seven.marker_separation` is the pair theorem of
 [seven squares](proof/seven.md#theorem-715-marker-separation), about just two
 disjoint squares.
 

@@ -3,7 +3,7 @@ import SquaresInCircles.Two.Uniqueness
 import SquaresInCircles.Three.Uniqueness
 import SquaresInCircles.Four.Uniqueness
 import SquaresInCircles.Five.Uniqueness
-import SquaresInCircles.Seven.Optimality
+import SquaresInCircles.Seven.Uniqueness
 
 /-!
 # Packing one to five, and seven, unit squares in a disk
@@ -12,8 +12,9 @@ For `1 ≤ n ≤ 5` and `n = 7`, `optimalRadius n` is the smallest radius of a d
 containing `n` non-overlapping unit squares, and some packing attains it. For
 `n ≤ 5` that packing is unique up to a rotation about the disk centre and a
 relabelling of the squares. For `n = 7` it is not: the middle column of the
-optimal packing can slide. Each case can also be imported on its own, from its
-folder `SquaresInCircles/One/` to `SquaresInCircles/Seven/`.
+optimal packing can slide, and up to that slide the packing is unique. Each
+case can also be imported on its own, from its folder `SquaresInCircles/One/`
+to `SquaresInCircles/Seven/`.
 -/
 noncomputable section
 namespace SquaresInCircles
@@ -72,6 +73,13 @@ theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
   · exact Three.uniqueness S o hp
   · exact Four.uniqueness S o hp
   · exact Five.uniqueness S o hp
+
+/-- For `n = 7`, uniqueness up to the sliding column: every optimal packing
+has the normal form of `Seven.slidingCenters c` for some column `c`. -/
+theorem sliding_uniqueness (S : Fin 7 → UnitSquare) (o : Point)
+    (hp : Packing S o (optimalRadius 7)) :
+    ∃ c : Seven.Column, HasNormalForm S o (Seven.slidingCenters c) :=
+  Seven.uniqueness S o hp
 
 /-- Uniqueness with the frame replaced by an explicit isometry of the plane that
 takes the origin to the disk centre. -/

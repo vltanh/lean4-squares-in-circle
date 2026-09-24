@@ -1,13 +1,12 @@
 import SquaresInCircles.Seven.Uniqueness.CenterSection
-import SquaresInCircles.Four.Uniqueness
 
 /-!
-# Rigidity of the origin-containing square
+# The square in the middle
 
-The four side squares make two closed barriers in |y|<=1. Convexity of the
-containing square prevents it from crossing either barrier. Its horizontal
-center section then fixes its frame and horizontal center coordinate. The
-vertical coordinate remains free and is constrained later by its neighbors.
+The four side squares block the band `|y| ≤ 1` beyond `|x| = 1/2`, so the
+square that contains the disk centre stays in the strip between them, and by
+`CenterSection` it is axis-parallel and centred on the axis. Its height is
+left free.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -101,7 +100,7 @@ lemma central_strip {S : UnitSquare} {B : Fin 4 → UnitSquare} {o : Point} {φ 
     ((hrep i).closed _ _).mpr hi
   exact closed_open_disjoint (B i) S (hd i) hc hp'
 
-/-- Actual local coordinates in an arbitrary common frame. -/
+/-- The centre of `S` in the frame of `o` and `φ`. -/
 def centerX (S : UnitSquare) (o : Point) (φ : Direction) : ℝ :=
   φ.cos*(S.center.1-o.1)+φ.sin*(S.center.2-o.2)
 def centerY (S : UnitSquare) (o : Point) (φ : Direction) : ℝ :=
@@ -148,8 +147,8 @@ lemma square_section (S : UnitSquare) (o : Point) (φ : Direction) (x y : ℝ) :
     nlinarith [hc.2]
   simp only [openSquare,sectionOpen,hx',hy']
 
-/-- The central square has the common side frame, and center (0,z). The
-conclusion deliberately leaves z unrestricted except for containing O. -/
+/-- The square that contains the disk centre sits at `(0, z)`, with
+`|z| < 1/2`, in the frame of the four side squares. -/
 theorem central_square_represents {S : UnitSquare} {B : Fin 4 → UnitSquare}
     {o : Point} {φ : Direction} (h0 : openSquare S o)
     (hrep : ∀ i, Represents (B i) o φ (sideCenters i))

@@ -1,11 +1,10 @@
 import SquaresInCircles.Seven.SmallAndParallelGaps
 
 /-!
-# Parallel comparisons at the boundary radius
+# Parallel squares with closed containment
 
-Strict containment was sufficient for optimality but is not available in an
-equality packing. Here containment is closed and the marker gap is strictly
-less than pi/3. The tangent remainders are allowed to vanish.
+The parallel-label inequalities of the lower bound, with the tangent
+remainders allowed to vanish, for gaps below `π/3`.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven

@@ -23,7 +23,8 @@ and no `native_decide`.
 - `SanityChecks.lean` checks the radius and centre tables, re-proves the exact
   rational margins the proofs rely on, restates the public theorems, checks
   the five unique optimal packings against their normal forms, and checks the
-  sliding family of seven squares; it must elaborate without errors.
+  sliding family of seven squares and its normal form; it must elaborate
+  without errors.
 
 [`.github/workflows/lean.yml`](../.github/workflows/lean.yml) runs these steps
 on every push to `main` and on pull requests, using `leanprover/lean-action`.

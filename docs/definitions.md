@@ -184,11 +184,43 @@ symmetric under one. With the disk centre at the origin, the models are:
 | 7 | `(±1, ±1/2)`, `(0, -1)`, `(0, 0)`, `(0, 1)` | a column of three between two columns of two |
 
 These are `One.centers`, …, `Five.centers` and `Seven.centers`;
-`modelCenters n` selects the one for `n` (`SquaresInCircles.lean`). For
-`n = 7` there is no uniqueness theorem: the middle column can slide, and
-`Seven.centers` is the packing with the column centred. Each case builds its
-optimal packing as `model i = axisSquare (centers i)`, the axis-parallel
-square centred at `centers i`.
+`modelCenters n` selects the one for `n` (`SquaresInCircles.lean`). Each case
+builds its optimal packing as `model i = axisSquare (centers i)`, the
+axis-parallel square centred at `centers i`.
+
+## The sliding family
+
+For `n = 7` the optimum is not unique: the column of three squares in the
+middle can slide. A `Column` records its three heights
+(`Seven/Construction.lean`):
+
+```lean
+def Seven.columnLimit : ℝ := Real.sqrt 3 - 1 / 2
+
+structure Seven.Column where
+  bottom : ℝ
+  middle : ℝ
+  top : ℝ
+  lower : -columnLimit ≤ bottom
+  gap_lower : bottom + 1 ≤ middle
+  gap_upper : middle + 1 ≤ top
+  upper : top ≤ columnLimit
+
+def Seven.slidingCenters (c : Column) : Fin 7 → Point :=
+  ![(1, -1/2), (1, 1/2), (-1, -1/2), (-1, 1/2),
+    (0, c.bottom), (0, c.middle), (0, c.top)]
+```
+
+The heights are at least 1 apart, so the three squares do not overlap, and
+within `√3 - 1/2` of the disk centre, so they fit in the disk of radius `√13/2`.
+`Seven.centers` is the member with heights `-1, 0, 1`. Uniqueness for seven
+squares says that every optimal packing has the normal form of
+`slidingCenters c` for some column `c` (`Seven/Uniqueness/NormalForm.lean`):
+
+```lean
+def Seven.SlidingNormalForm (S : Fin 7 → UnitSquare) (o : Point) : Prop :=
+  ∃ c : Column, HasNormalForm S o (slidingCenters c)
+```
 
 Read these definitions before trusting the result. A kernel check establishes
 that the proofs are valid; it cannot establish that the statements mean what

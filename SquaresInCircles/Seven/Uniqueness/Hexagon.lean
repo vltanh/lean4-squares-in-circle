@@ -3,11 +3,12 @@ import SquaresInCircles.Common.ArcMetric
 import Mathlib.Data.Fin.Tuple.Sort
 
 /-!
-# Angular rigidity at the critical budget
+# The regular hexagon
 
-Sort six real lifts. Five consecutive gaps and the wraparound gap are at
-least pi/3; their six nonnegative slacks sum to zero. This proves the regular
-hexagon rather than assuming an equality tiling.
+Six directions pairwise at least `π/3` apart form a regular hexagon: sorted,
+their six gaps, including the one that wraps round, are at least `π/3` and add
+up to `2π`. Seven directions cannot be that far apart, so an optimal packing
+has a square that contains the disk centre.
 -/
 noncomputable section
 open Set
@@ -22,7 +23,7 @@ lemma coe_angle_distance_le {x y : ℝ} (hxy : x ≤ y) :
 private def steps (r : Fin 6 → ℝ) : Fin 6 → ℝ :=
   ![r 1-r 0,r 2-r 1,r 3-r 2,r 4-r 3,r 5-r 4,r 0+2*Real.pi-r 5]
 
-/-- Six separated marker directions are precisely one regular hexagon. -/
+/-- Six directions pairwise at least `π/3` apart form a regular hexagon. -/
 theorem six_directions_hexagon (c : Fin 6 → Direction)
     (hsep : ∀ i j, i ≠ j → gap ≤ dist (c i) (c j)) :
     ∃ (φ : Direction) (σ : Equiv.Perm (Fin 6)),
@@ -97,7 +98,7 @@ lemma hexagon_successor {c : Fin 6 → Direction} {φ : Direction}
   · exact hwrap.symm
   · rfl
 
-/-- Seven directions with separation at least pi/3 cannot occur. -/
+/-- Seven directions cannot be pairwise at least `π/3` apart. -/
 lemma seven_directions_impossible (c : Fin 7 → Direction)
     (hsep : ∀ i j, i ≠ j → gap ≤ dist (c i) (c j)) : False := by
   have hballs : Pairwise (fun i j =>
@@ -117,8 +118,7 @@ lemma seven_directions_impossible (c : Fin 7 → Direction)
   norm_num at hb
   linarith [pi_lt_22_over_7]
 
-/-- Exactly one square contains the tested point at the optimum. The center
-of that square is not assumed to equal the tested point. -/
+/-- At the optimal radius some square contains the disk centre. -/
 theorem exists_containing (S : Fin 7 → UnitSquare) (o : Point)
     (hp : Packing S o radius) : ∃ i, openSquare (S i) o := by
   classical

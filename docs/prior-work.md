@@ -17,7 +17,7 @@ was:
 | 3 | computer-assisted interval enclosure of the radius and the optimal arrangements by Montanher, Neumaier, Markót, Domes and Schichl [1]; no exact value | exact formal proofs of optimality and uniqueness |
 | 4 | reported on Friedman's page as proved at the International Math Summer Camp in 2026; we found no publication | formal proofs of optimality and uniqueness |
 | 5 | none found; the plus is listed only as the best known packing | formal proofs of optimality and uniqueness |
-| 7 | none found; the packing of radius `√13/2` is listed only as the best known one | formal proof of optimality; the optimal packing is not unique |
+| 7 | none found; the packing of radius `√13/2` is listed only as the best known one | formal proofs of optimality and of uniqueness up to the sliding of the middle column |
 
 Montanher et al. [1] state the three-square problem as a constraint satisfaction
 problem over a tiling of the configuration space and search it by interval
@@ -56,7 +56,7 @@ dimension 8 in Lean [3]. We found no formal proof of an optimal packing of
 squares or circles in a circle or a square. To our knowledge, this repository
 gives the first proof-assistant verification of these six cases. We also found
 no earlier exact proof of optimality for three, five or seven squares, and none
-of uniqueness for three, four or five squares.
+of uniqueness for three, four, five or seven squares.
 
 ## References
 

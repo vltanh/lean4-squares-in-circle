@@ -2,24 +2,23 @@ import SquaresInCircles.Seven.Optimality
 import SquaresInCircles.Common.NormalForm
 
 /-!
-# The geometric statement of seven-square uniqueness
+# The sliding normal form
 
-A packing is classified as a member of the existing sliding family, modulo a
-single Euclidean frame and a permutation. Frame records of individual squares
-are not equated. In particular, a quarter-turn of a square is not counted as a
-new packing, and no choice of the three middle ordinates is forced.
-
-This is an uncompiled incremental proof draft. No workflow changes are made.
+`SlidingNormalForm S o` says that `S` has the normal form of
+`slidingCenters c` for some column `c`; `CongruentToSliding` says the same
+with an explicit isometry of the plane. Every sliding normal form is an
+optimal packing.
 -/
 noncomputable section
 open Set
 namespace SquaresInCircles.Seven
 
-/-- Classification up to a common rigid motion, relabeling and column slides. -/
+/-- `S` has the normal form of some sliding packing. -/
 def SlidingNormalForm (S : Fin 7 → UnitSquare) (o : Point) : Prop :=
   ∃ c : Column, HasNormalForm S o (slidingCenters c)
 
-/-- A formulation that does not expose any representation of a square frame. -/
+/-- `SlidingNormalForm` with an explicit isometry of the plane in place of the
+frame. -/
 def CongruentToSliding (S : Fin 7 → UnitSquare) (o : Point) : Prop :=
   ∃ (c : Column) (e : Point ≃ Point) (σ : Equiv.Perm (Fin 7)),
     e (0,0) = o ∧
@@ -42,17 +41,7 @@ lemma slidingModel_closed (c : Column) (i : Fin 7) (p : Point) :
     closedSquare (slidingModel c i) p ↔ closedAxisSquare (slidingCenters c i) p.1 p.2 := by
   simp [slidingModel,axisSquare,closedSquare,closedAxisSquare,localX,localY]
 
-lemma slidingModel_normalForm (c : Column) :
-    SlidingNormalForm (slidingModel c) (0,0) := by
-  refine ⟨c,0,Equiv.refl _,?_⟩
-  intro i x y
-  have hp : pointInDirection (0,0) (0 : Direction) x y = (x,y) := by
-    simp [pointInDirection]
-  simpa only [hp,Equiv.refl_apply] using
-    And.intro (slidingModel_open c i (x,y)) (slidingModel_closed c i (x,y))
-
-/-- The converse to classification: every permitted normal form is a packing.
-The construction's entire sliding simplex is retained in this direction. -/
+/-- Every sliding normal form is an optimal packing. -/
 theorem SlidingNormalForm.packing {S : Fin 7 → UnitSquare} {o : Point}
     (h : SlidingNormalForm S o) : Packing S o radius := by
   obtain ⟨c,φ,σ,hφ⟩ := h
@@ -94,11 +83,5 @@ theorem SlidingNormalForm.packing {S : Fin 7 → UnitSquare} {o : Point}
     · apply (slidingModel_open c l q).mpr
       apply ((hφ l q.1 q.2).1).mp
       simpa only [hl,←frameEquiv_apply,←he] using hp.2
-
-/-- There is no singleton "unique packing": four slots sum to a positive
-constant, leaving the expected three parameters. -/
-lemma sliding_slot_budget_pos : 0 < 2*Real.sqrt 3-3 := by
-  have hs := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
-  nlinarith [Real.sqrt_nonneg (3 : ℝ)]
 
 end SquaresInCircles.Seven

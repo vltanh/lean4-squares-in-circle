@@ -15,10 +15,13 @@ $(0, -1)$, $(0, 0)$, $(0, 1)$.
    packing.
 2. A packing of seven unit squares in a closed disk of radius $R$ forces
    $R \ge R_7$.
+3. A packing of seven unit squares in a closed disk of radius $R_7$ has the
+   normal form of $(\pm1, \pm\frac12)$, $(0, y_1)$, $(0, y_2)$, $(0, y_3)$
+   for some $y_1, y_2, y_3$ as in (1).
 
-There is no uniqueness part: by (1) the optimal packings form at least a
+So the optimum is not unique: by (1) the optimal packings form a
 three-parameter family, with infinitely many packings that no rotation and
-relabelling carry onto one another, and the proof does not classify them.
+relabelling carry onto one another. By (3) there are no others.
 
 ![The packing of seven squares in its dashed circle of radius root 13 over 2: a grey middle square around the centre, one square above and one below it, and two squares on either side; the unit circle about the centre is divided into six coloured arcs of 60 degrees, one in each square other than the middle one](figures/seven.svg)
 
@@ -34,16 +37,20 @@ $R_7$, two disjoint squares always have markers more than $\frac\pi3$ apart;
 six directions cannot all be that far apart. The pair theorem is the heart of
 the proof: it places the two squares in a normal position, computes their
 shadows on the four edge directions exactly, and shows that the shadows
-overlap whenever the markers are at most $\frac\pi3$ apart.
+overlap whenever the markers are at most $\frac\pi3$ apart. At radius $R_7$
+the markers can be exactly $\frac\pi3$ apart, but only when neighbouring
+squares touch as in (1), which rebuilds the packing up to the position of the
+middle column.
 
 Unlike three to five squares, the argument is about pairs of squares rather
 than arcs of a single circle, and it uses the disk only through
-$\varphi(a_S, b_S) < \frac{13}4$.
+$\varphi(a_S, b_S) < \frac{13}4$, or $\le \frac{13}4$ for uniqueness.
 
 *Lean:
 [`Seven.attainment`](../../SquaresInCircles/Seven/Construction.lean#L126),
 [`Seven.sliding_packing`](../../SquaresInCircles/Seven/Construction.lean#L90),
-[`Seven.optimality`](../../SquaresInCircles/Seven/Optimality.lean#L38), in
+[`Seven.optimality`](../../SquaresInCircles/Seven/Optimality.lean#L38),
+[`Seven.uniqueness`](../../SquaresInCircles/Seven/Uniqueness.lean#L22), in
 [`SquaresInCircles/Seven/`](../../SquaresInCircles/Seven).*
 
 ## Construction
@@ -365,10 +372,11 @@ through $3.141592 < \pi < 3.141593$. Strictness is carried from the original
 states throughout, never assumed for a boundary point chosen during a
 minimisation. $\square$
 
-The two sectors where $\sigma$ can vanish are the two kinds of contact in the
-optimal packing: a side square against the top or bottom square, and the two
-side squares of one column. In the first the equality forces
-$(a, u) = (1, \frac12)$ and $v = 0$ but leaves $A$ free, as the sliding column
+At radius $R_7$, $\sigma_k(\frac\pi3)$ vanishes only where two squares touch
+as in the optimal packing: the two squares of a side column, or a side square
+and the top or bottom square (Proposition 7.18). In the second case the
+equality fixes the side state $(1, \frac12)$ and puts the other square on the
+axis, $v = 0$, but leaves its height $A$ free, as the sliding column
 requires.
 
 *Lean: [`Seven.fixed_gap_pos`](../../SquaresInCircles/Seven/FixedGap.lean#L60),
@@ -505,3 +513,226 @@ them are pairwise disjoint, and their total length $12r$ exceeds $2\pi$
 squares are exterior, and by Lemma 1 each has a strictly admissible state.
 By Theorem 7.15 their markers are pairwise more than $\frac\pi3$ apart, which
 Lemma 7.16 excludes. $\square$
+
+## Uniqueness
+
+*Idea.* Run the lower bound again at radius exactly $R_7$. The support sums may
+now vanish, but only at the gap $\frac\pi3$, and only where two squares touch
+as they do in the packings of Theorem 7. So some square contains $o$, the
+markers of the other six form a regular hexagon, and going round it each
+square touches the next in a fixed pattern. That pattern rebuilds the two side
+columns and puts one square above $o$ and one below, each at a free height.
+The side columns then pin the square that contains $o$ to the middle column,
+where it can slide too.
+
+### Definition 7.17 (contacts)
+
+A state is a *side state* if it is $(1, \frac12)$, and an *axial state* if it
+is $(a, 0)$ with $\frac12 \le a \le \sqrt3 - \frac12$. States $(a, u)$ and
+$(A, v)$ with signs $s$ and $t$ form a *contact* if
+
+1. $s = -1$, $t = +1$, and both states are side states; or
+2. $s = +1$, $(a, u)$ is a side state and $(A, v)$ is axial; or
+3. $t = -1$, $(a, u)$ is axial and $(A, v)$ is a side state.
+
+Going counterclockwise round a packing of Theorem 7, these are the three ways
+in which an exterior square touches the next one: (1) the first square of a
+side column touches the second, (2) a side column touches the top or bottom
+square, and (3) the top or bottom square touches the next side column. The
+label of a side state is $\frac\pi6$ and that of an axial state is $0$, so no
+state in a contact has a capped label.
+
+*Lean:
+[`Seven.Equality.OrderedContact`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L19),
+[`Seven.Equality.Side`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L16),
+[`Seven.Equality.Axial`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L17),
+[`Seven.Equality.contact_label_not_cap`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L48).*
+
+### Proposition 7.18 (zeros at the gap of $\frac\pi3$)
+
+Let $(a, u)$ and $(A, v)$ be admissible. If $\sigma_k(\frac\pi3) = 0$ for some
+$k$ and signs $s$, $t$, then the two states with these signs form a contact.
+
+*Proof.* Go through the sectors of Proposition 7.11 again, first with active
+labels. In most of them the lower bound is positive for all admissible states.
+The others are forward with signs $(+, -)$, $(-, +)$ or $(-, -)$, and inward
+with signs $(+, +)$ or $(+, -)$. There the bound is tight only when the turn
+between the two labels and one of the remainders $r$ vanish. By the identity
+of Definition 7.4, $r(a, u) = 0$ with $\varphi(a, u) \le \frac{13}4$ forces
+$(a, u) = (1, \frac12)$. The turn then fixes the other label, which makes the
+other state a side state or gives it transverse coordinate 0, and an
+admissible state $(A, 0)$ is axial, since $\varphi(A, 0) \le \frac{13}4$ gives
+$A \le \sqrt3 - \frac12$. A capped label reduces to active ones as in
+Proposition 7.11: $\sigma_k$ at a capped state is a convex combination of its
+values at the three vertices of the triangle, which are nonnegative, so it
+vanishes at a vertex of positive weight. That vertex would be in a contact,
+but its label is $\frac\pi4$. $\square$
+
+*Lean:
+[`Seven.Equality.fixed_gap_zero`](../../SquaresInCircles/Seven/Uniqueness/FixedGapEquality.lean#L85),
+[`Seven.Equality.fixed_gap_zero_active`](../../SquaresInCircles/Seven/Uniqueness/FixedGapEquality.lean#L13),
+[`Seven.Equality.remainder_zero`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L24),
+[`Seven.Equality.axial_of_transverse_zero`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L31),
+[`Seven.Equality.side_side_zero`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L74),
+[`Seven.Equality.inward_opposite_zero`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L119),
+[`Seven.Equality.forward_negative_target_zero`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L174),
+[`Seven.inward_side_axial_eq_zero`](../../SquaresInCircles/Seven/InwardSideAxial.lean#L119).*
+
+### Lemma 7.19 (closed containment)
+
+Let $(a, u)$ and $(A, v)$ be admissible. Then $\sigma_k(g) \ge 0$ for
+$0 \le g \le \frac\pi3$, and $\sigma_k(g) > 0$ for $0 \le g < \frac\pi3$.
+
+*Proof.* For $0 < e \le 1$ the states $((1 - e)a + \frac e2, (1 - e)u)$ are
+strictly admissible, by the identity
+
+```math
+\tfrac{13}4 - \varphi\left((1 - e)a + \tfrac e2,\ (1 - e)u\right)
+= (1 - e)\left(\tfrac{13}4 - \varphi(a, u)\right) + 2e
++ e(1 - e)\left(\left(a - \tfrac12\right)^2 + u^2\right),
+```
+
+and they tend to $(a, u)$ as $e \to 0$. Theorem 7.14 applies to them, and
+$\sigma_k(g)$ is continuous in the states, so $\sigma_k(g) \ge 0$.
+
+For the strict inequality, Lemma 7.12 covers $g \le 1$. Suppose
+$\sigma_k(g) = 0$ with $1 < g < \frac\pi3$, and let $x$ be the least zero of
+$\sigma_k$ in $[1, g]$. Since $\sigma_k \ge 0$ on $[1, \frac\pi3]$, $x$ is the
+leftmost point where $\sigma_k$ attains its minimum there, and $x > 1$. The two
+cases of Lemma 7.13 still give $\sigma_k(x) > 0$. The smooth case needs only
+admissible states. In the cardinal case the label bounds hold with $\ge$ and
+$\le$ in place of $>$ and $<$, which gives $x \ge \frac\pi3$ instead of
+$x > \frac\pi3$, still a contradiction. $\square$
+
+*Lean:
+[`Seven.Equality.all_gap_nonneg`](../../SquaresInCircles/Seven/Uniqueness/ClosedGaps.lean#L47),
+[`Seven.Equality.all_gap_pos_below`](../../SquaresInCircles/Seven/Uniqueness/ClosedGaps.lean#L67),
+[`Seven.Equality.cardinal_target_pos_below`](../../SquaresInCircles/Seven/Uniqueness/ClosedParallel.lean#L141),
+[`Seven.Equality.opposite_labels_ge`](../../SquaresInCircles/Seven/Uniqueness/ClosedParallel.lean#L13).*
+
+### Proposition 7.20 (closed marker separation)
+
+Let $S$ and $T$ be disjoint exterior squares with
+$\varphi(a_S, b_S) \le \frac{13}4$ and $\varphi(a_T, b_T) \le \frac{13}4$.
+Then their markers are at least $\frac\pi3$ apart. If the marker of $T$ is
+exactly $\frac\pi3$ ahead of that of $S$, their states and signs
+$\varepsilon_S$, $\varepsilon_T$ form a contact.
+
+*Proof.* As in Theorem 7.15, if the marker of $T$ is $g \in [0, \frac\pi3]$
+ahead of that of $S$, the two squares are the canonical pair of their states.
+They are disjoint, so by Lemma 7.10 some support sum is at most 0, for the
+pair or for the pair seen from $T$. For $g < \frac\pi3$ this contradicts
+Lemma 7.19. For $g = \frac\pi3$ that sum is 0 by Lemma 7.19, and
+Proposition 7.18 gives a contact. Seen from $T$, the contact is one of the
+reversed pair with both signs flipped, which is a contact of the pair itself.
+$\square$
+
+*Lean:
+[`Seven.Equality.marker_separation_closed`](../../SquaresInCircles/Seven/Uniqueness/PairGeometry.lean#L151),
+[`Seven.Equality.ordered_chart_contact`](../../SquaresInCircles/Seven/Uniqueness/PairGeometry.lean#L176),
+[`Seven.Equality.canonical_has_separator`](../../SquaresInCircles/Seven/Uniqueness/PairGeometry.lean#L58),
+[`Seven.Equality.reflected_reverse_contact`](../../SquaresInCircles/Seven/Uniqueness/ScalarEquality.lean#L59).*
+
+### Lemma 7.21 (the hexagon)
+
+1. Six directions pairwise at least $\frac\pi3$ apart are, in some order,
+   $\phi + i\frac\pi3$ for $i = 0, \dots, 5$.
+2. Seven directions cannot be pairwise at least $\frac\pi3$ apart.
+3. In a packing of seven unit squares in a closed disk of radius $R_7$ about
+   $o$, some square contains $o$.
+
+*Proof.* (1) Sort the directions round the circle. The six gaps between
+neighbours, including the one that wraps round, are at least $\frac\pi3$ and
+add up to $2\pi$, so each is exactly $\frac\pi3$. (2) The closed arcs of
+half-width $\frac12$ about them would be pairwise disjoint, since
+$\frac\pi3 > 1$, and have total length $7 > 2\pi$
+([Lemma 7](common.md#lemma-7-angular-budget)). (3) Otherwise all seven squares
+are exterior, with admissible states by
+[Lemma 1](common.md#lemma-1-farthest-vertex), and Proposition 7.20 puts their
+markers pairwise at least $\frac\pi3$ apart, against (2). $\square$
+
+*Lean:
+[`Seven.Equality.six_directions_hexagon`](../../SquaresInCircles/Seven/Uniqueness/Hexagon.lean#L27),
+[`Seven.Equality.seven_directions_impossible`](../../SquaresInCircles/Seven/Uniqueness/Hexagon.lean#L102),
+[`Seven.Equality.exists_containing`](../../SquaresInCircles/Seven/Uniqueness/Hexagon.lean#L122).*
+
+### Proposition 7.22 (the ring)
+
+Let six pairwise disjoint exterior squares have admissible states. Then in
+some frame at $o$ they sit, in some order, at
+
+```math
+(1, -\tfrac12),\quad (1, \tfrac12),\quad (0, h),\quad (-1, \tfrac12),\quad (-1, -\tfrac12),\quad (0, -k)
+```
+
+for some $h$ and $k$ with $\frac12 \le h, k \le \sqrt3 - \frac12$.
+
+*Proof.* By Proposition 7.20 and Lemma 7.21 the markers form a regular
+hexagon, and each square and the next one counterclockwise form a contact.
+Call a square with a side state *lower* if its sign is $-1$ and *upper* if it
+is $+1$. By Definition 7.17, after a lower square comes an upper one, after an
+upper one an axial one, and after an axial one a lower one. So round the
+hexagon the kinds are lower, upper, axial, lower, upper, axial. The labels are
+$\frac\pi6$ and $0$, so the markers fix the phases: they are $\theta$,
+$\theta$, $\theta + \frac\pi2$, $\theta + \pi$, $\theta + \pi$,
+$\theta + \frac{3\pi}2$ for the phase $\theta$ of the first lower square. By
+[Lemma 11](common.md#lemma-11-cartesian-form-of-a-chart) each square sits, in
+the frame of its own phase, at $(1, -\frac12)$ if lower, at $(1, \frac12)$ if
+upper, and at $(a, 0)$ if axial. Turning back to the frame $\theta$ by
+[Lemma 21](common.md#lemma-21-sitting-at-a-centre) (2) gives the six points;
+$h$ and $k$ are the first coordinates of the two axial states. $\square$
+
+*Lean:
+[`Seven.Equality.six_exterior_ring`](../../SquaresInCircles/Seven/Uniqueness/ContactCycle.lean#L216),
+[`Seven.Equality.ring_of_ordered_contacts`](../../SquaresInCircles/Seven/Uniqueness/ContactCycle.lean#L141),
+[`Seven.Equality.contact_kinds`](../../SquaresInCircles/Seven/Uniqueness/ContactCycle.lean#L26),
+[`Seven.Equality.hexagon_successor`](../../SquaresInCircles/Seven/Uniqueness/Hexagon.lean#L81),
+[`Seven.ExteriorRing`](../../SquaresInCircles/Seven/Uniqueness/ContactCycle.lean#L130).*
+
+### Lemma 7.23 (the square in the middle)
+
+Let $S$ contain $o$, and let four squares disjoint from $S$ sit at
+$(\pm1, \pm\frac12)$ in a frame $\phi$ at $o$. Then $S$ sits at $(0, z)$ in the
+frame $\phi$, with $|z| < \frac12$.
+
+*Proof.* Work in the frame $\phi$. Every point $(x, y)$ of $S^\circ$ with
+$|y| < 1$ has $|x| \le \frac12$. Otherwise some point of the segment from $o$
+to $(x, y)$, which lies in $S^\circ$, would have $\frac12 < |x'| \le \frac34$
+and $|y'| < 1$, and so lie in one of the closed side squares, against
+[Lemma 5](common.md#lemma-5-supporting-line) (2). The centre of $S$ is within
+$\frac1{\sqrt2}$ of $o$, so the line through it parallel to the first axis
+lies in the band $|y| < 1$. If $S$ were tilted, the chord of $S^\circ$ along
+that line would be longer than 1, which does not fit in $|x| \le \frac12$. So
+the sides of $S$ are parallel to the axes, its centre is on $x = 0$, and
+$|z| < \frac12$ because $S$ contains $o$. $\square$
+
+*Lean:
+[`Seven.Equality.central_square_represents`](../../SquaresInCircles/Seven/Uniqueness/CentralSquare.lean#L152),
+[`Seven.Equality.central_strip`](../../SquaresInCircles/Seven/Uniqueness/CentralSquare.lean#L61),
+[`Seven.Equality.section_strip_rigidity`](../../SquaresInCircles/Seven/Uniqueness/CenterSection.lean#L76).*
+
+### Proposition 7.24 (uniqueness)
+
+If seven pairwise disjoint unit squares lie in the closed disk of radius $R_7$
+about $o$, the packing has the normal form of $(\pm1, \pm\frac12)$,
+$(0, y_1)$, $(0, y_2)$, $(0, y_3)$ for some $y_1, y_2, y_3$ as in Theorem 7.
+Conversely, every such normal form is a packing in that disk.
+
+*Proof.* By Lemma 7.21 some square contains $o$. The other six are exterior,
+with admissible states by Lemma 1, and Proposition 7.22 places them in a frame
+$\phi$; Lemma 7.23 places the seventh at $(0, z)$ in the same frame. The
+squares at $(0, -k)$, $(0, z)$ and $(0, h)$ are disjoint and sit on one axis
+of the frame, so $-k + 1 \le z$ and $z + 1 \le h$. With
+$h, k \le \sqrt3 - \frac12$ these are the conditions of Theorem 7 for
+$(y_1, y_2, y_3) = (-k, z, h)$, and
+[Lemma 22](common.md#lemma-22-from-slots-to-a-normal-form) gives the normal
+form. The converse is Proposition 7.1, moved to $o$ by the rotation. $\square$
+
+*Lean: [`Seven.uniqueness`](../../SquaresInCircles/Seven/Uniqueness.lean#L22),
+[`Seven.packing_iff_sliding`](../../SquaresInCircles/Seven/Uniqueness.lean#L32),
+[`Seven.Equality.classify`](../../SquaresInCircles/Seven/Uniqueness/Reconstruction.lean#L134),
+[`Seven.Equality.normal_form_of_containing`](../../SquaresInCircles/Seven/Uniqueness/Reconstruction.lean#L74),
+[`Seven.Equality.column_centers_separated`](../../SquaresInCircles/Seven/Uniqueness/Reconstruction.lean#L41),
+[`Seven.SlidingNormalForm`](../../SquaresInCircles/Seven/Uniqueness/NormalForm.lean#L17),
+[`Seven.SlidingNormalForm.packing`](../../SquaresInCircles/Seven/Uniqueness/NormalForm.lean#L45),
+[`Seven.classification_by_slots`](../../SquaresInCircles/Seven/Uniqueness.lean#L38).*

@@ -258,14 +258,17 @@ direction $n$.*
 
 ### Lemma 5 (supporting line)
 
-If $S$ and $T$ are disjoint, there is a vector $n \ne 0$ with
+Let $S$ and $T$ be disjoint.
 
-```math
-w_S(n) + w_T(n) \le \langle n,\ c_T - c_S\rangle .
-```
+1. There is a vector $n \ne 0$ with
 
-In words: some line separates the two squares, and each square lies entirely
-on its own side.
+   ```math
+   w_S(n) + w_T(n) \le \langle n,\ c_T - c_S\rangle .
+   ```
+
+   In words: some line separates the two squares, and each square lies
+   entirely on its own side.
+2. No point of the closed square $\overline{S}$ lies in $T^\circ$.
 
 ![Two disjoint tilted squares, a dashed separating line between them, and their shadows on a line in direction n, which do not overlap](figures/shadows.svg)
 
@@ -293,10 +296,17 @@ Then
 \qquad \text{for every } 0 \le t < 1,
 ```
 
-and letting $t \to 1$ proves the lemma. $\square$
+and letting $t \to 1$ proves (1). For (2), every $p \in \overline{S}$ and
+$q \in T^\circ$ satisfy
+
+```math
+\langle n, p\rangle \le \langle n, c_S\rangle + w_S(n) \le \langle n, c_T\rangle - w_T(n) < \langle n, q\rangle . \qquad \square
+```
 
 *Lean:
 [`support_separator`](../../SquaresInCircles/Common/Separation.lean#L134),
+[`closed_dot_bound`](../../SquaresInCircles/Common/Support.lean#L166),
+[`closed_open_disjoint`](../../SquaresInCircles/Common/Support.lean#L177),
 [`support_point`](../../SquaresInCircles/Common/Separation.lean#L83),
 [`bound_from_shrinks`](../../SquaresInCircles/Common/Separation.lean#L109).*
 

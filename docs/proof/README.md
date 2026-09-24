@@ -29,9 +29,10 @@ symbol. The figures are drawn from the same geometry by
 
 ## The main theorem
 
-*Lean: [`optimality`](../../SquaresInCircles.lean#L42),
-[`attainment`](../../SquaresInCircles.lean#L54),
-[`uniqueness`](../../SquaresInCircles.lean#L65) in
+*Lean: [`optimality`](../../SquaresInCircles.lean#L43),
+[`attainment`](../../SquaresInCircles.lean#L55),
+[`uniqueness`](../../SquaresInCircles.lean#L66),
+[`sliding_uniqueness`](../../SquaresInCircles.lean#L79) in
 [`SquaresInCircles.lean`](../../SquaresInCircles.lean).*
 
 For $1 \le n \le 5$ and $n = 7$ let $R_n$ and $c_1, \dots, c_n$ be given by the
@@ -53,13 +54,15 @@ table.
    (Definitions 2 and 3).
 2. *Optimality.* If $n$ unit squares form a packing in a closed disk of
    radius $R$, then $R \ge R_n$.
-3. *Uniqueness, for $n \le 5$.* Every packing of $n$ unit squares in a closed
+3. *Uniqueness.* For $n \le 5$, every packing of $n$ unit squares in a closed
    disk of radius $R_n$ has the normal form of $c_1, \dots, c_n$
    (Definition 5): one rotation about the disk centre and one relabelling
-   carry the model onto it.
+   carry the model onto it. For $n = 7$ the same holds with $c_5, c_6, c_7$
+   replaced by $(0, y_1), (0, y_2), (0, y_3)$ for some heights that are at
+   least 1 apart and within $\sqrt3 - \frac12$ of 0: the middle column can
+   slide.
 
-The case $n$ is Theorem $n$ on the page for that case. For $n = 7$ there is no
-uniqueness: the middle column of the packing can slide.
+The case $n$ is Theorem $n$ on the page for that case.
 
 ## One and two squares
 
@@ -127,7 +130,10 @@ $R^2 < \frac{13}4$.
    apart ([Lemma 7](common.md#lemma-7-angular-budget)).
 
 At the optimal radius the six markers are exactly $\frac\pi3$ apart, and the
-middle column of the packing can slide without changing them.
+middle column of the packing can slide without changing them. For uniqueness
+the same argument runs with equality allowed: the markers form a regular
+hexagon, neighbouring exterior squares touch as in the optimal packing, and
+that rebuilds the packing up to the sliding column.
 
 ## Shared lemmas by case
 
@@ -149,16 +155,15 @@ construction uses Lemma 20 and nothing else.
 | 8. elementary estimates | | | 19 | | 19 | 19 |
 
 **Uniqueness.** Each uniqueness proof reruns part of the optimality argument
-at the optimal radius; the table lists only the lemmas it adds. Seven squares
-have no uniqueness proof.
+at the optimal radius; the table lists only the lemmas it adds.
 
-| | 1 | 2 | 3 | 4 | 5 |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| reuses | Proposition 1.2 | Lemma 2.2 | Proposition 3.11 | Proposition 4.7 | Proposition 5.8 |
-| 3. two disjoint squares | | 5, 6 | | | 4, 6 |
-| 4. angular budget | | | | 8 | |
-| 5. charts | | | | 11 | |
-| 10. normal forms | 21, 22 | 21, 22 | 21, 22 | 21, 22, 23 | 21, 22 |
+| | 1 | 2 | 3 | 4 | 5 | 7 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| reuses | Proposition 1.2 | Lemma 2.2 | Proposition 3.11 | Proposition 4.7 | Proposition 5.8 | Theorem 7.14 |
+| 3. two disjoint squares | | 5, 6 | | 5 | 4, 6 | 5 |
+| 4. angular budget | | | | 8 | | |
+| 5. charts | | | | 11 | | |
+| 10. normal forms | 21, 22 | 21, 22 | 21, 22 | 21, 22, 23 | 21, 22 | 21, 22 |
 
 ## The legacy proof of three squares
 

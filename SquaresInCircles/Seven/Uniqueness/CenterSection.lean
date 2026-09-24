@@ -1,12 +1,11 @@
 import SquaresInCircles.Common.NormalForm
 
 /-!
-# A width-one strip fixes the frame of an origin-containing unit square
+# The centre section of a square in a strip
 
-The proof uses the horizontal section THROUGH THE SQUARE CENTER. The center
-lies strictly inside |y|<1 because the square contains the origin. A tilted
-unit square has a center section wider than one, contradicting the strip.
-No trigonometric approximation or vertical-centering hypothesis is needed.
+A unit square that contains the origin, and whose points in the band
+`|y| < 1` all have `|x| ≤ 1/2`, is axis-parallel and centred on `x = 0`: a
+tilted square has a section through its centre longer than 1.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven.Equality
@@ -71,7 +70,9 @@ lemma cardinal_section {c s X Y x y : ℝ}
     have he : c = 1 ∨ c = -1 := mul_self_eq_one_iff.mp (by nlinarith)
     rcases he with rfl | rfl <;> simp [sectionOpen,hs,abs_sub_comm]
 
-/-- The only possible center freedom is the vertical coordinate. -/
+/-- A unit square whose open section contains the origin, and whose points in
+the band `|y| < 1` all have `|x| ≤ 1/2`, is axis-parallel and centred at
+`(0, Y)` with `|Y| < 1/2`. -/
 theorem section_strip_rigidity {c s X Y : ℝ}
     (hunit : c^2+s^2=1) (h0 : sectionOpen c s X Y 0 0)
     (hstrip : ∀ x y, sectionOpen c s X Y x y → |y| < 1 → |x| ≤ 1/2) :

@@ -4,9 +4,10 @@
 [![Doc links](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/docs.yml/badge.svg)](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/docs.yml)
 
 Machine-checked proofs, for `n = 1, …, 5` and `n = 7`, of the smallest radius
-of a disk that holds `n` non-overlapping unit squares, and, for `n ≤ 5`, that
-exactly one packing attains it, up to rotation about the disk centre and
-relabelling of the squares.
+of a disk that holds `n` non-overlapping unit squares, and of which packings
+attain it, up to rotation about the disk centre and relabelling of the squares:
+exactly one for `n ≤ 5`, and for `n = 7` a family in which the middle column
+slides.
 
 | n | optimal radius | ≈ | an optimal packing |
 | :-: | :-: | :-: | :-: |
@@ -107,13 +108,34 @@ def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
     (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔ closedAxisSquare (centers i) x y)
 ```
 
+For seven squares the optimal packings form a family: two columns of two
+squares, and between them a column of three whose heights can vary. A
+`Seven.Column` records the three heights (`Seven/Construction.lean`):
+
+```lean
+def Seven.columnLimit : ℝ := Real.sqrt 3 - 1 / 2
+
+structure Seven.Column where
+  bottom : ℝ
+  middle : ℝ
+  top : ℝ
+  lower : -columnLimit ≤ bottom
+  gap_lower : bottom + 1 ≤ middle
+  gap_upper : middle + 1 ≤ top
+  upper : top ≤ columnLimit
+
+def Seven.slidingCenters (c : Column) : Fin 7 → Point :=
+  ![(1, -1/2), (1, 1/2), (-1, -1/2), (-1, 1/2),
+    (0, c.bottom), (0, c.middle), (0, c.top)]
+```
+
 ## Results
 
 More on each theorem: [docs/results.md](docs/results.md).
 
 For `1 ≤ n ≤ 5` and `n = 7`, the root file `SquaresInCircles.lean` proves, in
-namespace `SquaresInCircles`, optimality and attainment, and for `1 ≤ n ≤ 5`
-uniqueness:
+namespace `SquaresInCircles`, optimality and attainment, for `1 ≤ n ≤ 5`
+uniqueness, and for `n = 7` uniqueness up to the sliding column:
 
 ```lean
 theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7)
@@ -126,6 +148,10 @@ theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7) :
 theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
     (S : Fin n → UnitSquare) (o : Point) (hp : Packing S o (optimalRadius n)) :
     HasNormalForm S o (modelCenters n)
+
+theorem sliding_uniqueness (S : Fin 7 → UnitSquare) (o : Point)
+    (hp : Packing S o (optimalRadius 7)) :
+    ∃ c : Seven.Column, HasNormalForm S o (Seven.slidingCenters c)
 ```
 
 `optimalRadius n` is the optimal radius, and `modelCenters n` lists the centres
@@ -142,9 +168,10 @@ the packing whose middle column is centred. Their definitions in Lean are:
 | 7 | `Real.sqrt 13 / 2` | `![(1,-1/2),(1,1/2),(-1,-1/2),(-1,1/2),(0,-1),(0,0),(0,1)]` |
 
 Each case also stands alone, in namespaces `One` to `Five` and `Seven`, with
-the same theorems; `Seven` has no uniqueness theorem, and
-`Seven.sliding_packing` shows that the middle column can slide.
-`rigid_uniqueness` restates uniqueness with an explicit isometry of the plane.
+the same theorems; `Seven.uniqueness` has the sliding family in its
+conclusion, and `Seven.sliding_packing` shows that every member of the family
+is optimal. `rigid_uniqueness` restates uniqueness with an explicit isometry
+of the plane.
 
 ## Proof outline
 
@@ -168,7 +195,8 @@ one page per case: [docs/proof/](docs/proof/README.md)
   the other six gets a marker, a direction from the disk centre. In a smaller
   disk, two disjoint squares have markers more than `π/3` apart, which six
   directions cannot all be. The pair theorem behind this is by far the
-  longest proof in the library.
+  longest proof in the library. At the optimal radius the markers form a
+  regular hexagon, which rebuilds the packing up to the sliding column.
 - **Uniqueness.** With equality allowed, every inequality in the chain must be
   tight, and the tight cases are reconstructed exactly.
 
@@ -193,8 +221,8 @@ More on each earlier result, with references:
   packing, found by him in 1997, as the best known one.
 
 We found no proof-assistant verification of any optimal square or circle
-packing. Here every case is proved exactly, uniqueness included for `n ≤ 5`,
-and checked by Lean's kernel.
+packing. Here every case is proved exactly, uniqueness included (for `n = 7`,
+up to the sliding column), and checked by Lean's kernel.
 
 ## Layout
 

@@ -7,28 +7,6 @@ noncomputable section
 open Set
 namespace SquaresInCircles
 
-lemma closed_dot_bound (S : UnitSquare) (n : Point) {p : Point}
-    (hp : closedSquare S p) : |dot n (sub p S.center)| ≤ width S n := by
-  rw [← frame_dot S]
-  change |frameX S n*localX S p+frameY S n*localY S p| ≤ width S n
-  have ha := abs_add_le (frameX S n*localX S p) (frameY S n*localY S p)
-  rw [abs_mul,abs_mul] at ha
-  have hx := mul_le_mul_of_nonneg_left hp.1 (abs_nonneg (frameX S n))
-  have hy := mul_le_mul_of_nonneg_left hp.2 (abs_nonneg (frameY S n))
-  dsimp [width]
-  linarith
-
-lemma closed_open_disjoint (S T : UnitSquare)
-    (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p))
-    {p : Point} (hS : closedSquare S p) : ¬ openSquare T p := by
-  obtain ⟨e⟩ := support_separator S T hd
-  intro hT
-  have h₁ := (abs_le.mp (closed_dot_bound S e.normal hS)).2
-  have h₂ := (abs_lt.mp (dot_open_bound_of_ne T e.nonzero hT)).1
-  have hsep := e.separates
-  simp only [dot_sub_right] at *
-  linarith
-
 lemma four_contact_eq {a b : ℝ} (hφ : phi a b ≤ 2) (hs : 1 ≤ a+b) :
     a=1/2 ∧ b=1/2 := by
   have he : phi a b-2=2*(a+b-1)+(a-1/2)^2+(b-1/2)^2 := by dsimp [phi]; ring
