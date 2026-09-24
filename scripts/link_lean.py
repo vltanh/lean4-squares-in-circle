@@ -4,8 +4,11 @@
 Every paragraph of docs/**/*.md that starts with `*Lean:` lists Lean names in
 backticks. This script turns each name into a link to the file and line of
 its declaration in SquaresInCircles.lean or SquaresInCircles/, and refreshes
-links that are already there, so line numbers follow the code. Folder and
-file names in those paragraphs are linked too.
+links that are already there, so line numbers follow the code. Names are
+written relative to the namespace SquaresInCircles, as in `Five.optimality`
+or `Seven.label`, whether the file declares them with a dotted name or inside
+a `namespace` block. Folder and file names in those paragraphs are linked
+too.
 
     python3 scripts/link_lean.py           rewrite the docs in place
     python3 scripts/link_lean.py --check   exit 1 if any link is stale
@@ -27,19 +30,38 @@ DECL = re.compile(
     r'(?:(?:private|protected|noncomputable|partial|unsafe)\s+)*'
     r'(?:theorem|lemma|def|abbrev|structure|class|inductive|instance)'
     r'\s+([^\s:({\[]+)')
+# Scopes: `namespace A.B`, `section` (possibly named or noncomputable), `end`.
+SCOPE = re.compile(r'(namespace|(?:noncomputable\s+)?section|end)\b\s*(\S*)')
 # A linked name, [`name`](target), or a bare one, `name`.
 TOKEN = re.compile(r'\[`([^`]+)`\]\([^)]*\)|`([^`$]+)`')
 
 
 def declarations():
+    """Every declaration by its name relative to `SquaresInCircles`."""
     sources = [ROOT / 'SquaresInCircles.lean']
     sources += sorted((ROOT / 'SquaresInCircles').rglob('*.lean'))
     found = {}
     for path in sources:
+        # One entry per open scope: the namespace components it adds.
+        scopes = []
         for number, line in enumerate(path.read_text().splitlines(), 1):
+            s = SCOPE.match(line)
+            if s:
+                kind, name = s.groups()
+                if kind == 'namespace':
+                    scopes.append(name.split('.'))
+                elif kind != 'end':
+                    scopes.append([])
+                elif scopes:
+                    scopes.pop()
+                continue
             m = DECL.match(line)
             if m:
-                found.setdefault(m.group(1), []).append((path, number))
+                parts = [p for scope in scopes for p in scope]
+                parts += m.group(1).split('.')
+                if parts[0] == 'SquaresInCircles':
+                    parts = parts[1:]
+                found.setdefault('.'.join(parts), []).append((path, number))
     return found
 
 
