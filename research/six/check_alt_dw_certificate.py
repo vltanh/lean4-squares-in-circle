@@ -8,7 +8,7 @@ by the reduced verifier.
 Geometric hypotheses for this terminal rule (angles are radians):
 
   |theta_N| <= 1/6
-  |theta_W| <= 1/4
+  |theta_W| <= 2/5
    1/6 <= theta_S <= 1/2
   |eps_D|   <= 1/6
 
@@ -270,7 +270,7 @@ def lower_bound(theta_n, theta_w, theta_s, eps_d, source_wn):
 
 ROOT = (
     I(-F(1, 6), F(1, 6)),
-    I(-F(1, 4), F(1, 4)),
+    I(-F(2, 5), F(2, 5)),
     I(F(1, 6), F(1, 2)),
     I(-F(1, 6), F(1, 6)),
 )
