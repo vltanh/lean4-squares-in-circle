@@ -485,3 +485,54 @@ cover, has been exhausted.
 
 The next computational milestone is a complete fast cover whose terminal
 boxes carry rule identifiers, followed by exact rational replay.
+
+
+## Exact terminal certificate: alternate D--W axis
+
+The first persistent diagnostic survivor family turned out to use a different
+outer separator from the candidate: D--W separates on D's secondary axis
+instead of W's near-vertical axis.
+
+That family now has a fixed rational dual certificate. It uses only the five
+separations C->N, S->C, W->N, D->W, and D->S, and ignores E completely.
+
+The containment weights are
+
+    (lambda_N,lambda_W,lambda_S,lambda_D)=(281,233,279,207)/1000,
+
+and the separator multipliers are
+
+    mu_CN=mu_SC=949/1000,
+    mu_WN=277/1000, mu_DW=603/1000, mu_DS=738/1000.
+
+For a fixed angle tuple, if m_i is the selected relative vertex and G_i is
+the force induced by these five separator multipliers, weighted containment
+and completion of squares give
+
+    R^2 >= 1/2 + sum_e mu_e H_e
+             - sum_i |2 lambda_i m_i-G_i|^2/(4 lambda_i).    (T)
+
+The selected vertices are ++ for N, -+ for W, +- for S, and the lower
+diamond vertex for D.
+
+The exact replay in research/six/check_alt_dw_certificate.py proves
+R^2 > Q0 = 2.85118 throughout
+
+    |theta_N| <= 1/6, |theta_W| <= 1/4,
+    1/6 <= theta_S <= 1/2, |eps_D| <= 1/6,
+
+for either W or N supplying the W--N horizontal axis, provided C--N and
+C--S use the common vertical axes, D--W uses D's secondary axis, and D--S
+uses S's near-horizontal axis.
+
+The replay uses fractions.Fraction only. Its transcendental inputs are the
+standard alternating Taylor bounds for sine and cosine on [-3/4,3/4], plus
+the exact rational enclosure
+
+    70710678/10^8 < 1/sqrt(2) < 70710679/10^8.
+
+The two source cases close after respectively 1720 and 1424 certified leaves,
+at maximum subdivision depths 15 and 14.
+
+This is the first nonlocal survivor family converted from a diagnostic search
+observation into a compact exact terminal certificate.
