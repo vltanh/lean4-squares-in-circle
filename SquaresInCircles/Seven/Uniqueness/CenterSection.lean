@@ -22,7 +22,6 @@ lemma section_origin_center_bound {c s X Y : ℝ}
       _ = _ := by rw [hunit]; ring
   rcases abs_lt.mp h0.1 with ⟨hx0,hx1⟩
   rcases abs_lt.mp h0.2 with ⟨hy0,hy1⟩
-  dsimp [sectionOpen] at hx0 hx1 hy0 hy1
   have hxsq : (c*(-X)+s*(-Y))^2 < 1/4 := by nlinarith
   have hysq : (-s*(-X)+c*(-Y))^2 < 1/4 := by nlinarith
   linarith
@@ -45,13 +44,13 @@ lemma center_section_forces_cardinal {c s X Y : ℝ}
     have hp := mul_pos (show 0 < 1-m by linarith) (show 0 < 2-m by linarith)
     dsimp [q]
     nlinarith
-  have hcq : |c|*q < 1/2 := by
+  have hcq : |c| * q < 1/2 := by
     have hh := mul_le_mul_of_nonneg_right (le_max_left |c| |s|) (show 0 ≤ q by linarith)
-    change |c|*q ≤ m*q at hh
+    change |c| * q ≤ m*q at hh
     nlinarith
-  have hsq : |s|*q < 1/2 := by
+  have hsq : |s| * q < 1/2 := by
     have hh := mul_le_mul_of_nonneg_right (le_max_right |c| |s|) (show 0 ≤ q by linarith)
-    change |s|*q ≤ m*q at hh
+    change |s| * q ≤ m*q at hh
     nlinarith
   have hplus : sectionOpen c s X Y (X+q) Y := by
     simpa [sectionOpen,abs_mul,abs_of_pos (show 0 < q by linarith)] using And.intro hcq hsq
@@ -66,11 +65,11 @@ lemma cardinal_section {c s X Y x y : ℝ}
     sectionOpen c s X Y x y ↔ |x-X| < 1/2 ∧ |y-Y| < 1/2 := by
   rcases hcard with hc | hs
   · rw [hc] at hunit
-    have he : s = 1 ∨ s = -1 := by nlinarith
-    rcases he with rfl | rfl <;> simp [sectionOpen,hc,and_comm]
+    have he : s = 1 ∨ s = -1 := mul_self_eq_one_iff.mp (by nlinarith)
+    rcases he with rfl | rfl <;> simp [sectionOpen,hc,and_comm,abs_sub_comm]
   · rw [hs] at hunit
-    have he : c = 1 ∨ c = -1 := by nlinarith
-    rcases he with rfl | rfl <;> simp [sectionOpen,hs]
+    have he : c = 1 ∨ c = -1 := mul_self_eq_one_iff.mp (by nlinarith)
+    rcases he with rfl | rfl <;> simp [sectionOpen,hs,abs_sub_comm]
 
 /-- The only possible center freedom is the vertical coordinate. -/
 theorem section_strip_rigidity {c s X Y : ℝ}

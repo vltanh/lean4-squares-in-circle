@@ -45,14 +45,14 @@ lemma column_centers_separated {S T : UnitSquare} {o : Point} {φ : Direction} {
   by_contra hn
   have hlt : y-x < 1 := by linarith
   let m := (x+y)/2
-  have hx : OpenRect (0,x) 0 m := by
-    dsimp [OpenRect,m]
+  have hx : openAxisSquare (0,x) 0 m := by
+    dsimp [openAxisSquare,m]
     constructor
     · norm_num
     · apply abs_lt.mpr
       constructor <;> linarith
-  have hy : OpenRect (0,y) 0 m := by
-    dsimp [OpenRect,m]
+  have hy : openAxisSquare (0,y) 0 m := by
+    dsimp [openAxisSquare,m]
     constructor
     · norm_num
     · apply abs_lt.mpr
@@ -98,7 +98,7 @@ theorem normal_form_of_containing (S : Fin 7 → UnitSquare) (o : Point)
     hp.disjoint _ k (hek (sideRingIndex i)) p
   obtain ⟨z,hz,hcenter⟩ := central_square_represents hk hb hdisj
   have ht : Represents (S (e 2)) o W.phase (0,W.top) := by
-    simpa only [ringCenters,Matrix.cons_val_two] using hrep 2
+    simpa only [ringCenters,Matrix.cons_val_two,Matrix.tail_cons,Matrix.head_cons] using hrep 2
   have hbot : Represents (S (e 5)) o W.phase (0,-W.bottom) := by
     simpa [ringCenters] using hrep 5
   have hza := abs_lt.mp hz

@@ -19,9 +19,9 @@ theorem uniqueness_column (S : Fin 7 → UnitSquare) (o : Point)
     ∃ (c : Column) (φ : Direction) (σ : Equiv.Perm (Fin 7)),
       ∀ i x y,
         (openSquare (S (σ i)) (pointInDirection o φ x y) ↔
-          OpenRect (slidingCenters c i) x y) ∧
+          openAxisSquare (slidingCenters c i) x y) ∧
         (closedSquare (S (σ i)) (pointInDirection o φ x y) ↔
-          ClosedRect (slidingCenters c i) x y) :=
+          closedAxisSquare (slidingCenters c i) x y) :=
   uniqueness S o hp
 
 /-- Alias emphasizing the fixed candidate radius in both directions. -/
@@ -58,7 +58,8 @@ theorem off_center_sliding_attainment :
     ∃ c : Column, 0<c.middle ∧ Packing (slidingModel c) (0,0) radius := by
   let g : Fin 4 → ℝ := ![2*Real.sqrt 3-3,0,0,0]
   have hg (i : Fin 4) : 0≤g i := by
-    fin_cases i <;> simp [g] <;> linarith [sliding_slot_budget_pos]
+    fin_cases i <;> simp [g]
+    linarith [sliding_slot_budget_pos]
   have hs : ∑ i,g i=2*Real.sqrt 3-3 := by simp [g,Fin.sum_univ_succ]
   let c := columnOfSlots g hg hs
   refine ⟨c,?_,sliding_packing c⟩

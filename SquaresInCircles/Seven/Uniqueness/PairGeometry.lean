@@ -46,7 +46,7 @@ lemma reverse_center_coordinates (a u A v g : ℝ) (s t : TransverseSign) :
   let d := relativePhase a u A v g s t
   have hu := Real.sin_sq_add_cos_sq d
   constructor <;> dsimp [centerDX,centerDY] <;>
-    rw [reverse_reflected_phase,TransverseSign.coe_flip,TransverseSign.coe_flip]
+    rw [reverse_reflected_phase] <;> simp only [TransverseSign.coe_flip]
   · change Real.cos d*(A*Real.cos d-t.coe*v*Real.sin d-a)+
       Real.sin d*(A*Real.sin d+t.coe*v*Real.cos d-s.coe*u) = _
     nlinarith [congrArg (fun z : ℝ => A*z) hu]
@@ -158,7 +158,6 @@ theorem marker_separation_closed {S T : UnitSquare} {o : Point}
   have hg : |g| < gap := by
     have he : dist (chartMarker C) (chartMarker D) = |g| := by
       rw [dist_comm,direction_dist]
-      rfl
     rwa [he] at hdist
   have hang : (g : Direction) = chartMarker D-chartMarker C := Real.Angle.coe_toReal _
   by_cases hpos : 0 ≤ g

@@ -35,27 +35,27 @@ lemma open_segment (S : UnitSquare) {p q : Point}
     by rw [he.2]; exact scalar _ _ hp.2 hq.2⟩
 
 lemma side_barriers_cover {x y : ℝ} (hx : 1/2 ≤ |x| ∧ |x| ≤ 3/2)
-    (hy : |y| ≤ 1) : ∃ i : Fin 4, ClosedRect (sideCenters i) x y := by
+    (hy : |y| ≤ 1) : ∃ i : Fin 4, closedAxisSquare (sideCenters i) x y := by
   have hya := abs_le.mp hy
   by_cases hxn : 0 ≤ x <;> by_cases hyn : 0 ≤ y
   · refine ⟨1,?_⟩
     rw [abs_of_nonneg hxn] at hx
-    dsimp [ClosedRect,sideCenters]
+    dsimp [closedAxisSquare,sideCenters]
     exact ⟨abs_le.mpr ⟨by linarith [hx.1],by linarith [hx.2]⟩,
       abs_le.mpr ⟨by linarith,by linarith [hya.2]⟩⟩
   · refine ⟨0,?_⟩
     rw [abs_of_nonneg hxn] at hx
-    dsimp [ClosedRect,sideCenters]
+    dsimp [closedAxisSquare,sideCenters]
     exact ⟨abs_le.mpr ⟨by linarith [hx.1],by linarith [hx.2]⟩,
       abs_le.mpr ⟨by linarith [hya.1],by linarith⟩⟩
   · refine ⟨3,?_⟩
     rw [abs_of_neg (lt_of_not_ge hxn)] at hx
-    dsimp [ClosedRect,sideCenters]
+    dsimp [closedAxisSquare,sideCenters]
     exact ⟨abs_le.mpr ⟨by linarith [hx.2],by linarith [hx.1]⟩,
       abs_le.mpr ⟨by linarith,by linarith [hya.2]⟩⟩
   · refine ⟨2,?_⟩
     rw [abs_of_neg (lt_of_not_ge hxn)] at hx
-    dsimp [ClosedRect,sideCenters]
+    dsimp [closedAxisSquare,sideCenters]
     exact ⟨abs_le.mpr ⟨by linarith [hx.2],by linarith [hx.1]⟩,
       abs_le.mpr ⟨by linarith [hya.1],by linarith⟩⟩
 
@@ -165,7 +165,7 @@ theorem central_square_represents {S : UnitSquare} {B : Fin 4 → UnitSquare}
   refine ⟨centerY S o φ,hr.2.2.1,?_⟩
   intro x y
   rw [square_section,hr.2.2.2 x y]
-  simp [OpenRect]
+  simp [openAxisSquare]
 
 end Equality
 end SquaresInCircles.Seven

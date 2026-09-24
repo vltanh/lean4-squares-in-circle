@@ -16,7 +16,7 @@ lemma fixed_gap_zero_active {a u A v : ℝ} (s t : TransverseSign) (k : Fin 4)
     (ha : ActiveLabel a u) (hb : ActiveLabel A v)
     (hz : pairSupport a u A v s t k gap = 0) :
     OrderedContact a u A v s t := by
-  fin_cases k
+  obtain rfl | rfl | rfl | rfl : k = 0 ∨ k = 1 ∨ k = 2 ∨ k = 3 := by fin_cases k <;> simp
   · have hp := fixed_gap_outward h h' s t
     rw [hz] at hp
     exact False.elim ((lt_irrefl (0 : ℝ)) hp)

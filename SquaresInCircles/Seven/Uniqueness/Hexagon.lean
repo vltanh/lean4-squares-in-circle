@@ -115,7 +115,7 @@ lemma seven_directions_impossible (c : Fin 7 → Direction)
     (fun _ => ⟨by norm_num,by linarith [Real.pi_pos,pi_lower_157]⟩) hballs
   simp only [Finset.sum_const,Finset.card_univ,Fintype.card_fin,nsmul_eq_mul] at hb
   norm_num at hb
-  linarith [pi_upper_22]
+  linarith [pi_lt_22_over_7]
 
 /-- Exactly one square contains the tested point at the optimum. The center
 of that square is not assumed to equal the tested point. -/

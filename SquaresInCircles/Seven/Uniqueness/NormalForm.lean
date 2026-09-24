@@ -25,8 +25,8 @@ def CongruentToSliding (S : Fin 7 → UnitSquare) (o : Point) : Prop :=
     e (0,0) = o ∧
     (∀ p q, normSq (sub (e p) (e q)) = normSq (sub p q)) ∧
     (∀ i p,
-      (openSquare (S (σ i)) (e p) ↔ OpenRect (slidingCenters c i) p.1 p.2) ∧
-      (closedSquare (S (σ i)) (e p) ↔ ClosedRect (slidingCenters c i) p.1 p.2))
+      (openSquare (S (σ i)) (e p) ↔ openAxisSquare (slidingCenters c i) p.1 p.2) ∧
+      (closedSquare (S (σ i)) (e p) ↔ closedAxisSquare (slidingCenters c i) p.1 p.2))
 
 lemma SlidingNormalForm.rigid {S : Fin 7 → UnitSquare} {o : Point}
     (h : SlidingNormalForm S o) : CongruentToSliding S o := by
@@ -35,12 +35,12 @@ lemma SlidingNormalForm.rigid {S : Fin 7 → UnitSquare} {o : Point}
   exact ⟨c,e,σ,he,hd,hm⟩
 
 lemma slidingModel_open (c : Column) (i : Fin 7) (p : Point) :
-    openSquare (slidingModel c i) p ↔ OpenRect (slidingCenters c i) p.1 p.2 := by
-  simp [slidingModel,axisSquare,openSquare,OpenRect,localX,localY]
+    openSquare (slidingModel c i) p ↔ openAxisSquare (slidingCenters c i) p.1 p.2 := by
+  simp [slidingModel,axisSquare,openSquare,openAxisSquare,localX,localY]
 
 lemma slidingModel_closed (c : Column) (i : Fin 7) (p : Point) :
-    closedSquare (slidingModel c i) p ↔ ClosedRect (slidingCenters c i) p.1 p.2 := by
-  simp [slidingModel,axisSquare,closedSquare,ClosedRect,localX,localY]
+    closedSquare (slidingModel c i) p ↔ closedAxisSquare (slidingCenters c i) p.1 p.2 := by
+  simp [slidingModel,axisSquare,closedSquare,closedAxisSquare,localX,localY]
 
 lemma slidingModel_normalForm (c : Column) :
     SlidingNormalForm (slidingModel c) (0,0) := by

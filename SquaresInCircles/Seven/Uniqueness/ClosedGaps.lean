@@ -61,7 +61,7 @@ lemma all_gap_nonneg {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
         nhdsWithin_le_nhds)] with e he0 he1
     exact (all_gap_support_pos s t k (mix_strict h ⟨he0,he1.le⟩)
       (mix_strict h' ⟨he0,he1.le⟩) hg).le
-  have hh : 0 ≤ f 0 := le_of_tendsto hlim hpos
+  have hh : 0 ≤ f 0 := ge_of_tendsto hlim hpos
   simpa [f,mixA,mixU] using hh
 
 /-- Closed containment is enough when the angular gap is strictly subcritical. -/
@@ -88,7 +88,7 @@ theorem all_gap_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
       by_contra hn
       have hx1 : x = 1 := le_antisymm (le_of_not_gt hn) hx.1.1
       rw [hx1] at hx
-      linarith [hx.2]
+      linarith [show f 1 = 0 from hx.2]
     have hmin : ∀ y ∈ Icc 1 gap, f x ≤ f y := by
       intro y hy
       rw [hx.2]
@@ -99,7 +99,7 @@ theorem all_gap_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
       by_contra hn
       have hy0 : f y = 0 := le_antisymm (le_of_not_gt hn) (hnn y hy)
       have hyK : y ∈ K := ⟨⟨hy.1,hyx.le.trans hx.1.2⟩,hy0⟩
-      have he := hfirst hyK
+      have he : x ≤ y := hfirst hyK
       linarith
     let z := cardinalAngle k+Real.pi-x-s.coe*label a u+t.coe*label A v
     by_cases hs : Real.sin z = 0

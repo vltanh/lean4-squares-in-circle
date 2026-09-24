@@ -34,8 +34,7 @@ theorem packing_iff_sliding (S : Fin 7 → UnitSquare) (o : Point) :
 /-- The statement with the radius written as sqrt(13)/2. -/
 theorem uniqueness_sqrt_thirteen_half (S : Fin 7 → UnitSquare) (o : Point)
     (hp : Packing S o (Real.sqrt 13/2)) : SlidingNormalForm S o := by
-  apply uniqueness S o
-  simpa only [radius_eq_sqrt_thirteen_half] using hp
+  exact uniqueness S o hp
 
 /-- The parameter set is exactly the four nonnegative slots of fixed total;
 no equal-spacing, contact, or centered-middle-square constraint is inserted. -/

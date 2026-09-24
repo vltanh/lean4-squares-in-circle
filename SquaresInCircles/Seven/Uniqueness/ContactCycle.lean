@@ -20,7 +20,7 @@ def cycleTurnAngle : Fin 6 → ℝ := ![0,0,Real.pi/2,Real.pi,Real.pi,3*Real.pi/
 
 lemma kind_unique {a u : ℝ} {s : TransverseSign} {i j : Fin 3}
     (hi : KindAt a u s i) (hj : KindAt a u s j) : i = j := by
-  fin_cases i <;> fin_cases j <;> simp_all [KindAt,Side] <;> linarith
+  fin_cases i <;> fin_cases j <;> simp_all [KindAt,Side]
 
 lemma contact_kinds {a u A v : ℝ} {s t : TransverseSign}
     (hc : OrderedContact a u A v s t) :
@@ -36,7 +36,7 @@ lemma kind_signed_label {a u : ℝ} {s : TransverseSign}
   fin_cases k
   · rcases hk with ⟨rfl,ha,hu⟩
     rw [ha,hu,side_label]
-    norm_num [kindOffset,TransverseSign.coe]
+    norm_num [kindOffset,TransverseSign.coe,neg_div]
   · rcases hk with ⟨rfl,ha,hu⟩
     rw [ha,hu,side_label]
     norm_num [kindOffset,TransverseSign.coe]
@@ -102,8 +102,7 @@ lemma marker_steps (m : Fin 6 → Direction)
   norm_num [next] at h1 h2 h3 h4 h5
   intro i
   rw [coe_nat_gap]
-  fin_cases i <;> norm_num only [Fin.val_zero,Fin.val_one] <;>
-    simp only [h5,h4,h3,h2,h1] <;> abel
+  fin_cases i <;> simp [h5,h4,h3,h2,h1] <;> abel
 
 lemma cycle_turn_coe (i : Fin 6) :
     (cycleTurnAngle i : Direction) = quarterShift (cycleTurns i) := by
@@ -176,8 +175,9 @@ lemma ring_of_ordered_contacts {S : Fin 6 → UnitSquare} {o : Point}
     have hcalc : (C (σ i)).phase =
         φ+(((i.val : ℝ)*gap-kindOffset (cycleKinds i)-Real.pi/6 : ℝ) : Direction) := by
       rw [he]
-      simp only [Real.Angle.coe_sub,Real.Angle.coe_neg]
+      simp only [Real.Angle.coe_sub]
       dsimp [φ,cycleKinds,kindOffset]
+      rw [neg_div,Real.Angle.coe_neg]
       abel
     rw [hcalc,hreal,cycle_turn_coe]
   let top := (C (σ 2)).a
@@ -187,7 +187,7 @@ lemma ring_of_ordered_contacts {S : Fin 6 → UnitSquare} {o : Point}
   have hb : 1/2 ≤ bottom ∧ bottom ≤ columnLimit :=
     ⟨(hC _).2.2.1,(hC _).a_le_sqrt_three⟩
   refine ⟨{ phase := φ, order := σ, top := top, bottom := bottom,
-    top_bounds := ht, bottom_bounds := hb, represents := ?_ }⟩
+            top_bounds := ht, bottom_bounds := hb, represents := ?_ }⟩
   intro i
   have hr := chart_represents (C (σ i))
   rw [hphase i] at hr
@@ -197,7 +197,7 @@ lemma ring_of_ordered_contacts {S : Fin 6 → UnitSquare} {o : Point}
     rw [←chartSign_coordinate]
     fin_cases i
     · rcases hkind 0 with ⟨hs,ha,hu⟩
-      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
+      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe,neg_div]
     · rcases hkind 1 with ⟨hs,ha,hu⟩
       simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
     · have hu : (C (σ 2)).b = 0 := hkind 2
@@ -205,7 +205,7 @@ lemma ring_of_ordered_contacts {S : Fin 6 → UnitSquare} {o : Point}
     · rcases hkind 3 with ⟨hs,ha,hu⟩
       simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
     · rcases hkind 4 with ⟨hs,ha,hu⟩
-      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe]
+      simp [cycleTurns,ringCenters,turnPoint,hs,ha,hu,TransverseSign.coe,neg_div]
     · have hu : (C (σ 5)).b = 0 := hkind 5
       simp [cycleTurns,ringCenters,turnPoint,hu,bottom]
   simpa only [he] using hrot
@@ -233,8 +233,8 @@ theorem six_exterior_ring (S : Fin 6 → UnitSquare) (o : Point)
   obtain ⟨W⟩ := ring_of_ordered_contacts (S := fun i => S (σ i))
     (fun i => C (σ i)) (fun i => hadm _) hm hc
   exact ⟨{ phase := W.phase, order := W.order.trans σ,
-    top := W.top, bottom := W.bottom, top_bounds := W.top_bounds,
-    bottom_bounds := W.bottom_bounds, represents := W.represents }⟩
+           top := W.top, bottom := W.bottom, top_bounds := W.top_bounds,
+           bottom_bounds := W.bottom_bounds, represents := W.represents }⟩
 
 end Equality
 end SquaresInCircles.Seven

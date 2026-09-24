@@ -33,10 +33,10 @@ lemma axial_of_transverse_zero {a u : ℝ} (h : Admissible a u) (hu : u = 0) :
     Axial a u := ⟨hu,h.2.2.1,h.a_le_sqrt_three⟩
 
 lemma side_label : label 1 (1/2) = Real.pi/6 := by
-  have hp := pi_upper_22
+  have hp := pi_lt_22_over_7
   have hp0 := Real.pi_pos
   unfold label axial side
-  rw [min_eq_right (by linarith), min_eq_left (by linarith)]
+  rw [min_eq_right (a := (5*(1/2)/4 : ℝ)) (by linarith), min_eq_left (by linarith)]
   ring
 
 lemma axial_label {a u : ℝ} (h : Admissible a u) (ha : Axial a u) :
@@ -74,7 +74,7 @@ private lemma dual_norm : radius * Real.sqrt ((-9/10 : ℝ)^2+(-3/5)^2) = 39/20 
 lemma side_side_zero {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u = side a u) (hT' : label A v = side A v)
-    (hz : sideSideSupport a u A v (label a u+label A v-gap) = 0) :
+    (hz : sideSideSupport u A v (label a u+label A v-gap) = 0) :
     Side a u ∧ Side A v := by
   let w := label a u+label A v-gap
   have hw : w = side a u+side A v-gap := by simp [w,hT,hT']
@@ -99,13 +99,13 @@ lemma side_side_zero {a u A v : ℝ}
     have he : (radius * Real.sqrt (sideSideRadicand w))^2 =
         targetSq*sideSideRadicand w := by rw [mul_pow,radius_sq,hs]; rfl
     change -radius*Real.sqrt (sideSideRadicand w) ≤ _ at hsecond
-    change sideSideSupport a u A v w = 0 at hz
+    change sideSideSupport u A v w = 0 at hz
     rw [sideSide_support_identity hw] at hz
     have hl : sideSideL w ≤ radius * Real.sqrt (sideSideRadicand w) := by nlinarith
     have hp := mul_nonneg (sub_nonneg.mpr hl)
       (show 0 ≤ radius*Real.sqrt (sideSideRadicand w)+sideSideL w by linarith)
     nlinarith
-  change sideSideSupport a u A v w = 0 at hz
+  change sideSideSupport u A v w = 0 at hz
   rw [hw0] at hz
   have huv : u+v = 1 := by norm_num [sideSideSupport] at hz; linarith
   have hs : side a u+side A v = gap := by linarith [hw]
@@ -195,7 +195,7 @@ lemma forward_negative_target_zero {a u A v : ℝ} (sgn : TransverseSign)
   · have heL : -1 < e := by
       have hs := side_selected_label_gt h' hT
       cases sgn <;> dsimp [e,TransverseSign.coe] <;>
-        linarith [h.label_nonneg,h.label_le_quarter,pi_upper_22]
+        linarith [h.label_nonneg,h.label_le_quarter,pi_lt_22_over_7]
     have hid : forwardRaw A v e r = sideTarget A v e := by
       rw [hT,side_identity_radial] at he
       dsimp [forwardRaw,sideTarget]

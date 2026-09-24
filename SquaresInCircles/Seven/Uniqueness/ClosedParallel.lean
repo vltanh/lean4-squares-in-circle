@@ -36,7 +36,7 @@ lemma quarter_difference_horizontal_le {a b A B : ℝ}
     · have hx : Admissible a b := by simpa only [abs_of_nonneg hb] using h
       have hy : Admissible A B := by simpa only [abs_of_nonneg hB] using h'
       have ht := hx.tangent
-      simp only [signedLabel,if_neg (not_lt_of_ge hb),if_neg (not_lt_of_ge hB),
+      simp only [signedLabel,ite_eq_right (not_lt_of_ge hb),ite_eq_right (not_lt_of_ge hB),
         abs_of_nonneg hb,abs_of_nonneg hB]
       rcases hy.selected with hA | hT | hcap
       · rw [hA]
@@ -55,14 +55,14 @@ lemma quarter_difference_horizontal_le {a b A B : ℝ}
       have hl := hx.label_le_side
       have hr := hy.label_le_axial
       have ht := hx.tangent
-      simp only [signedLabel,if_neg (not_lt_of_ge hb),if_pos hB',
+      simp only [signedLabel,ite_eq_right (not_lt_of_ge hb),ite_eq_left hB',
         abs_of_nonneg hb,abs_of_neg hB']
       dsimp [side,axial] at hl hr
       linarith
     · have hx := signedLabel_nonpos h (lt_of_not_ge hb)
       have hr := h'.label_le_axial
       have ha := h.a_lt_five_fourths
-      simp only [signedLabel,if_pos hB',abs_of_neg hB'] at *
+      simp only [signedLabel,ite_eq_left hB',abs_of_neg hB'] at *
       dsimp [axial] at hr
       linarith [pi_lower_157]
 
@@ -93,7 +93,7 @@ lemma parallel_zero_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 
   have hv := h'.u_lt
   fin_cases k
   · norm_num
-    linarith [h'.2.2.1]
+    linarith [h.2.2.1]
   · by_contra hn
     cases s <;> cases t <;> norm_num [TransverseSign.coe] at hn he ⊢
     · linarith [h.1]
@@ -102,7 +102,7 @@ lemma parallel_zero_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 
       linarith [hg.2]
     · linarith [h'.1]
   · norm_num
-    linarith [h.2.2.1]
+    linarith [h'.2.2.1]
   · cases s <;> cases t <;> norm_num [TransverseSign.coe] at he ⊢
     · linarith [h'.1]
     · linarith [hg.1]
