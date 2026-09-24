@@ -2,9 +2,9 @@ import SquaresInCircles.Seven.EasySectors
 import SquaresInCircles.Seven.SectorBounds
 
 /-!
-# Forward transverse support, both transverse signs positive
+# The forward axis, both signs positive
 
-This closes this whole source/sign sector without selecting an active label.
+Positive for all labels, by the marker bounds.
 -/
 noncomputable section
 open Set

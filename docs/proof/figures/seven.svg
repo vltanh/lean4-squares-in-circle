@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="601" height="601" viewBox="0 0 601 601" role="img" aria-label="Two columns of two squares beside a column of three, with the unit circle">
+<title>Two columns of two squares beside a column of three, with the unit circle</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="300.4" cy="300.4" r="270.4" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="6 4"/>
+<polygon points="375.4,450.4 525.4,450.4 525.4,300.4 375.4,300.4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="375.4,300.4 525.4,300.4 525.4,150.4 375.4,150.4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="75.4,450.4 225.4,450.4 225.4,300.4 75.4,300.4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="75.4,300.4 225.4,300.4 225.4,150.4 75.4,150.4" fill="#f3e8ff" stroke="#9333ea" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="225.4,525.4 375.4,525.4 375.4,375.4 225.4,375.4" fill="#fce7f3" stroke="#db2777" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="225.4,375.4 375.4,375.4 375.4,225.4 225.4,225.4" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5" fill-opacity="1"/>
+<polygon points="225.4,225.4 375.4,225.4 375.4,75.4 225.4,75.4" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5" fill-opacity="1"/>
+<circle cx="300.4" cy="300.4" r="150.0" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+<path d="M 375.4 430.3 A 150.0 150.0 0 0 0 450.4 300.4" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+<path d="M 450.4 300.3 A 150.0 150.0 0 0 0 375.3 170.4" fill="none" stroke="#ea580c" stroke-width="5" stroke-linecap="round"/>
+<path d="M 150.4 300.5 A 150.0 150.0 0 0 0 225.5 430.4" fill="none" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+<path d="M 225.3 170.6 A 150.0 150.0 0 0 0 150.4 300.5" fill="none" stroke="#9333ea" stroke-width="5" stroke-linecap="round"/>
+<path d="M 225.5 430.4 A 150.0 150.0 0 0 0 375.4 430.3" fill="none" stroke="#db2777" stroke-width="5" stroke-linecap="round"/>
+<path d="M 375.3 170.4 A 150.0 150.0 0 0 0 225.3 170.6" fill="none" stroke="#ca8a04" stroke-width="5" stroke-linecap="round"/>
+<circle cx="300.4" cy="300.4" r="3.2" fill="#1f2937"/>
+<text x="307.9" y="312.4" font-size="15" font-family="Georgia, 'Times New Roman', serif" fill="#1f2937" text-anchor="start" dominant-baseline="middle" font-style="italic">o</text>
+</svg>

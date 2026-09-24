@@ -4,10 +4,11 @@ import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 
 /-!
-# Analytic bounds for the genuine marker arc
+# Estimates for the marker arc
 
-The continuum estimate below is proved by a single positive-power identity,
-not by checking an interval mesh. The derivatives are of explicit functions.
+Monotonicity from derivatives, arcsine bounds, and the envelope that bounds the
+near-edge angle of the marker arc: it is concave, by one polynomial with
+positive coefficients in a Bernstein basis, and its maximum is explicit.
 -/
 noncomputable section
 open Set
@@ -44,38 +45,13 @@ lemma asin_half : Real.arcsin (1/2 : ℝ) = Real.pi/6 := by
     (by linarith [Real.pi_pos]) (by linarith [Real.pi_pos])
   simpa only [Real.sin_pi_div_six] using h
 
-lemma asin_le_self_nonpos {x : ℝ} (hx : -1 ≤ x ∧ x ≤ 0) :
-    Real.arcsin x ≤ x := by
-  have ha : 0 ≤ Real.arcsin (-x) := Real.arcsin_nonneg.mpr (by linarith [hx.2])
-  have h := Real.sin_le ha
-  rw [Real.sin_arcsin (by linarith [hx.2]) (by linarith [hx.1]),
-    Real.arcsin_neg] at h
-  linarith
-
-lemma asin_le_cubic {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/5) :
-    Real.arcsin x ≤ x+x^3/4 := by
-  let t := x+x^3/4
-  have hx3 : 0 ≤ x^3 := pow_nonneg hx.1 _
-  have hsmall := mul_nonneg hx.1 (show 0 ≤ 9/25-x^2 by nlinarith [hx.2])
-  have ht0 : 0 ≤ t := by dsimp only [t]; linarith
-  have ht : t ≤ (109/100 : ℝ)*x := by dsimp [t]; nlinarith
-  have ht3 : t^3 ≤ ((109/100 : ℝ)*x)^3 := by gcongr
-  have hs := Real.sin_ge_sub_cube ht0
-  have hsin : x ≤ Real.sin t := by
-    dsimp [t] at *
-    nlinarith
-  apply (Real.arcsin_le_iff_le_sin
-    (show x ∈ Icc (-1 : ℝ) 1 by constructor <;> linarith [hx.1,hx.2])
-    (show t ∈ Icc (-(Real.pi/2)) (Real.pi/2) by
-      constructor <;> nlinarith [Real.two_le_pi,hx.2])).mpr hsin
-
 lemma asin_upper_remainder {y : ℝ} (hy : -1/2 ≤ y ∧ y ≤ 11/40) :
     Real.arcsin y ≤ y+1331/256000 := by
   by_cases h : 0 ≤ y
-  · have hb := asin_le_cubic ⟨h,by linarith [hy.2]⟩
+  · have hb := arcsin_le_cubic h (by linarith [hy.2])
     have hc : y^3 ≤ (11/40 : ℝ)^3 := pow_le_pow_left₀ h hy.2 3
     nlinarith
-  · have hb := asin_le_self_nonpos ⟨by linarith [hy.1],by linarith⟩
+  · have hb := arcsin_le_self_of_nonpos (by linarith [hy.1]) (by linarith)
     linarith
 
 lemma weighted_center_bound {a u p r : ℝ} (h : Admissible a u) :
@@ -260,7 +236,7 @@ lemma arcEnvelope_antitone_right : AntitoneOn arcEnvelope (Icc (1/4 : ℝ) (3/4)
 
 lemma arcEnvelope_bound_small {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 1/4) :
     arcEnvelope x ≤ Real.pi/6+(Real.sqrt 87061-86)/384 := by
-  have ha := asin_le_cubic ⟨hx.1,by linarith [hx.2]⟩
+  have ha := arcsin_le_cubic hx.1 (by linarith [hx.2])
   have hm := mul_nonneg hx.1 (show 0 ≤ 1/16-x^2 by nlinarith [hx.2])
   have hasin : Real.arcsin x ≤ (65/64)*x := by nlinarith
   let B := Real.sqrt (targetSq-(x+1)^2)

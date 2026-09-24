@@ -2,11 +2,11 @@ import SquaresInCircles.Seven.BoundarySegments
 import SquaresInCircles.Seven.InwardAxialAxial
 
 /-!
-# Geometry of the inward (+,-) sector
+# The inward axis with opposite signs: formula and displacements
 
-The exact support formula is followed by displacement inequalities on both
-pieces of the axial envelope and on the circular side envelope. These whole-
-interval inequalities avoid differentiating the minimum at its corner.
+The exact support formula, and displacement bounds along the two pieces of the
+axial boundary and the circular side boundary, which avoid differentiating the
+minimum at its corner.
 -/
 noncomputable section
 open Set
@@ -64,12 +64,12 @@ lemma inward_opposite_negative_turn {a u A v : ℝ}
     have ht := side_selected_label_gt h hT
     have hs := h'.label_nonneg
     dsimp [z]
-    constructor <;> linarith [pi_upper_22]
+    constructor <;> linarith [pi_lt_22_over_7]
   have hv : v+1/2 < 6/5 := by
     have hs := h'.label_le_quarter
     rw [hA] at hs
     dsimp [axial] at hs
-    linarith [pi_upper_22]
+    linarith [pi_lt_22_over_7]
   have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
     (by linarith [hz.2,pi_lower_157])
   have hs := Real.sin_ge_sub_cube hz.1
@@ -90,7 +90,7 @@ namespace Boundary
 lemma axialTop_antitone {u v : ℝ}
     (hu : 0 ≤ u) (huv : u ≤ v) (hv : v ≤ Real.pi/5) :
     axialTop v ≤ axialTop u := by
-  have hvr : v ≤ rd := by linarith [hv,pi_upper_22,rd_bounds.1]
+  have hvr : v ≤ rd := by linarith [hv,pi_lt_22_over_7,rd_bounds.1]
   have hc := (circle_order hu huv hvr).1
   have hl : axialLine v ≤ axialLine u := by dsimp [axialLine]; linarith
   exact min_le_min hc hl
@@ -98,7 +98,7 @@ lemma axialTop_antitone {u v : ℝ}
 lemma axialTop_displacement {u v : ℝ}
     (hu : 0 ≤ u) (huv : u ≤ v) (hv : v ≤ Real.pi/5) :
     axialTop u-axialTop v ≤ (11/9)*(v-u) := by
-  have hvr : v ≤ rd := by linarith [hv,pi_upper_22,rd_bounds.1]
+  have hvr : v ≤ rd := by linarith [hv,pi_lt_22_over_7,rd_bounds.1]
   have hc := (circle_order hu huv hvr).2
   by_cases hm : circle v ≤ axialLine v
   · have hv' : axialTop v=circle v := min_eq_left hm

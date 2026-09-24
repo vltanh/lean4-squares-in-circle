@@ -2,18 +2,15 @@ import SquaresInCircles.Seven.PairModel
 import SquaresInCircles.Seven.TaylorBounds
 
 /-!
-# Bounds shared by the mixed fixed-gap support sectors
+# Bounds shared by the sectors
 
-This file contains no numerical evaluation tactic or interval oracle. All
-constants are rational; the quadratic inequalities retain the original
-containment remainder.
+Bounds on the labels and states of side- and axial-selected squares, and
+elementary trigonometric comparisons.
 -/
 noncomputable section
 open Set
 namespace SquaresInCircles.Seven
 
-lemma pi_lower_157 : (157 : ℝ)/50 < Real.pi := by linarith [Real.pi_gt_d2]
-lemma pi_upper_22 : Real.pi < (22 : ℝ)/7 := by linarith [Real.pi_lt_d4]
 lemma sqrt_three_bounds : (173 : ℝ)/100 < Real.sqrt 3 ∧ Real.sqrt 3 < 1733/1000 := by
   have hs := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
   constructor <;> nlinarith [Real.sqrt_nonneg (3 : ℝ)]
@@ -57,7 +54,7 @@ lemma side_selected_a_gt {a u : ℝ} (h : Admissible a u)
   have hq := h.label_le_quarter
   rw [hsel] at ht hq
   dsimp [side,axial] at ht hq
-  linarith [pi_upper_22]
+  linarith [pi_lt_22_over_7]
 
 lemma axial_tangent {a u : ℝ} (h : Admissible a u)
     (hsel : label a u = axial u) : 9*a+11*u ≤ 2*Real.pi+7 := by
@@ -71,7 +68,7 @@ lemma axial_sum_lt {a u : ℝ} (h : Admissible a u)
   have ht := axial_tangent h hsel
   by_contra hn
   have hs : 113/80 ≤ a+u := le_of_not_gt hn
-  have hu : u < 23/80 := by linarith [pi_upper_22]
+  have hu : u < 23/80 := by linarith [pi_lt_22_over_7]
   have hp := h.2.2.2
   dsimp [phi,targetSq] at hp
   nlinarith [sq_nonneg (a-9/8),sq_nonneg (u-23/80)]
@@ -85,7 +82,7 @@ lemma side_remainder_quadratic {a u : ℝ} (h : Admissible a u)
   have hD : D ≤ 4/15 := by
     have hh := h.label_le_quarter
     dsimp [D]
-    linarith [pi_upper_22]
+    linarith [pi_lt_22_over_7]
   have hx : a-1 = -(4/5)*D-(2/15)*W := by
     have hh := side_identity_radial a u
     rw [← hsel] at hh

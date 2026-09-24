@@ -1,14 +1,11 @@
 import SquaresInCircles.Seven.SectorBounds
 
 /-!
-# Exact label-boundary geometry
+# The boundary of the label regions
 
-The transition constants are radicals in pi. The side-circle parametrization
-uses the two perpendicular coefficient vectors (3/4,-1/3) and (1/3,3/4).
-Its square-root denominator is exactly the derivative denominator L from the
-manuscript. This avoids introducing an additional polar-angle parameter.
-
-Incremental, uncompiled proof draft.
+The transition state, where the line on which the axial and side labels agree
+meets the circle `φ = 13/4`, the diagonal corner, and a parametrization of the
+circle by the side label. The constants are radicals in `π`.
 -/
 noncomputable section
 open Set

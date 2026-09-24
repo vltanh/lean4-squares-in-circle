@@ -1,33 +1,32 @@
-import Mathlib
 import SquaresInCircles.Common.Constructions
 
 /-!
-# Seven squares: attainment and the complete sliding construction
+# Seven squares: the optimal radius and the sliding packings
 
-The original packing predicate is unchanged. The side columns force the
-candidate radius, while the three middle squares may slide. This file proves
-attainment; it does not use or assert the seven-square lower bound.
+A column of three unit squares between two columns of two, at the optimal
+radius `√13 / 2`. The outer corners of the side columns lie on the circle, but
+the middle column is shorter than the room it has, so it can slide: every
+`Column` gives an optimal packing, and `Seven.centers` is the one with the
+column centred.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
 
-/-- Candidate radius. Optimality is a separate theorem. -/
-def radius : ℝ := Real.sqrt (13 / 4)
+/-- The optimal radius for seven unit squares: the distance from the disk centre
+to the outer corners of the side columns. -/
+def radius : ℝ := Real.sqrt 13 / 2
 
-lemma radius_nonneg : 0 ≤ radius := Real.sqrt_nonneg _
-lemma radius_sq : radius ^ 2 = 13 / 4 := Real.sq_sqrt (by norm_num)
-lemma radius_eq_sqrt_thirteen_half : radius = Real.sqrt 13 / 2 := by
-  have hs := Real.sq_sqrt (show (0 : ℝ) ≤ 13 by norm_num)
-  have hn := Real.sqrt_nonneg (13 : ℝ)
-  nlinarith [radius_sq, radius_nonneg]
+lemma radius_nonneg : 0 ≤ radius := by
+  unfold radius
+  positivity
 
-/-- Largest absolute ordinate of a middle-column center. -/
+lemma radius_sq : radius ^ 2 = 13 / 4 := by
+  unfold radius
+  rw [div_pow, Real.sq_sqrt (by norm_num)]
+  norm_num
+
+/-- How far a centre of the middle column can be from the disk centre. -/
 def columnLimit : ℝ := Real.sqrt 3 - 1 / 2
-
-lemma columnLimit_pos : 0 < columnLimit := by
-  dsimp [columnLimit]
-  have hs := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
-  nlinarith [Real.sqrt_nonneg (3 : ℝ)]
 
 lemma one_le_columnLimit : (1 : ℝ) ≤ columnLimit := by
   have hs := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
@@ -38,7 +37,8 @@ lemma columnLimit_sq : (columnLimit + 1 / 2) ^ 2 = 3 := by
   simp only [columnLimit, sub_add_cancel]
   exact Real.sq_sqrt (by norm_num)
 
-/-- Three ordered centers, including all boundary/sliding contacts. -/
+/-- The heights of the three middle centres: at least 1 apart, and within
+`columnLimit` of the disk centre. -/
 structure Column where
   bottom : ℝ
   middle : ℝ
@@ -57,37 +57,9 @@ lemma middle_mem (c : Column) : -columnLimit ≤ c.middle ∧ c.middle ≤ colum
   ⟨c.lower.trans c.bottom_le_middle, c.middle_le_top.trans c.upper⟩
 lemma top_mem (c : Column) : -columnLimit ≤ c.top ∧ c.top ≤ columnLimit :=
   ⟨(c.lower.trans c.bottom_le_middle).trans c.middle_le_top, c.upper⟩
-
-/-- The four nonnegative slots describe the three-dimensional sliding simplex. -/
-def slots (c : Column) : Fin 4 → ℝ :=
-  ![c.bottom + columnLimit, c.middle - c.bottom - 1,
-    c.top - c.middle - 1, columnLimit - c.top]
-
-lemma slots_nonneg (c : Column) (i : Fin 4) : 0 ≤ c.slots i := by
-  fin_cases i <;> simp [slots] <;>
-    linarith [c.lower, c.gap_lower, c.gap_upper, c.upper]
-
-lemma sum_slots (c : Column) : ∑ i, c.slots i = 2 * Real.sqrt 3 - 3 := by
-  simp [slots, Fin.sum_univ_succ, columnLimit]
-  ring
 end Column
 
-/-- Recover a sliding column from its four nonnegative slots. -/
-def columnOfSlots (g : Fin 4 → ℝ) (hg : ∀ i, 0 ≤ g i)
-    (hs : ∑ i, g i = 2 * Real.sqrt 3 - 3) : Column where
-  bottom := -columnLimit + g 0
-  middle := -columnLimit + g 0 + 1 + g 1
-  top := -columnLimit + g 0 + 2 + g 1 + g 2
-  lower := by linarith [hg 0]
-  gap_lower := by linarith [hg 1]
-  gap_upper := by linarith [hg 2]
-  upper := by
-    have he : g 0 + g 1 + g 2 + g 3 = 2 * Real.sqrt 3 - 3 := by
-      simpa [Fin.sum_univ_succ, add_assoc] using hs
-    dsimp [columnLimit]
-    linarith [hg 3]
-
-/-- The four side centers, then the three movable middle centers. -/
+/-- The four side centres, then the three centres of the middle column. -/
 def slidingCenters (c : Column) : Fin 7 → Point :=
   ![(1, -1/2), (1, 1/2), (-1, -1/2), (-1, 1/2),
     (0, c.bottom), (0, c.middle), (0, c.top)]
@@ -114,7 +86,7 @@ lemma middle_square_contained {y : ℝ} (hy : -columnLimit ≤ y ∧ y ≤ colum
   · rw [columnLimit_sq, radius_sq]
     norm_num
 
-/-- Every point of the sliding simplex is an attaining construction. -/
+/-- Every position of the middle column gives an optimal packing. -/
 theorem sliding_packing (c : Column) : Packing (slidingModel c) (0, 0) radius := by
   refine ⟨radius_nonneg, ?_, slidingModel_disjoint c⟩
   intro i
@@ -131,6 +103,7 @@ theorem sliding_packing (c : Column) : Packing (slidingModel c) (0, 0) radius :=
   · exact middle_square_contained c.middle_mem
   · exact middle_square_contained c.top_mem
 
+/-- The middle column centred at the disk centre. -/
 def centeredColumn : Column where
   bottom := -1
   middle := 0
@@ -140,36 +113,17 @@ def centeredColumn : Column where
   gap_upper := by norm_num
   upper := one_le_columnLimit
 
-def centers : Fin 7 → Point := slidingCenters centeredColumn
-def model : Fin 7 → UnitSquare := slidingModel centeredColumn
+/-- The optimal packing with its middle column centred, in the frame of its
+disk centre. -/
+def centers : Fin 7 → Point :=
+  ![(1,-1/2),(1,1/2),(-1,-1/2),(-1,1/2),(0,-1),(0,0),(0,1)]
+
+/-- That packing, centred at the origin. -/
+def model : Fin 7 → UnitSquare := fun i => axisSquare (centers i)
 
 theorem model_packing : Packing model (0, 0) radius := sliding_packing centeredColumn
 
 theorem attainment : ∃ (S : Fin 7 → UnitSquare) (o : Point), Packing S o radius :=
   ⟨model, (0, 0), model_packing⟩
-
-/-- The four side squares already force this radius within the sliding family. -/
-theorem sliding_radius_necessary (c : Column) (R : ℝ)
-    (hp : Packing (slidingModel c) (0,0) R) : radius ≤ R := by
-  have hv : closedSquare (slidingModel c 1) (3/2,1) := by
-    norm_num [slidingModel, slidingCenters, axisSquare, closedSquare, localX, localY]
-  have hh := hp.2.1 1 (3/2,1) hv
-  norm_num [inDisk, normSq, sub] at hh
-  nlinarith [radius_sq, radius_nonneg, hp.1]
-
-/-- The middle square contains the disk center, but need not be centered there. -/
-lemma sliding_middle_contains (c : Column) : openSquare (slidingModel c 5) (0,0) := by
-  have hs := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
-  have hroot : Real.sqrt 3 < 2 := by nlinarith [Real.sqrt_nonneg (3 : ℝ)]
-  have hlow : -1/2 < c.middle := by
-    have hl := c.lower
-    dsimp [columnLimit] at hl
-    linarith [c.gap_lower]
-  have hhigh : c.middle < 1/2 := by
-    have hu := c.upper
-    dsimp [columnLimit] at hu
-    linarith [c.gap_upper]
-  norm_num [slidingModel, slidingCenters, axisSquare, openSquare, localX, localY]
-  exact abs_lt.mpr ⟨by linarith,hhigh⟩
 
 end SquaresInCircles.Seven

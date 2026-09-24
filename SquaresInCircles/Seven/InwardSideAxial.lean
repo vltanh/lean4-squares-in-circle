@@ -1,14 +1,11 @@
 import SquaresInCircles.Seven.InwardTurnBounds
 
 /-!
-# Inward radial source: positive signs, side/axial labels
+# The inward axis, positive signs, side and axial labels
 
-This sector is global in the admissible centers and relative orientation.
-The support expression is the actual `pairSupport` from `PairModel`, not a
-new geometric assumption. Equality fixes the side contact but leaves the
-axial radial coordinate free, as required by the sliding construction.
-
-Uncompiled incremental proof draft.
+A lower bound through the relative turn. Equality forces the side state
+`(1, 1/2)` and `v = 0` but leaves the axial coordinate `A` free, as in the
+sliding packings.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -70,9 +67,10 @@ lemma inward_side_axial_transverse {a u A v z : ℝ}
   rw [← hT] at ht
   rw [hA] at he
   dsimp [axial] at he
-  linarith [pi_upper_22]
+  linarith [pi_lt_22_over_7]
 
-/-- Quantitative support bound; only the explicitly named labels are selected. -/
+/-- A lower bound through the remainder of the side state and the relative
+turn. -/
 theorem inward_side_axial_lower {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u = side a u) (hA : label A v = axial v) :
@@ -108,7 +106,7 @@ lemma inward_side_axial_nonneg {a u A v : ℝ}
   linarith [h.remainder_nonneg,abs_nonneg (label a u-label A v-Real.pi/6)]
 
 /-- Strict containment of the side square is enough; the axial square may
-slide and may already touch the candidate circle. -/
+touch the circle. -/
 theorem inward_side_axial_pos {a u A v : ℝ}
     (h : StrictlyAdmissible a u) (h' : Admissible A v)
     (hT : label a u = side a u) (hA : label A v = axial v) :

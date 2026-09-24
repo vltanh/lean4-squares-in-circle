@@ -3,17 +3,19 @@
 [![Lean build](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/lean.yml/badge.svg)](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/lean.yml)
 [![Doc links](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/docs.yml/badge.svg)](https://github.com/vltanh/lean4-squares-in-circles/actions/workflows/docs.yml)
 
-Machine-checked proofs, for `n = 1, …, 5`, of the smallest radius of a disk
-that holds `n` non-overlapping unit squares, and that exactly one packing
-attains it, up to rotation about the disk centre and relabelling of the squares.
+Machine-checked proofs, for `n = 1, …, 5` and `n = 7`, of the smallest radius
+of a disk that holds `n` non-overlapping unit squares, and, for `n ≤ 5`, that
+exactly one packing attains it, up to rotation about the disk centre and
+relabelling of the squares.
 
-| n | optimal radius | ≈ | the unique optimal packing |
+| n | optimal radius | ≈ | an optimal packing |
 | :-: | :-: | :-: | :-: |
 | 1 | `√2 / 2` | 0.7071 | <img src="https://erich-friedman.github.io/packing/squincir/1.gif" width="100" alt="one unit square in a circle"><br>the square |
 | 2 | `√5 / 2` | 1.1180 | <img src="https://erich-friedman.github.io/packing/squincir/2.gif" width="100" alt="two unit squares in a circle"><br>a 2×1 rectangle |
 | 3 | `5√17 / 16` | 1.2885 | <img src="https://erich-friedman.github.io/packing/squincir/3.gif" width="100" alt="three unit squares in a circle"><br>the T |
 | 4 | `√2` | 1.4142 | <img src="https://erich-friedman.github.io/packing/squincir/4.gif" width="100" alt="four unit squares in a circle"><br>the 2×2 block |
 | 5 | `√(5/2)` | 1.5811 | <img src="https://erich-friedman.github.io/packing/squincir/5.gif" width="100" alt="five unit squares in a circle"><br>the plus |
+| 7 | `√13 / 2` | 1.8028 | <img src="https://erich-friedman.github.io/packing/squincir/7.gif" width="100" alt="seven unit squares in a circle"><br>three in a line between two pairs; not unique, the line of three can slide |
 
 Pictures by Erich Friedman, from the [Squares in Circles](https://erich-friedman.github.io/packing/squincir/)
 page of Erich's Packing Center.
@@ -109,15 +111,16 @@ def HasNormalForm {n : ℕ} (S : Fin n → UnitSquare) (o : Point)
 
 More on each theorem: [docs/results.md](docs/results.md).
 
-For `1 ≤ n ≤ 5`, the root file `SquaresInCircles.lean` proves, in namespace
-`SquaresInCircles`:
+For `1 ≤ n ≤ 5` and `n = 7`, the root file `SquaresInCircles.lean` proves, in
+namespace `SquaresInCircles`, optimality and attainment, and for `1 ≤ n ≤ 5`
+uniqueness:
 
 ```lean
-theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
+theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7)
     (S : Fin n → UnitSquare) (o : Point) (R : ℝ) (hp : Packing S o R) :
     optimalRadius n ≤ R
 
-theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5) :
+theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7) :
     ∃ (S : Fin n → UnitSquare) (o : Point), Packing S o (optimalRadius n)
 
 theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
@@ -126,8 +129,8 @@ theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
 ```
 
 `optimalRadius n` is the optimal radius, and `modelCenters n` lists the centres
-of the optimal packing, with its disk centre at the origin. Their definitions
-in Lean are:
+of the optimal packing, with its disk centre at the origin; for `n = 7` it is
+the packing whose middle column is centred. Their definitions in Lean are:
 
 | n | `optimalRadius n` | `modelCenters n` |
 | :-: | --- | --- |
@@ -136,10 +139,12 @@ in Lean are:
 | 3 | `5 * Real.sqrt 17 / 16` | `![(-1/2,-5/16),(1/2,-5/16),(0,11/16)]` |
 | 4 | `Real.sqrt 2` | `![(1/2,1/2),(-1/2,1/2),(-1/2,-1/2),(1/2,-1/2)]` |
 | 5 | `Real.sqrt (5 / 2)` | `![(0,0),(1,0),(0,1),(-1,0),(0,-1)]` |
+| 7 | `Real.sqrt 13 / 2` | `![(1,-1/2),(1,1/2),(-1,-1/2),(-1,1/2),(0,-1),(0,0),(0,1)]` |
 
-Each case also stands alone, in namespaces `One` to `Five`, with the same
-three theorems. `rigid_uniqueness` restates uniqueness with an explicit
-isometry of the plane.
+Each case also stands alone, in namespaces `One` to `Five` and `Seven`, with
+the same theorems; `Seven` has no uniqueness theorem, and
+`Seven.sliding_packing` shows that the middle column can slide.
+`rigid_uniqueness` restates uniqueness with an explicit isometry of the plane.
 
 ## Proof outline
 
@@ -148,7 +153,8 @@ one page per case: [docs/proof/](docs/proof/README.md)
 ([preliminaries](docs/proof/preliminaries.md),
 [shared lemmas](docs/proof/common.md), [one](docs/proof/one.md),
 [two](docs/proof/two.md), [three](docs/proof/three.md),
-[four](docs/proof/four.md), [five](docs/proof/five.md)).
+[four](docs/proof/four.md), [five](docs/proof/five.md),
+[seven](docs/proof/seven.md)).
 
 - **One and two squares.** The farthest corner of a square is at least half a
   diagonal from the disk centre. For two squares, the centres of disjoint unit
@@ -158,6 +164,11 @@ one page per case: [docs/proof/](docs/proof/README.md)
   around the disk centre, and together the arcs would need more than the whole
   circle. A square containing the disk centre needs a separate argument, which
   for three squares is the hardest part of the proof.
+- **Seven squares.** At most one square contains the disk centre, and each of
+  the other six gets a marker, a direction from the disk centre. In a smaller
+  disk, two disjoint squares have markers more than `π/3` apart, which six
+  directions cannot all be. The pair theorem behind this is by far the
+  longest proof in the library.
 - **Uniqueness.** With equality allowed, every inequality in the chain must be
   tight, and the tight cases are reconstructed exactly.
 
@@ -178,23 +189,26 @@ More on each earlier result, with references:
   International Math Summer Camp in 2026; we found no publication.
 - **Five squares.** We found no earlier proof; the plus is listed only as the
   best known packing.
+- **Seven squares.** We found no earlier proof; Friedman's page lists the
+  packing, found by him in 1997, as the best known one.
 
 We found no proof-assistant verification of any optimal square or circle
-packing. Here every case is proved exactly, uniqueness included, and checked by
-Lean's kernel.
+packing. Here every case is proved exactly, uniqueness included for `n ≤ 5`,
+and checked by Lean's kernel.
 
 ## Layout
 
 More on each file: [docs/layout.md](docs/layout.md).
 
 ```text
-SquaresInCircles.lean      optimalRadius, and all five cases in one statement
+SquaresInCircles.lean      optimalRadius, and all six cases in one statement
 SquaresInCircles/
 ├── Geometry.lean          the statement: squares, disks, Packing, normal forms
 ├── Common/                tools shared by several cases
 ├── One/  Two/             Construction, Optimality, Uniqueness
-└── Three/ Four/ Five/     Construction, Tangents, Exterior, Containing,
-                           Optimality, Uniqueness
+├── Three/ Four/ Five/     Construction, Tangents, Exterior, Containing,
+│                          Optimality, Uniqueness
+└── Seven/                 Construction, Optimality, and the pair theorem
 ```
 
 No case imports another.

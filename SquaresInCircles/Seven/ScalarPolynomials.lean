@@ -1,11 +1,10 @@
 import SquaresInCircles.Seven.TaylorBounds
 
 /-!
-# Whole-interval polynomial signs for the remaining axial/side estimates
+# Polynomial certificates for the axial and side profiles
 
-The coefficient lists are exact rational data. Each list is connected to its
-polynomial by a `ring` identity, and its signs by `norm_num`. These are not
-sampled values, interval boxes, native computations, or external proof flags.
+Bernstein certificates for the polynomials that bound the axial and side
+profiles from below, and the Taylor polynomials they use.
 -/
 noncomputable section
 open scoped BigOperators

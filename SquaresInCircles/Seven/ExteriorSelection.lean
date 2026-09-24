@@ -1,7 +1,7 @@
-import Mathlib
 import SquaresInCircles.Common.Basic
 
-/-! Select six exterior squares without changing the original packing model. -/
+/-! Six squares that avoid the disk centre, chosen from seven disjoint squares.
+-/
 noncomputable section
 namespace SquaresInCircles.Seven
 

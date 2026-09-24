@@ -1,12 +1,11 @@
 import SquaresInCircles.Seven.BoundarySegments
 
 /-!
-# Two fixed-point estimates in the boundary proof
+# Two fixed-point estimates
 
-The input constants are exact radicals in pi. Rational brackets follow from
-mathlib's proved pi bounds and squared comparisons; the trigonometric brackets
-follow from proved Taylor inequalities. These are two fixed evaluations, not
-an interval cover of the packing parameter space.
+Values and slopes of the boundary profiles at two fixed angles, from rational
+brackets of `π` and of the transition constants, and from Taylor bounds of
+`sin` and `cos` up to degree 11.
 -/
 noncomputable section
 open Set

@@ -5,15 +5,12 @@ import SquaresInCircles.Seven.InwardSideTarget
 import SquaresInCircles.Seven.InwardOpposite
 
 /-!
-# Complete fixed-pi/3 support partition
+# The gap of `π/3`
 
-There are four source cardinal normals and four transverse sign pairs. Each
-active-label case is discharged by a proved sector theorem; the capped label
-is handled by its exact barycentric decomposition. Both closed nonnegativity
-and strict positivity under strict original containment are propagated.
-
-This assembly does not yet identify the real support sum of an arbitrary pair
-of square charts; that geometric transport is proved separately.
+The support sums at the gap `π/3` on all four axes, for all signs and labels:
+each active case is one of the sector theorems, and capped labels reduce to
+active ones. Nonnegativity holds for admissible states and strict positivity
+for strictly admissible ones.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -59,8 +56,7 @@ lemma fixed_gap_nonneg {a u A v : ℝ} (s t : TransverseSign) (k : Fin 4)
     0≤pairSupport a u A v s t k gap :=
   (fixed_gap_property a u A v s t k h h').1
 
-/-- The theorem used by the strict-radius contradiction. Original states,
-not only their selected endpoints, satisfy the strict hypotheses here. -/
+/-- Strict positivity at the gap `π/3` for strictly admissible states. -/
 theorem fixed_gap_pos {a u A v : ℝ} (s t : TransverseSign) (k : Fin 4)
     (h : StrictlyAdmissible a u) (h' : StrictlyAdmissible A v) :
     0<pairSupport a u A v s t k gap :=

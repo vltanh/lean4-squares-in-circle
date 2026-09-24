@@ -1,10 +1,11 @@
 import SquaresInCircles.Seven.ArcAnalysis
 
 /-!
-# Order lemmas for the analytical boundary certificates
+# Order lemmas from derivatives
 
-The conclusions cover whole real intervals. The proofs use monotonicity of
-explicit derivatives, not a mesh of derivative values.
+Tangent-line and quadratic lower bounds from monotone or bounded derivatives,
+minima at the endpoints of concave functions, and positivity from one value, a
+small slope and a curvature bound. Also: the disk `φ ≤ 13/4` is convex.
 -/
 noncomputable section
 open Set

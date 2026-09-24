@@ -2,12 +2,11 @@ import SquaresInCircles.Seven.AngularMinima
 import SquaresInCircles.Seven.ParallelLabels
 
 /-!
-# The first endpoint and the nonsmooth angular minima
+# Small gaps and cardinal minima
 
-For small gaps three common circle points force every support sum to be
-strictly positive. This avoids an additional measure-zero boundary argument.
-At a cardinal target normal the relative frame is either zero or pi/2 in the
-relevant angular range; the existing parallel label inequalities apply.
+For gaps up to 1 the two marker arcs share three points of the unit circle,
+which forces every support sum to be positive. At a cardinal target direction
+the squares are parallel or quarter-turned, and the parallel labels apply.
 -/
 noncomputable section
 open Set

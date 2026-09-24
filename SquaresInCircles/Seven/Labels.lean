@@ -1,16 +1,18 @@
-import Mathlib
+import SquaresInCircles.Common.ElementaryTrig
 import SquaresInCircles.Common.Charts
 import SquaresInCircles.Common.Tangents
 
 /-!
-# Canonical states and the affine angular labels for seven squares
+# States, labels and markers
 
-`Admissible` is precisely the local coordinate region used in the analytical
-manuscript. It contains no support or separation conclusion. All marker values
-below are computed explicitly from coordinates.
+The state of an exterior square is its pair of offsets `(a, u)` of the disk
+centre, larger first. Its label, the least of an axial, a side and a capped
+term, is the angle from the chart phase to the marker.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
+
+lemma pi_lower_157 : (157 : ℝ)/50 < Real.pi := by linarith [Real.pi_gt_d2]
 
 def targetSq : ℝ := 13 / 4
 def gap : ℝ := Real.pi / 3

@@ -3,11 +3,11 @@ import SquaresInCircles.Seven.EasySectors
 import SquaresInCircles.Seven.CapReduction
 
 /-!
-# Forward source with two negative transverse coordinates
+# The forward axis, both signs negative
 
-The side-source branch is global. Target minimization proceeds along exact
-axial/side label segments; the high-angle circular piece is concave. Its
-endpoints reduce to the transition and diagonal profiles already proved.
+The case of a side-selected source. The target support is minimised along the
+exact axial and side label segments; its circular piece is concave, and the
+endpoints reduce to the transition and diagonal profiles.
 -/
 noncomputable section
 open Set
@@ -52,7 +52,7 @@ lemma sideTarget_concave_second {t s : ℝ}
   have hd : 0 < d ∧ d < Real.pi/2 := by
     have hc := transition_coarse
     dsimp [d,gap]
-    constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,td_bounds.2,pi_upper_22,pi_lower_157]
+    constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,td_bounds.2,pi_lt_22_over_7,pi_lower_157]
   have hC := cos_nonneg_quarter ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi hd.1.le (by linarith [hd.2,Real.pi_pos])
   have hCS : Real.cos d-(4/9)*Real.sin d ≤ 0 := by
@@ -144,8 +144,8 @@ lemma diagonal_target_pos {a u s : ℝ}
   have hq := h.label_le_quarter
   have hd : Real.pi/4 ≤ d ∧ d ≤ e := by
     dsimp [d,e,gap]
-    constructor <;> linarith [td_bounds.1,hs.1,hs.2,hq,pi_upper_22]
-  have he : e < Real.pi/2 := by dsimp [e]; linarith [ht,pi_upper_22]
+    constructor <;> linarith [td_bounds.1,hs.1,hs.2,hq,pi_lt_22_over_7]
+  have he : e < Real.pi/2 := by dsimp [e]; linarith [ht,pi_lt_22_over_7]
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi (x := d)
     (by linarith [hd.1,Real.pi_pos]) (by linarith [hd.2,he,Real.pi_pos])
   have hC := cos_nonneg_quarter (x := d)
@@ -263,7 +263,7 @@ lemma target_side_pos {a u A v : ℝ}
   have hd : 0 ≤ d ∧ d ≤ Real.pi/2 := by
     have hc := transition_coarse
     dsimp [d,gap]
-    constructor <;> linarith [ht'.1,ht'.2,hs.1,hs.2,pi_upper_22,pi_lower_157]
+    constructor <;> linarith [ht'.1,ht'.2,hs.1,hs.2,pi_lt_22_over_7,pi_lower_157]
   have seg := side_segment h' hT'
   have heq : -(A-1/2)*Real.sin d+(v+1/2)*Real.cos d-lineTarget t s =
       (v-(4/5)*s)*(Real.cos d-(4/9)*Real.sin d) := by
@@ -321,7 +321,7 @@ lemma target_axial_pos {a u A v : ℝ}
   have hv : v=(4/5)*s := by dsimp [s]; rw [hA']; dsimp [axial]; ring
   have hdelta : 0 ≤ gap-t+s ∧ gap-t+s ≤ Real.pi/2 := by
     dsimp [t,s,gap]
-    constructor <;> linarith [h.label_le_quarter,hs0,hs1,ht,pi_upper_22,Real.pi_pos]
+    constructor <;> linarith [h.label_le_quarter,hs0,hs1,ht,pi_lt_22_over_7,Real.pi_pos]
   have hsin := Real.sin_nonneg_of_nonneg_of_le_pi hdelta.1 (by linarith [hdelta.2,Real.pi_pos])
   have hup := axial_upper h' hA'
   by_cases hs : s ≤ s0
@@ -347,7 +347,7 @@ lemma target_axial_pos {a u A v : ℝ}
     change 0 < 1/2-u-(A-1/2)*Real.sin (gap-t+s)+(v+1/2)*Real.cos (gap-t+s)
     linarith
   · have hs' : s0 ≤ s := (lt_of_not_ge hs).le
-    have hvr : v ≤ rd := by rw [hv]; linarith [hs1,pi_upper_22,rd_bounds.1]
+    have hvr : v ≤ rd := by rw [hv]; linarith [hs1,pi_lt_22_over_7,rd_bounds.1]
     have hvu : u0 ≤ v := by rw [hv]; dsimp [s0] at hs'; linarith
     rw [axialTop_right ⟨hvu,hvr⟩] at hup
     have he : axialLine v=tieA s := by rw [hv]; dsimp [axialLine,tieA]; ring
@@ -389,7 +389,7 @@ lemma forward_negative_negative_small {a u A v : ℝ}
   simp only [TransverseSign.coe,neg_one_mul,sub_neg_eq_add]
   change 0 < 1/2-u+support A (-v) (3*Real.pi/2-gap+t-s)
   simp only [TransverseSign.coe,neg_one_mul] at hmarker
-  nlinarith [h.remainder_nonneg,pi_upper_22]
+  nlinarith [h.remainder_nonneg,pi_lt_22_over_7]
 
 /-- Complete remaining (-,-) sector when the source label is side-selected. -/
 theorem fixed_gap_forward_both_negative_side {a u A v : ℝ}
@@ -405,7 +405,7 @@ theorem fixed_gap_forward_both_negative_side {a u A v : ℝ}
     have h1 := h'.label_nonneg
     have h2 := h'.label_le_quarter
     dsimp [d,gap]
-    constructor <;> linarith [ht,pi_upper_22,Real.pi_pos]
+    constructor <;> linarith [ht,pi_lt_22_over_7,Real.pi_pos]
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi hd.1.le (by linarith [hd.2,Real.pi_pos])
   have hC := cos_nonneg_quarter ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
   have hid : pairSupport a u A v .negative .negative 1 gap=

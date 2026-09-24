@@ -1,12 +1,12 @@
 import SquaresInCircles.Seven.SectorBounds
 
 /-!
-# Elimination of the capped label
+# Capped labels
 
-The level set label = pi/4 is a triangle. The three vertices are strictly
-contained in the candidate disk and are axial/side ties. The exact barycentric
-identities below reduce both arguments of the real pair-support expression.
-Strictness is propagated as well as nonnegativity.
+Where the label is `π/4` the support sums are affine in the state, and the
+capped region is a triangle whose vertices are strictly admissible ties. So a
+support sum at a capped state is a convex combination of its values at active
+states, and nonnegativity and strict positivity both pass over.
 -/
 noncomputable section
 open scoped BigOperators
@@ -23,7 +23,7 @@ def capDen : ℝ := 7-2*Real.pi
 
 lemma capDen_pos : 0 < capDen := by
   dsimp [capDen]
-  linarith [pi_upper_22]
+  linarith [pi_lt_22_over_7]
 
 lemma label_eq_cap_of {a u : ℝ}
     (hA : Real.pi/4 ≤ axial u) (hT : Real.pi/4 ≤ side a u) :
@@ -42,7 +42,7 @@ lemma cap_constraints {a u : ℝ} (h : Admissible a u)
 lemma capVertex_strict (i : Fin 3) :
     StrictlyAdmissible (capVertex i).1 (capVertex i).2 := by
   have hp0 := pi_lower_157
-  have hp1 := pi_upper_22
+  have hp1 := pi_lt_22_over_7
   have hr (a u : ℝ) (ha0 : 1/2 ≤ a) (hu0 : 0 ≤ u)
       (hau : u ≤ a) (ha1 : a < 193/250) (hu1 : u < 193/250) :
       StrictlyAdmissible a u := by
@@ -58,8 +58,8 @@ lemma capVertex_strict (i : Fin 3) :
 @[simp] lemma capVertex_label (i : Fin 3) :
     label (capVertex i).1 (capVertex i).2 = Real.pi/4 := by
   apply label_eq_cap_of
-  · fin_cases i <;> norm_num [capVertex,axial] <;> linarith [pi_upper_22]
-  · fin_cases i <;> norm_num [capVertex,side] <;> linarith [pi_upper_22]
+  · fin_cases i <;> norm_num [capVertex,axial] <;> linarith [pi_lt_22_over_7]
+  · fin_cases i <;> norm_num [capVertex,side] <;> linarith [pi_lt_22_over_7]
 
 lemma capVertex_active (i : Fin 3) : ActiveLabel (capVertex i).1 (capVertex i).2 := by
   fin_cases i
@@ -202,8 +202,7 @@ lemma pairProperty_cap_second {a u A v : ℝ}
     exact cap_weighted_pos h hcap _
       (fun i => (hv i).2 ha (capVertex_strict i))
 
-/-- It is enough to prove the A/T cases. This theorem contains a genuine proof
-of the capped reduction; it does not assert the still-needed A/T cases. -/
+/-- It is enough to prove the support property for active labels. -/
 theorem fixed_gap_of_active_cases
     (H : ∀ (a u A v : ℝ) (s t : TransverseSign) (k : Fin 4),
       Admissible a u → Admissible A v → ActiveLabel a u → ActiveLabel A v →

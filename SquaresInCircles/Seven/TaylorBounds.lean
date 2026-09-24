@@ -1,11 +1,11 @@
-import Mathlib
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
-# Polynomial bounds with proof-producing calculus
+# Taylor bounds for sine and cosine
 
-The higher Taylor bounds are proved by monotonicity of explicit remainders.
-No numerical sine/cosine evaluation, interval procedure or external oracle is
-used. All inequalities below hold for every nonnegative real argument.
+Taylor polynomials of degrees 4 to 7 bound `sin` and `cos` on `[0, ∞)`, by
+monotonicity of the remainders.
 -/
 noncomputable section
 open Set

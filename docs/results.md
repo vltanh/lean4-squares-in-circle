@@ -2,15 +2,16 @@
 
 [Back to the README](../README.md)
 
-The results for all five cases are in the root file `SquaresInCircles.lean`,
-namespace `SquaresInCircles`:
+The results for all six cases are in the root file `SquaresInCircles.lean`,
+namespace `SquaresInCircles`. Optimality and attainment cover `n = 1, …, 5`
+and `n = 7`, uniqueness `n = 1, …, 5`:
 
 ```lean
-theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
+theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7)
     (S : Fin n → UnitSquare) (o : Point) (R : ℝ) (hp : Packing S o R) :
     optimalRadius n ≤ R
 
-theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5) :
+theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7) :
     ∃ (S : Fin n → UnitSquare) (o : Point), Packing S o (optimalRadius n)
 
 theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
@@ -18,8 +19,8 @@ theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
     HasNormalForm S o (modelCenters n)
 ```
 
-`optimality_attainment_uniqueness` conjoins the three. The statements use only
-the definitions in [Definitions](definitions.md).
+`optimality_attainment_uniqueness` conjoins the three for `n ≤ 5`. The
+statements use only the definitions in [Definitions](definitions.md).
 
 `rigid_uniqueness` restates uniqueness with the frame `pointInDirection o φ`
 replaced by an explicit bijection `e` of the plane that preserves Euclidean
@@ -27,14 +28,23 @@ distance and takes the origin to `o`: under `e`, the open and the closed squares
 are exactly the model squares.
 
 Each case also stands alone, in namespaces `SquaresInCircles.One`, …,
-`SquaresInCircles.Five` (folders `One/`, …, `Five/`), with the same three
-theorems:
+`SquaresInCircles.Five` and `SquaresInCircles.Seven` (folders `One/`, …,
+`Five/` and `Seven/`), with the same theorems:
 
 | theorem | statement, for `n = 3` |
 | --- | --- |
 | `Three.optimality` | `Packing S o R → Three.radius ≤ R` |
 | `Three.attainment` | `∃ S o, Packing S o Three.radius` |
 | `Three.uniqueness` | `Packing S o Three.radius → HasNormalForm S o Three.centers` |
+
+`Seven` has `Seven.optimality` and `Seven.attainment` but no uniqueness
+theorem: `Seven.sliding_packing` shows that the middle column of the optimal
+packing can take any position in a range of total slack `2√3 - 3`. Two
+stronger statements are proved on the way. `Seven.six_exterior_squared_lower`
+gives `13/4 ≤ R^2` already for six squares none of which contains the disk
+centre in its interior. `Seven.marker_separation` is the pair theorem of
+[seven squares](proof/seven.md#theorem-715-marker-separation), about just two
+disjoint squares.
 
 `Five.polygon_uniqueness` needs only interior-disjointness and the closed 12-gon
 of [Step 1 for five squares](proof/five.md#step-1-the-contact-polygon), not the

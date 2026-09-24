@@ -2,10 +2,11 @@ import SquaresInCircles.Seven.PairModel
 import SquaresInCircles.Seven.MarkerArc
 
 /-!
-# Whole-domain fixed-gap support sectors
+# Three sectors valid for every label
 
-The marker arc, not an unproved angular shadow statement, supplies the support
-bound used for the inward-radial negative-sign sector.
+At the gap `π/3`: the outward axis, by the size of the other square; the
+backward axis, by its marker point; and the inward axis with a negative source
+sign, by its marker arc.
 -/
 noncomputable section
 open Set

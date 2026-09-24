@@ -2,12 +2,11 @@ import SquaresInCircles.Seven.ScalarPolynomials
 import SquaresInCircles.Seven.SectorBounds
 
 /-!
-# The universal axial profile
+# The axial profile
 
-This file connects existing Bernstein polynomial certificates to their actual
-trigonometric meaning. The split at 35/32 is the exact sign change of the
-coefficient of cosine, not a configuration-space subdivision. The zero angle
-is retained explicitly. No compiler or CI execution accompanies this draft.
+`sin z - (4/5) z cos z - (7/8)(1 - cos z)` is positive on `(0, π/2]`, by
+Taylor bounds and two Bernstein certificates split at `z = 35/32`, where the
+coefficient of `cos z` changes sign.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -28,7 +27,7 @@ lemma axial_profile_pos {z : ℝ} (hz : 0 < z ∧ z ≤ Real.pi/2) :
     have hid := axialSmall_identity z
     dsimp [axialProfile]
     nlinarith
-  · have hzU : z ≤ 11/7 := by linarith [hz.2,pi_upper_22]
+  · have hzU : z ≤ 11/7 := by linarith [hz.2,pi_lt_22_over_7]
     have hc : 7/8-(4/5)*z ≤ 0 := by linarith
     have hm := mul_le_mul_of_nonpos_left (cos_le_cos4 hz0) hc
     have hp := axialLargeP_pos ⟨le_of_not_ge hsmall,hzU⟩

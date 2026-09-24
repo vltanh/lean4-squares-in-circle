@@ -2,10 +2,10 @@ import SquaresInCircles.Seven.BoundarySegments
 import SquaresInCircles.Seven.EasySectors
 
 /-!
-# Inward radial source, positive signs, side-selected target
+# The inward axis, positive signs, side target
 
-The first label is arbitrary. Concavity reduces its full label interval to
-zero and pi/4; both endpoint estimates are proved analytically below.
+The support is concave in the source label, so the endpoints `0` and `π/4`
+suffice.
 -/
 noncomputable section
 open Set
@@ -20,7 +20,7 @@ private lemma target_angle {A v t : ℝ} (h : Admissible A v)
   have hs0 := side_selected_label_gt h hT
   have hs1 := h.label_le_quarter
   dsimp [gap]
-  constructor <;> linarith [ht.1,ht.2,pi_upper_22,Real.pi_pos]
+  constructor <;> linarith [ht.1,ht.2,pi_lt_22_over_7,Real.pi_pos]
 
 private lemma targetH_support {A v t : ℝ} (h : Admissible A v)
     (hT : label A v=side A v) (ht : 0 ≤ t ∧ t ≤ Real.pi/4) :
@@ -49,7 +49,7 @@ private lemma targetH_pos {A v t : ℝ} (h : Admissible A v)
   rw [he,cos_two_pi_sub,targetH_support h hT ht] at hm
   have hp : 0 < Real.cos (gap+t-1/2) := Real.cos_pos_of_mem_Ioo
     ⟨by dsimp [gap]; linarith [ht.1,pi_lower_157],
-     by dsimp [gap]; linarith [ht.2,pi_upper_22]⟩
+     by dsimp [gap]; linarith [ht.2,pi_lt_22_over_7]⟩
   exact hp.trans_le hm
 
 private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
@@ -58,7 +58,7 @@ private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
   let d := gap-s
   have hs : 9/25 < s ∧ s ≤ Real.pi/4 := ⟨side_selected_label_gt h hT,h.label_le_quarter⟩
   have hd : 0 < d ∧ d < Real.pi/2 := by
-    dsimp [d,gap]; constructor <;> linarith [hs.1,hs.2,pi_upper_22,Real.pi_pos]
+    dsimp [d,gap]; constructor <;> linarith [hs.1,hs.2,pi_lt_22_over_7,Real.pi_pos]
   have hc0 := cos_nonneg_quarter ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
   have hsin0 := Real.sin_nonneg_of_nonneg_of_le_pi hd.1.le (by linarith [hd.2,Real.pi_pos])
   have hline : A ≥ Boundary.tieA s := by
@@ -77,7 +77,7 @@ private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
   by_cases hs1 : s ≤ Real.pi/6
   · have hA : 19/20 < A := by dsimp [Boundary.tieA] at hline; linarith [pi_lower_157]
     have hv : v ≤ 1/2 := by linarith
-    have hd7 : d < 7/10 := by dsimp [d,gap]; linarith [hs.1,pi_upper_22]
+    have hd7 : d < 7/10 := by dsimp [d,gap]; linarith [hs.1,pi_lt_22_over_7]
     have hcos : 151/200 < Real.cos d := by
       have hh := Real.one_sub_sq_div_two_le_cos (x := d)
       nlinarith
@@ -104,7 +104,7 @@ private lemma targetH_zero_gt_one {A v : ℝ} (h : Admissible A v)
       nlinarith
     · have hA := side_selected_a_gt h hT
       have hv := h.u_lt
-      have hdlim : d < 8/21 := by dsimp [d,gap]; linarith [pi_upper_22]
+      have hdlim : d < 8/21 := by dsimp [d,gap]; linarith [pi_lt_22_over_7]
       have hcos : 409/441 < Real.cos d := by
         have hh := Real.one_sub_sq_div_two_le_cos (x := d)
         nlinarith
@@ -161,13 +161,13 @@ private lemma quarter_profile_gt {d : ℝ} (hd : -1/6 ≤ d ∧ d ≤ Real.pi/12
       linarith [sqrt_three_bounds.1]
     have h0 : 0 ≤ (4/5)*Real.cos z+(6/5)*Real.sin z := by positivity
     have h1 : (4/5)*Real.cos z+(6/5)*Real.sin z ≤ 8/5 := by linarith [Real.sin_le_one z]
-    have hp := mul_nonneg (show 0 ≤ 4/15-x by linarith [hx.2,pi_upper_22]) h0
+    have hp := mul_nonneg (show 0 ≤ 4/15-x by linarith [hx.2,pi_lt_22_over_7]) h0
     dsimp [quarterProfileDD]
     change (9/10)*Real.cos z-(8/5)*Real.sin z+x*((4/5)*Real.cos z+(6/5)*Real.sin z) ≤ 0
     nlinarith
   have hlo : 0 < f (-1/6) := by
     let e := Real.pi/12-1/6
-    have he : 9/100 < e ∧ e < 1/10 := by dsimp [e]; constructor <;> linarith [pi_lower_157,pi_upper_22]
+    have he : 9/100 < e ∧ e < 1/10 := by dsimp [e]; constructor <;> linarith [pi_lower_157,pi_lt_22_over_7]
     have hs := Real.sin_ge_sub_cube (show 0 ≤ e by linarith)
     have hc := Real.one_sub_sq_div_two_le_cos (x := e)
     have he3 : e^3 ≤ (1/10:ℝ)^3 := pow_le_pow_left₀ (by linarith) he.2.le 3
@@ -186,7 +186,7 @@ private lemma quarter_profile_gt {d : ℝ} (hd : -1/6 ≤ d ∧ d ≤ Real.pi/12
         Real.cos_pi_div_three,Real.sin_pi_div_three]
       ring
     have hp := mul_lt_mul_of_pos_left sqrt_three_bounds.2 Real.pi_pos
-    have hp' := mul_lt_mul_of_pos_right pi_upper_22 (show (0:ℝ) < 1/30+(1733/1000)/20 by norm_num)
+    have hp' := mul_lt_mul_of_pos_right pi_lt_22_over_7 (show (0:ℝ) < 1/30+(1733/1000)/20 by norm_num)
     dsimp [f]
     rw [hid]
     nlinarith
@@ -206,7 +206,7 @@ private lemma targetH_quarter_gt {A v : ℝ} (h : Admissible A v)
     have hs := side_selected_label_gt h hT
     have hq := h.label_le_quarter
     dsimp [d]
-    constructor <;> linarith [pi_upper_22]
+    constructor <;> linarith [pi_lt_22_over_7]
   have hz : Real.pi/3 ≤ z ∧ z ≤ Real.pi/2 := by
     dsimp [z]; constructor <;> linarith [hd.1,hd.2,pi_lower_157]
   have hsin : 4/5 < Real.sin z := by
@@ -260,7 +260,7 @@ theorem fixed_gap_inward_side_target {a u A v : ℝ}
   have hlo : 0 < f 0 := by
     have hh := targetH_zero_gt_one h' hT
     dsimp [f,s]
-    linarith [pi_upper_22]
+    linarith [pi_lt_22_over_7]
   have hhi : 0 < f (Real.pi/4) := by
     have hh := targetH_quarter_gt h' hT
     dsimp [f,s]

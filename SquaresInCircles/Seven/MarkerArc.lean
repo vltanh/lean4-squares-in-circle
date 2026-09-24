@@ -1,11 +1,11 @@
 import SquaresInCircles.Seven.ArcAnalysis
 
 /-!
-# The full marker arc, including all endpoint cases
+# The marker arc
 
-This proves the former `MarkerArcStatement`: every point in the specified
-closed angular interval belongs to the actual canonical closed square.
-Only the far vertical edge can be attained in the final membership proof.
+For an admissible state, the closed square holds the arc of the unit circle of
+half-width `801/1600` about its label: each of the four edge lines stays out
+of the way, the far one trivially.
 -/
 noncomputable section
 open Set
@@ -148,8 +148,8 @@ lemma marker_horizontal_endpoint {a u : ℝ} (h : Admissible a u) (hu : u ≤ 1/
   dsimp [axial] at hl
   linarith
 
-/-- A concrete proof of the former `MarkerArcStatement`.
-The conclusion concerns the closed square, not an unjustified open arc. -/
+/-- The marker arc: chart angles within `801/1600` of the label stay in the
+closed square. -/
 theorem marker_arc {a u t : ℝ} (h : Admissible a u)
     (ht : |t-label a u| ≤ 801/1600) :
     |Real.cos t-a| ≤ 1/2 ∧ |Real.sin t-u| ≤ 1/2 := by

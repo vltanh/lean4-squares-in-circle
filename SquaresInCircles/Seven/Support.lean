@@ -1,7 +1,7 @@
 import SquaresInCircles.Seven.Labels
 import SquaresInCircles.Seven.Construction
 
-/-! Actual support of the canonical square and its affine marker point. -/
+/-! The support function of the square at a state, and its marker point. -/
 noncomputable section
 namespace SquaresInCircles.Seven
 

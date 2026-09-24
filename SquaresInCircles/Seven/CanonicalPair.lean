@@ -3,11 +3,11 @@ import SquaresInCircles.Seven.SeparatingAxes
 import SquaresInCircles.Common.Constructions
 
 /-!
-# Canonical pair geometry
+# The canonical pair
 
-The all-gap scalar theorem gives strict overlap on the first square's two axes.
-Reflecting and reversing the ordered pair gives the other two axes. The proved
-separating-axis theorem then supplies an actual point in both open squares.
+Positive support sums on the two axes of the first square, and, for the pair
+seen from the second square, on its two axes, give a point in both open
+squares by the separating-axis theorem.
 -/
 noncomputable section
 open Set
@@ -153,8 +153,7 @@ lemma rotatedState_local (a b d : ℝ) (p : Point) :
   · dsimp [localY,rotatedState]
     nlinarith [congrArg (fun x : ℝ => b*x) hu]
 
-/-- An actual common interior point for the canonical pair. This is the bridge
-from positive scalar supports to square membership, through the proved SAT. -/
+/-- The open squares of a canonical pair with a gap in `[0, π/3]` meet. -/
 theorem canonical_pair_overlap {a u A v g : ℝ} (s t : TransverseSign)
     (h : StrictlyAdmissible a u) (h' : StrictlyAdmissible A v)
     (hg : 0≤g ∧ g≤gap) :

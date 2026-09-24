@@ -1,11 +1,12 @@
 import SquaresInCircles.Seven.NearestCornerMinimum
 
 /-!
-# All marker gaps up to pi/3
+# All marker gaps up to `π/3`
 
-The compact minimization is carried out on the actual support expression.
-Its endpoints, nonsmooth cardinal points, and smooth leftmost minima have all
-been proved separately. No geometric-reduction proposition is assumed here.
+The support sums of a strictly admissible pair are positive for every gap in
+`[0, π/3]`. Gaps up to 1 are small; for larger ones a nonpositive value forces
+a leftmost minimum on `[1, π/3]`, which is either at a cardinal target
+direction or a smooth stationary point, and both are positive.
 -/
 noncomputable section
 open Set
@@ -16,8 +17,8 @@ lemma pairSupport_continuous (a u A v : ℝ) (s t : TransverseSign) (k : Fin 4) 
   unfold pairSupport support
   fun_prop
 
-/-- The support sum is positive in every edge-source direction whenever the
-markers have gap at most pi/3 and the original two containments are strict. -/
+/-- For strictly admissible states the support sums are positive on every axis
+of the first square, for every gap in `[0, π/3]`. -/
 theorem all_gap_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
     (h : StrictlyAdmissible a u) (h' : StrictlyAdmissible A v)
     (hg : 0≤g ∧ g≤gap) : 0<pairSupport a u A v s t k g := by

@@ -123,6 +123,7 @@ def Two.radius : ℝ := Real.sqrt 5 / 2          -- Two/Construction.lean
 def Three.radius : ℝ := 5 * Real.sqrt 17 / 16  -- Three/Construction.lean
 def Four.radius : ℝ := Real.sqrt 2             -- Four/Construction.lean
 def Five.radius : ℝ := Real.sqrt (5 / 2)       -- Five/Construction.lean
+def Seven.radius : ℝ := Real.sqrt 13 / 2       -- Seven/Construction.lean
 
 def optimalRadius : ℕ → ℝ                      -- SquaresInCircles.lean
   | 1 => One.radius
@@ -130,14 +131,16 @@ def optimalRadius : ℕ → ℝ                      -- SquaresInCircles.lean
   | 3 => Three.radius
   | 4 => Four.radius
   | 5 => Five.radius
+  | 7 => Seven.radius
   | _ => 0
 ```
 
 Each value is the distance from the disk centre to the outermost corners of the
-optimal packing. Their squares `1/2`, `5/4`, `425/256`, `2` and `5/2` are
-rational (`One.radius_sq`, …, `Five.radius_sq`). The proofs bound the squared
-radius, so the contact inequalities stay polynomial, which is what `nlinarith`
-needs; mathlib's `le_of_sq_le_sq` turns `r² ≤ R²` into `r ≤ R` at the end.
+optimal packing. Their squares `1/2`, `5/4`, `425/256`, `2`, `5/2` and `13/4`
+are rational (`One.radius_sq`, …, `Five.radius_sq`, `Seven.radius_sq`). The
+proofs bound the squared radius, so the contact inequalities stay polynomial,
+which is what `nlinarith` needs; mathlib's `le_of_sq_le_sq` turns `r² ≤ R²`
+into `r ≤ R` at the end.
 
 ## Normal forms
 
@@ -178,11 +181,14 @@ symmetric under one. With the disk centre at the origin, the models are:
 | 3 | `(-1/2, -5/16)`, `(1/2, -5/16)`, `(0, 11/16)` | the T |
 | 4 | `(±1/2, ±1/2)` | the 2×2 block |
 | 5 | `(0, 0)`, `(±1, 0)`, `(0, ±1)` | the plus |
+| 7 | `(±1, ±1/2)`, `(0, -1)`, `(0, 0)`, `(0, 1)` | a column of three between two columns of two |
 
-These are `One.centers`, …, `Five.centers`; `modelCenters n` selects the one for
-`n` (`SquaresInCircles.lean`). Each case builds its optimal packing as
-`model i = axisSquare (centers i)`, the axis-parallel square centred at
-`centers i`.
+These are `One.centers`, …, `Five.centers` and `Seven.centers`;
+`modelCenters n` selects the one for `n` (`SquaresInCircles.lean`). For
+`n = 7` there is no uniqueness theorem: the middle column can slide, and
+`Seven.centers` is the packing with the column centred. Each case builds its
+optimal packing as `model i = axisSquare (centers i)`, the axis-parallel
+square centred at `centers i`.
 
 Read these definitions before trusting the result. A kernel check establishes
 that the proofs are valid; it cannot establish that the statements mean what

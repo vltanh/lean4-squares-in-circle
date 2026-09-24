@@ -2,11 +2,12 @@ import SquaresInCircles.Seven.FixedGap
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 /-!
-# Interior minima of the support sinusoid
+# Leftmost minima of a support sum
 
-A leftmost minimizer is used so that an identically constant sign piece cannot
-be mistaken for a new stationary case. The smooth case uses Fermat's theorem
-and one comparison to the left, rather than an unproved second-derivative test.
+A nonpositive value between positive endpoints gives a leftmost minimum, so a
+stretch where a support sum is constant cannot hide a new case. At a smooth
+leftmost minimum of a sinusoid, Fermat's theorem and one comparison to the
+left make it stationary with a negative value.
 -/
 noncomputable section
 open Set Filter

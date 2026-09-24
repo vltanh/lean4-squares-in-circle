@@ -3,12 +3,12 @@ import SquaresInCircles.Seven.TargetBoundaryMonotonicity
 import SquaresInCircles.Seven.CapReduction
 
 /-!
-# Finite boundary reduction of the positive inward-opposite turn
+# Boundary minima of the inward axis with opposite signs
 
-A diagonal source is moved to its junction or a capped axial endpoint.
-A circular source with a straight axial target is moved to one of its two
-junctions. The two circular pieces use the quadratic certificate, and the
-remaining diagonal junction uses one fixed positive value plus monotonicity.
+A diagonal source moves to its junction or a capped axial endpoint, and a
+circular source with a straight axial target to one of its two junctions. The
+circular pieces use the two-circle certificate, and the diagonal junction one
+fixed positive value and monotonicity.
 -/
 noncomputable section
 open Set
@@ -68,7 +68,7 @@ lemma opposite_upper_cap {z t : ℝ}
     (hs : otherLabel z t=Real.pi/4) : 0 < oppositeUpper z t := by
   have hv : otherV z t=Real.pi/5 := by rw [otherV,hs]; ring
   have hu0 : u0 ≤ Real.pi/5 := by linarith [transition_coarse.2.2.2.1,pi_lower_157]
-  have hur : Real.pi/5 ≤ rd := by linarith [rd_bounds.1,pi_upper_22]
+  have hur : Real.pi/5 ≤ rd := by linarith [rd_bounds.1,pi_lt_22_over_7]
   have hA : axialTop (Real.pi/5) < 3/4 := by
     rw [axialTop_right ⟨hu0,hur⟩]
     dsimp [axialLine]
@@ -164,7 +164,7 @@ lemma diagonal_junction_pos {z : ℝ}
       · have hp := mul_nonneg (show 0≤-(43/90-(4/5)*s) by linarith) (sub_nonneg.mpr hSC)
         have hm : 0<(13/10-tieA s)+(9/4)*(43/90-(4/5)*s) := by
           dsimp [tieA]
-          linarith [hsx.2,pi_upper_22]
+          linarith [hsx.2,pi_lt_22_over_7]
         have hm' := mul_nonneg hm.le (show 0≤Real.cos x by linarith)
         nlinarith
   have he : diagonalJunction diagonalAngle=diagonalValue := by
@@ -192,7 +192,7 @@ lemma opposite_upper_junction {z : ℝ}
       dsimp [otherV]
       constructor
       · dsimp [s0] at hs'; linarith
-      · linarith [hs.2,pi_upper_22,rd_bounds.1]
+      · linarith [hs.2,pi_lt_22_over_7,rd_bounds.1]
     have htop : axialTop (otherV z td)=tieA (otherLabel z td) := by
       rw [axialTop_right hv]
       dsimp [otherV,axialLine,tieA]
@@ -233,7 +233,7 @@ lemma circular_source_line_reduction {z t r : ℝ}
     dsimp [otherV,otherLabel] at *
     constructor
     · dsimp [s0] at hs; linarith
-    · linarith [pi_upper_22,rd_bounds.1]
+    · linarith [pi_lt_22_over_7,rd_bounds.1]
   have htline : axialTop (otherV z t)=tieA (otherLabel z t) := by
     rw [axialTop_right (hsdom t ⟨le_rfl,ht.2⟩)]
     dsimp [axialLine,otherV,tieA]; ring
@@ -249,8 +249,8 @@ lemma circular_source_line_reduction {z t r : ℝ}
   dsimp [tieA,otherV,otherLabel]
   nlinarith
 
-/-- Every positive-turn pair of upper endpoints is excluded. The proof is a
-finite analytic case split, not a sampled parameter-space cover. -/
+/-- Every positive-turn pair of upper endpoints is excluded, by a finite case
+split. -/
 theorem opposite_upper_pos {z t : ℝ}
     (hz : 0<z ∧ z≤Real.pi/3)
     (ht : s0≤t ∧ t≤Real.pi/4)
@@ -289,7 +289,7 @@ theorem opposite_upper_pos {z t : ℝ}
         have hsc := transition_bounds
         have hh : s0<otherLabel z t := lt_of_not_ge hcircle
         dsimp [otherLabel,s0] at hh ht
-        linarith [pi_upper_22]
+        linarith [pi_lt_22_over_7]
       have hcomp := circular_source_line_reduction ⟨hzlow,hz.2⟩ ⟨ht.1,htr⟩ hrd ⟨hsr,hs.2⟩
       have hbase : 0<oppositeUpper z r := by
         by_cases hc : td≤z+Real.pi/6-s0
@@ -305,8 +305,8 @@ theorem opposite_upper_pos {z t : ℝ}
 
 end Boundary
 
-/-- Complete side/axial inward-opposite sector. Strictness is retained for
-negative and zero turns through the original source remainder. -/
+/-- The inward axis with opposite signs, side source and axial target.
+Strictness comes from the remainder of the source state. -/
 theorem inward_opposite_side_axial_property {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u=side a u) (hA : label A v=axial v) :

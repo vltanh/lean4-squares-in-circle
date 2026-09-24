@@ -25,15 +25,17 @@ symbol. The figures are drawn from the same geometry by
 | [three.md](three.md) | Theorem 3, three squares |
 | [four.md](four.md) | Theorem 4, four squares |
 | [five.md](five.md) | Theorem 5, five squares |
+| [seven.md](seven.md) | Theorem 7, seven squares |
 
 ## The main theorem
 
-*Lean: [`optimality`](../../SquaresInCircles.lean#L37),
-[`attainment`](../../SquaresInCircles.lean#L48),
-[`uniqueness`](../../SquaresInCircles.lean#L58) in
+*Lean: [`optimality`](../../SquaresInCircles.lean#L42),
+[`attainment`](../../SquaresInCircles.lean#L54),
+[`uniqueness`](../../SquaresInCircles.lean#L65) in
 [`SquaresInCircles.lean`](../../SquaresInCircles.lean).*
 
-For $1 \le n \le 5$ let $R_n$ and $c_1, \dots, c_n$ be given by the table.
+For $1 \le n \le 5$ and $n = 7$ let $R_n$ and $c_1, \dots, c_n$ be given by the
+table.
 
 | $n$ | $R_n$ | $c_1, \dots, c_n$ | packing |
 | :-: | :-: | --- | --- |
@@ -42,20 +44,22 @@ For $1 \le n \le 5$ let $R_n$ and $c_1, \dots, c_n$ be given by the table.
 | 3 | $\frac{5\sqrt{17}}{16}$ | $(-\frac12, -\frac5{16})$, $(\frac12, -\frac5{16})$, $(0, \frac{11}{16})$ | the T |
 | 4 | $\sqrt2$ | $(\frac12, \frac12)$, $(-\frac12, \frac12)$, $(-\frac12, -\frac12)$, $(\frac12, -\frac12)$ | the $2 \times 2$ block |
 | 5 | $\sqrt{5/2}$ | $(0, 0)$, $(1, 0)$, $(0, 1)$, $(-1, 0)$, $(0, -1)$ | the plus |
+| 7 | $\frac{\sqrt{13}}2$ | $(1, -\frac12)$, $(1, \frac12)$, $(-1, -\frac12)$, $(-1, \frac12)$, $(0, -1)$, $(0, 0)$, $(0, 1)$ | two columns of two beside a column of three |
 
-**Theorem.** Let $1 \le n \le 5$.
+**Theorem.** Let $1 \le n \le 5$ or $n = 7$.
 
 1. *Attainment.* The axis-parallel squares $Q(c_1), \dots, Q(c_n)$ form a
    packing in the closed disk of radius $R_n$ about the origin
    (Definitions 2 and 3).
 2. *Optimality.* If $n$ unit squares form a packing in a closed disk of
    radius $R$, then $R \ge R_n$.
-3. *Uniqueness.* Every packing of $n$ unit squares in a closed disk of radius
-   $R_n$ has the normal form of $c_1, \dots, c_n$ (Definition 5): one
-   rotation about the disk centre and one relabelling carry the model onto
-   it.
+3. *Uniqueness, for $n \le 5$.* Every packing of $n$ unit squares in a closed
+   disk of radius $R_n$ has the normal form of $c_1, \dots, c_n$
+   (Definition 5): one rotation about the disk centre and one relabelling
+   carry the model onto it.
 
-The case $n$ is Theorem $n$ on the page for that case.
+The case $n$ is Theorem $n$ on the page for that case. For $n = 7$ there is no
+uniqueness: the middle column of the packing can slide.
 
 ## One and two squares
 
@@ -105,7 +109,27 @@ configurations are rebuilt exactly.
 | uniqueness: assumes | $\varphi \le \frac{425}{256}$ | $\varphi \le 2$ | the closed 12-gon only |
 | uniqueness: rebuilt from | angles between arc centres | a quarter grid of arc centres | unit contacts |
 
-### Shared lemmas by case
+## Seven squares
+
+The lower bound is again a proof by contradiction, but it compares pairs of
+squares rather than arcs on one circle. Assume a packing in a disk with
+$R^2 < \frac{13}4$.
+
+1. **Six exterior squares.** At most one square contains the disk centre, so
+   six squares avoid it.
+2. **Markers.** Each exterior square gets a marker, a direction from the disk
+   centre computed from the position of the centre relative to the square.
+3. **The pair theorem.** Two disjoint exterior squares have markers more than
+   $\frac\pi3$ apart. The proof puts the pair in a normal position, writes
+   the overlaps of their shadows on the four edge directions in closed form,
+   and shows that they are positive for every gap up to $\frac\pi3$.
+4. **Conclusion.** Six directions cannot be pairwise more than $\frac\pi3$
+   apart ([Lemma 7](common.md#lemma-7-angular-budget)).
+
+At the optimal radius the six markers are exactly $\frac\pi3$ apart, and the
+middle column of the packing can slide without changing them.
+
+## Shared lemmas by case
 
 The cells list the lemmas of [common.md](common.md) that each part of a proof
 depends on, including those used only inside other shared lemmas. Every
@@ -113,19 +137,20 @@ construction uses Lemma 20 and nothing else.
 
 **Optimality.**
 
-| section of common.md | 1 | 2 | 3 | 4 | 5 |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| 1. the disk centre seen from a square | 1 | 1 | 1 | 1 | 1 |
-| 2. contact polygons | | | 2 | 2 | 2 |
-| 3. two disjoint squares | | 3, 4 | 3 | 5 | 3, 5 |
-| 4. angular budget | | | 7, 8, 9 | 7 | 7 |
-| 5. charts | | | 10, 11 | 10 | 10 |
-| 6. exterior arcs | | | 12, 13 | 12, 13 | 12, 14 |
-| 7. radial sweep | | | | 15 to 18 | 15 to 18 |
-| 8. elementary estimates | | | 19 | | 19 |
+| section of common.md | 1 | 2 | 3 | 4 | 5 | 7 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| 1. the disk centre seen from a square | 1 | 1 | 1 | 1 | 1 | 1 |
+| 2. contact polygons | | | 2 | 2 | 2 | |
+| 3. two disjoint squares | | 3, 4 | 3 | 5 | 3, 5 | 5 |
+| 4. angular budget | | | 7, 8, 9 | 7 | 7 | 7 |
+| 5. charts | | | 10, 11 | 10 | 10 | 10, 11 |
+| 6. exterior arcs | | | 12, 13 | 12, 13 | 12, 14 | |
+| 7. radial sweep | | | | 15 to 18 | 15 to 18 | |
+| 8. elementary estimates | | | 19 | | 19 | 19 |
 
 **Uniqueness.** Each uniqueness proof reruns part of the optimality argument
-at the optimal radius; the table lists only the lemmas it adds.
+at the optimal radius; the table lists only the lemmas it adds. Seven squares
+have no uniqueness proof.
 
 | | 1 | 2 | 3 | 4 | 5 |
 | --- | :-: | :-: | :-: | :-: | :-: |

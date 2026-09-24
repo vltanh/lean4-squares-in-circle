@@ -2,11 +2,11 @@ import SquaresInCircles.Seven.Support
 import SquaresInCircles.Seven.TaylorBounds
 
 /-!
-# Global side--side support certificate
+# Two side labels
 
-This is the complete scalar/Cauchy--Schwarz argument for the opposite-sign,
-side-selected pair. It is not restricted to a neighborhood of the contact.
-All signs are proved by polynomial inequalities and Taylor bounds.
+The support sum of two side-selected squares with opposite signs on the
+forward axis, bounded below by a Cauchy–Schwarz certificate over the whole
+admissible region.
 -/
 noncomputable section
 open Set

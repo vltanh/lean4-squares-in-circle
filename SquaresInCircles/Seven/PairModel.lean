@@ -1,6 +1,7 @@
 import SquaresInCircles.Seven.Support
 
-/-! Concrete support sums and sign symmetries for two affine-marker states. -/
+/-! The support sums of a canonical pair on the four edge axes, and their sign
+symmetries. -/
 noncomputable section
 namespace SquaresInCircles.Seven
 

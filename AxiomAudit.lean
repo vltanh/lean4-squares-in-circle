@@ -9,7 +9,7 @@ Any appearance of `sorryAx` would mean an unproved lemma; any appearance of
 used in this development.
 -/
 
--- All five cases in one statement, which depends on every case.
+-- All six cases in one statement, which depends on every case.
 #print axioms SquaresInCircles.optimality
 #print axioms SquaresInCircles.attainment
 #print axioms SquaresInCircles.uniqueness
@@ -37,6 +37,17 @@ used in this development.
 #print axioms SquaresInCircles.three_compensation
 #print axioms SquaresInCircles.near_axis_square_overlap
 
+-- Seven squares: the marker arc, the gap of pi/3 and all smaller gaps, the pair
+-- theorem for actual squares, six markers, and the sliding packings.
+#print axioms SquaresInCircles.Seven.marker_arc
+#print axioms SquaresInCircles.Seven.fixed_gap_pos
+#print axioms SquaresInCircles.Seven.all_gap_support_pos
+#print axioms SquaresInCircles.Seven.SAT.separating_axes
+#print axioms SquaresInCircles.Seven.marker_separation
+#print axioms SquaresInCircles.Seven.six_markers_impossible
+#print axioms SquaresInCircles.Seven.six_exterior_squared_lower
+#print axioms SquaresInCircles.Seven.sliding_packing
+
 -- The statements being proved, for inspection.
 #print SquaresInCircles.Packing
 #print SquaresInCircles.HasNormalForm
@@ -47,3 +58,5 @@ used in this development.
 #check @SquaresInCircles.uniqueness
 #check @SquaresInCircles.rigid_uniqueness
 #check @SquaresInCircles.Five.polygon_uniqueness
+#check @SquaresInCircles.Seven.marker_separation
+#check @SquaresInCircles.Seven.sliding_packing

@@ -3,11 +3,11 @@ import SquaresInCircles.Seven.BoundarySegments
 import SquaresInCircles.Seven.CapReduction
 
 /-!
-# Forward transverse source, negative target sign
+# The forward axis, negative target sign
 
-Covers a positive source with any active label, and a negative source with an
-axial label. The side-target medium-angle minimum is obtained directly from
-the disk tangent at the transition, avoiding a further calculus minimization.
+A positive source with any active label, and a negative source with an axial
+label. The side-target minimum at medium angles comes from the tangent of the
+disk at the transition state.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -206,7 +206,7 @@ lemma negative_target_axial_pos {A v e r : ℝ}
     have hsin := Real.sin_le he0
     have hc := mul_nonneg (show 0 ≤ A-1/2 by linarith [h.2.2.1])
       (sub_nonneg.mpr (Real.cos_le_one e))
-    have hp := mul_nonneg (show 0 ≤ 13/20-v by linarith [pi_upper_22]) hs0
+    have hp := mul_nonneg (show 0 ≤ 13/20-v by linarith [pi_lt_22_over_7]) hs0
     have hm := mul_nonneg (show (0:ℝ) ≤ 3/20 by norm_num) (sub_nonneg.mpr hsin)
     rw [abs_of_nonneg hs0]
     have hsum := axial_sum_lt h hA
@@ -276,7 +276,7 @@ theorem fixed_gap_forward_negative_target {a u A v : ℝ} (sgn : TransverseSign)
       have h0 := h.label_nonneg
       have h1 := h.label_le_quarter
       constructor
-      · cases sgn <;> dsimp [e,r,TransverseSign.coe] <;> linarith [pi_upper_22]
+      · cases sgn <;> dsimp [e,r,TransverseSign.coe] <;> linarith [pi_lt_22_over_7]
       · exact he.2
     refine ⟨(negative_target_side_nonneg h' hT he' rfl).trans hlow,?_⟩
     intro ha hb

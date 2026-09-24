@@ -21,9 +21,9 @@ and no `native_decide`.
 - The audit also prints `Packing`, `optimalRadius`, `HasNormalForm`,
   `modelCenters` and the theorem signatures for inspection.
 - `SanityChecks.lean` checks the radius and centre tables, re-proves the exact
-  rational margins the proofs rely on, restates the public theorems, and checks
-  all five optimal packings against their normal forms; it must elaborate
-  without errors.
+  rational margins the proofs rely on, restates the public theorems, checks
+  the five unique optimal packings against their normal forms, and checks the
+  sliding family of seven squares; it must elaborate without errors.
 
 [`.github/workflows/lean.yml`](../.github/workflows/lean.yml) runs these steps
 on every push to `main` and on pull requests, using `leanprover/lean-action`.
@@ -50,5 +50,5 @@ and would be re-resolved.
 
 **Trusted base:** Lean, Lake, mathlib. Every numeric margin is an exact rational
 inequality closed by `norm_num`, `linarith` or `nlinarith`; `π` enters only
-through mathlib's rational bounds `3.14 < π < 3.1416`. There are no
-machine-generated certificates.
+through mathlib's rational bounds `3.14 < π < 3.1416`, and for seven squares
+also `3.141592 < π < 3.141593`.

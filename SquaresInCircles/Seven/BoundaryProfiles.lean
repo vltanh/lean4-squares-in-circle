@@ -1,11 +1,10 @@
 import SquaresInCircles.Seven.BoundaryPointChecks
 
 /-!
-# Positive scalar profiles after exact boundary minimization
+# Profiles along the boundary of the label regions
 
-The small-margin profile is proved by a uniform curvature lower bound and the
-single fixed-point bounds from BoundaryPointChecks. The diagonal profile is
-proved by monotonicity and elementary endpoint comparisons.
+The transition profile is positive by a curvature bound and one fixed value
+(`BoundaryPointChecks`); the diagonal profile by monotonicity.
 -/
 noncomputable section
 open Set
@@ -56,7 +55,7 @@ lemma transition_curvature {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ td) :
     nlinarith
   have hangle : Real.pi/6 < transitionAngle t ∧ transitionAngle t < Real.pi/2 := by
     dsimp [transitionAngle,gap]
-    constructor <;> linarith [ht.1,ht.2,td_bounds.2,pi_upper_22,pi_lower_157]
+    constructor <;> linarith [ht.1,ht.2,td_bounds.2,pi_lt_22_over_7,pi_lower_157]
   have hsin : 1/2 ≤ Real.sin (transitionAngle t) := by
     have hh := sin_le_sin_half
       (x := Real.pi/6) (y := transitionAngle t)
@@ -118,7 +117,7 @@ lemma transitionDiagonalF_pos {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
     · intro x hx
       have hang : 0 ≤ transitionAngle x ∧ transitionAngle x ≤ Real.pi/2 := by
         dsimp [transitionAngle,gap]
-        constructor <;> linarith [hx.1,hx.2,td_bounds.1,pi_upper_22,pi_lower_157]
+        constructor <;> linarith [hx.1,hx.2,td_bounds.1,pi_lt_22_over_7,pi_lower_157]
       have hsin := Real.sin_nonneg_of_nonneg_of_le_pi hang.1 (by linarith [hang.2,Real.pi_pos])
       have hcos := cos_nonneg_quarter ⟨by linarith [hang.1,Real.pi_pos],hang.2⟩
       have hy0 : 0 ≤ Y0 := by dsimp [u0] at hs; linarith
@@ -170,7 +169,7 @@ lemma diagonalSlope_gt {x : ℝ}
     dsimp [dd,diagonalSlope]; ring
   have dsign (y : ℝ) (hy : y ∈ Icc (Real.pi/3) (7*Real.pi/12-2/5)) : dd y ≤ 0 := by
     have hy0 : 0 ≤ y := by linarith [hy.1,Real.pi_pos]
-    have hyp : y ≤ Real.pi/2 := by linarith [hy.2,pi_upper_22]
+    have hyp : y ≤ Real.pi/2 := by linarith [hy.2,pi_lt_22_over_7]
     have hs := Real.sin_nonneg_of_nonneg_of_le_pi hy0 (by linarith [hyp,Real.pi_pos])
     have hc := cos_nonneg_quarter ⟨by linarith [hy0,Real.pi_pos],hyp⟩
     dsimp [dd,diagonalSlope]
@@ -181,7 +180,7 @@ lemma diagonalSlope_gt {x : ℝ}
     linarith [sqrt_three_bounds.1]
   have hu : 0 < f (7*Real.pi/12-2/5) := by
     let z := 7*Real.pi/12-2/5
-    have hz : 7/5 < z ∧ z < Real.pi/2 := by dsimp [z]; constructor <;> linarith [pi_lower_157,pi_upper_22]
+    have hz : 7/5 < z ∧ z < Real.pi/2 := by dsimp [z]; constructor <;> linarith [pi_lower_157,pi_lt_22_over_7]
     have hs := sin_le_sin_half (x := 7/5) (y := z)
       (by constructor <;> linarith [pi_lower_157])
       (by constructor <;> linarith [hz.1,hz.2,Real.pi_pos]) hz.1.le
@@ -214,10 +213,10 @@ lemma diagonalK_pos {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) : 0 < diagona
       linarith
   have hbase : 0 < diagonalK (2/5) := by
     let e := 2/5-Real.pi/12
-    have he : 27/200 < e ∧ e < 3/20 := by dsimp [e]; constructor <;> linarith [pi_lower_157,pi_upper_22]
+    have he : 27/200 < e ∧ e < 3/20 := by dsimp [e]; constructor <;> linarith [pi_lower_157,pi_lt_22_over_7]
     have hs := Real.sin_ge_sub_cube (show 0 ≤ e by linarith)
     have he3 : e^3 ≤ (3/20:ℝ)^3 := pow_le_pow_left₀ (by linarith [he.1]) he.2.le 3
-    have heL : 29/210 ≤ e := by dsimp [e]; linarith [pi_upper_22]
+    have heL : 29/210 ≤ e := by dsimp [e]; linarith [pi_lt_22_over_7]
     have hsL : 27/200 < Real.sin e := by nlinarith
     have hid : Real.cos (7*Real.pi/12-2/5)=Real.sin e := by
       rw [show 7*Real.pi/12-2/5=Real.pi/2-e by dsimp [e]; ring,

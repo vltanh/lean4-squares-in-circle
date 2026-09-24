@@ -1,18 +1,14 @@
 import SquaresInCircles.Seven.Labels
 
 /-!
-# The algebraic part of the parallel-pair argument
+# Labels of parallel squares
 
-These inequalities are statements about the actual affine labels. In
-particular, the labels are not replaced by a hypothesis asserting the desired
-packing lower bound. Geometric transport of the general pair theorem is a
-separate obligation.
+For parallel squares on opposite sides of the axis, and for quarter-turned
+squares separated by a whole side, the labels are too far apart for a gap of
+at most `π/3`.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
-
-private lemma pi_upper : Real.pi < 22/7 := by linarith [Real.pi_lt_d4]
-private lemma pi_lower : (157 : ℝ)/50 < Real.pi := by linarith [Real.pi_gt_d2]
 
 lemma side_side_sum_identity (a x A y : ℝ) :
     side a x + side A y = gap + (5/6)*(x+y-1) +
@@ -33,19 +29,19 @@ lemma axial_side_sum_gt {x A y : ℝ} (h' : Admissible A y) (hs : 1 ≤ x+y) :
   have hl : (11/12)*y+(3/4)*A < 31/24 := by
     linarith [h'.sum_lt, h'.2.1]
   dsimp [gap, axial, side]
-  linarith [pi_upper]
+  linarith [pi_lt_22_over_7]
 
 lemma axial_axial_sum_gt {x y : ℝ} (hs : 1 ≤ x+y) :
     gap < axial x + axial y := by
   dsimp [gap, axial]
-  linarith [pi_upper]
+  linarith [pi_lt_22_over_7]
 
 lemma cap_axial_sum_gt {x A y : ℝ}
     (h' : Admissible A y) (hs : 1 ≤ x+y) :
     gap < Real.pi/4 + axial x := by
   have hx : 9/40 < x := by linarith [h'.u_lt]
   dsimp [gap, axial]
-  linarith [pi_upper]
+  linarith [pi_lt_22_over_7]
 
 lemma cap_side_sum_gt {a x A y : ℝ}
     (h : Admissible a x) (h' : Admissible A y) (hs : 1 ≤ x+y) :
@@ -54,9 +50,10 @@ lemma cap_side_sum_gt {a x A y : ℝ}
   rw [side_identity_transverse]
   have hw := h'.remainder_nonneg
   dsimp [gap]
-  linarith [pi_lower]
+  linarith [pi_lower_157]
 
-/-- The identical-canonical-frame case of the marker inequality. -/
+/-- Two labels on opposite sides of parallel squares add up to more than
+`π/3`. -/
 theorem opposite_transverse_labels_gt {a x A y : ℝ}
     (h : StrictlyAdmissible a x) (h' : StrictlyAdmissible A y) (hs : 1 ≤ x+y) :
     gap < label a x + label A y := by
@@ -136,7 +133,7 @@ theorem quarter_difference_of_horizontal {a b A B : ℝ}
       have ha := hw.a_lt_five_fourths
       simp only [signedLabel, ite_eq_left hB', abs_of_neg hB'] at *
       dsimp [axial] at hr
-      linarith [pi_lower]
+      linarith [pi_lower_157]
 
 /-- Either separating coordinate suffices for the quarter-turn label inequality. -/
 theorem quarter_difference_gt {a b A B : ℝ}

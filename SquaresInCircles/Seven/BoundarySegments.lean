@@ -2,11 +2,11 @@ import SquaresInCircles.Seven.LabelBoundary
 import SquaresInCircles.Seven.AnalyticOrder
 
 /-!
-# Exact label-level segments
+# Segments of constant label
 
-Support at a fixed marker label is affine in the center. This file proves the
-feasible segments and the endpoint reduction used by the remaining sectors.
-No extremum is inferred from a numerical search.
+At a fixed label the support is affine in the state, so it is extreme at the
+ends of the admissible segment of that label. The segments end on the axial
+line, on the circle `φ = 13/4` and on the diagonal.
 -/
 noncomputable section
 open Set
@@ -122,10 +122,10 @@ lemma axial_upper {a u : ℝ} (h : Admissible a u)
 
 lemma axialTop_state {u : ℝ} (hu : 0 ≤ u ∧ u ≤ Real.pi/5) :
     Admissible (axialTop u) u ∧ label (axialTop u) u=axial u := by
-  have huR : u ≤ rd := by linarith [hu.2,pi_upper_22,rd_bounds.1]
+  have huR : u ≤ rd := by linarith [hu.2,pi_lt_22_over_7,rd_bounds.1]
   have hc := circle_state ⟨hu.1,huR⟩
-  have hlineU : u ≤ axialLine u := by dsimp [axialLine]; linarith [hu.2,pi_upper_22]
-  have hlineA : 1/2 ≤ axialLine u := by dsimp [axialLine]; linarith [hu.2,pi_upper_22]
+  have hlineU : u ≤ axialLine u := by dsimp [axialLine]; linarith [hu.2,pi_lt_22_over_7]
+  have hlineA : 1/2 ≤ axialLine u := by dsimp [axialLine]; linarith [hu.2,pi_lt_22_over_7]
   have htop : 1/2 ≤ axialTop u := le_min hc.2.2.1 hlineA
   have hgeU : u ≤ axialTop u := le_min hc.2.1 hlineU
   have hle : axialTop u ≤ circle u := min_le_left _ _
@@ -224,7 +224,7 @@ lemma diagonal_state {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
       side (diagonal t) (diagonal t)=t := by
   have hd : diagonal td=rd := by dsimp [diagonal,td]; ring
   have hupper : diagonal t ≤ rd := by rw [← hd]; dsimp [diagonal]; linarith [ht.1]
-  have hlower : 1/2 < diagonal t := by dsimp [diagonal]; linarith [ht.2,pi_upper_22]
+  have hlower : 1/2 < diagonal t := by dsimp [diagonal]; linarith [ht.2,pi_lt_22_over_7]
   have hphi : phi (diagonal t) (diagonal t) ≤ targetSq := by
     have hrd : (rd+1/2)^2=targetSq/2 := by
       dsimp [rd,targetSq]
@@ -237,7 +237,7 @@ lemma diagonal_state {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
   have hTA : side (diagonal t) (diagonal t) ≤ axial (diagonal t) := by
     rw [he]
     dsimp [diagonal,axial]
-    linarith [ht.2,pi_upper_22]
+    linarith [ht.2,pi_lt_22_over_7]
   refine ⟨⟨by linarith,le_rfl,hlower.le,hphi⟩,?_,he⟩
   rw [he] at hTA
   simp only [label,he,min_eq_right hTA,min_eq_left ht.2]
@@ -260,7 +260,7 @@ lemma tie_state {t : ℝ} (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
     have hs := transition_coarse
     constructor <;> linarith [ht.1,ht.2]
   have hu0 : u0 ≤ (4/5)*t := by dsimp [s0] at ht; linarith [ht.1]
-  have hur : (4/5)*t ≤ rd := by linarith [hu.2,pi_upper_22,rd_bounds.1]
+  have hur : (4/5)*t ≤ rd := by linarith [hu.2,pi_lt_22_over_7,rd_bounds.1]
   have he : axialTop ((4/5)*t)=tieA t := by
     rw [axialTop_right ⟨hu0,hur⟩]
     dsimp [axialLine,tieA]; ring
@@ -314,7 +314,7 @@ lemma side_segment {a u : ℝ} (h : Admissible a u)
   exact ⟨hlow,hupp,hlin⟩
 
 /-- The two endpoint alternatives are sufficient for any affine support at a
-fixed side label; both endpoint states are genuinely admissible. -/
+fixed side label; both endpoint states are admissible. -/
 lemma side_linear_min {a u p r : ℝ} (h : Admissible a u)
     (hT : label a u=side a u) :
     min (p*tieA (label a u)+r*((4/5)*label a u))

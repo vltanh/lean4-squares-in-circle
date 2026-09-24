@@ -1,14 +1,15 @@
 import SquaresInCircles.Seven.CanonicalPair
-import SquaresInCircles.Seven.Reduction
 import SquaresInCircles.Common.Coordinates
 
 /-!
-# Marker separation for the original square model
+# The pair theorem for actual squares
 
-Each reflected chart is represented by a positively oriented frame and a
-signed transverse coordinate. The circle's toReal difference selects the
-positive marker order; swapping charts handles the other sign. No additional
-orientation, generic-position, or arc-order hypothesis enters the theorem.
+Two disjoint squares that avoid the disk centre, each in the disk of squared
+radius below `13/4`, have markers more than `π/3` apart. A chart with a
+reversed orientation is read as a turned frame with a signed transverse
+coordinate, so each square sits at its state in the frame of its phase and the
+pair is a canonical pair. The sign of the marker difference decides which
+square plays the first role.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -28,8 +29,8 @@ lemma chartMarker_formula {S : UnitSquare} {o : Point} (C : SquareChart S o) :
   cases h : C.reversed <;>
     simp [chartMarker,chartAngle,chartSign,h,TransverseSign.coe]
 
-/-- Ordered chart pair: sufficiently close markers give a common open-square
-point. This is a theorem about actual points in the repository's geometry. -/
+/-- If the marker of `D` is `g ∈ [0, π/3]` ahead of the marker of `C`, and both
+states are strictly admissible, the open squares meet. -/
 theorem close_ordered_charts_overlap {S T : UnitSquare} {o : Point}
     (C : SquareChart S o) (D : SquareChart T o)
     (hC : StrictlyAdmissible C.a C.b) (hD : StrictlyAdmissible D.a D.b)
@@ -59,11 +60,17 @@ theorem close_ordered_charts_overlap {S T : UnitSquare} {o : Point}
     rw [hphase,Real.Angle.cos_coe,Real.Angle.sin_coe,←chartSign_coordinate D]
     exact hxy'
 
-/-- Unconditional strict pair theorem. The square frames and translations are
-arbitrary; the only geometric hypotheses are the original containments,
-exteriority, and disjoint open interiors. -/
-theorem marker_separation : MarkerSeparationStatement := by
-  intro S T o C D hsortC hsortD hextC hextD hphiC hphiD hdisj
+/-- The pair theorem: disjoint exterior squares in a disk of squared radius
+below `13/4` have markers more than `π/3` apart. The frames and positions of
+the squares are arbitrary. -/
+theorem marker_separation {S T : UnitSquare} {o : Point}
+    (C : SquareChart S o) (D : SquareChart T o)
+    (hsortC : C.b ≤ C.a) (hsortD : D.b ≤ D.a)
+    (hextC : ¬ openSquare S o) (hextD : ¬ openSquare T o)
+    (hphiC : phi (alpha S o) (beta S o) < targetSq)
+    (hphiD : phi (alpha T o) (beta T o) < targetSq)
+    (hdisj : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) :
+    gap < dist (chartMarker C) (chartMarker D) := by
   have hC := chart_strictlyAdmissible C hsortC hextC hphiC
   have hD := chart_strictlyAdmissible D hsortD hextD hphiD
   by_contra hn

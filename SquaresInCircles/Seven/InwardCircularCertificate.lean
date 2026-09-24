@@ -2,11 +2,11 @@ import SquaresInCircles.Seven.InwardOppositeGeometry
 import SquaresInCircles.Seven.PolynomialCertificates
 
 /-!
-# Two-circle certificate for the inward (+,-) sector
+# A two-circle certificate for the inward axis
 
-The radical envelope is bounded by an explicit quadratic using a squared
-comparison. The resulting support bound is precisely `radialE`, whose
-whole-interval positivity was already proved by a Bernstein identity.
+With opposite signs, the radical envelope is bounded by an explicit quadratic,
+which turns the support bound into `radialE`, positive by a Bernstein
+certificate.
 -/
 noncomputable section
 open Set
@@ -70,8 +70,6 @@ lemma radial_trig_lower {z v r : ℝ}
   dsimp [radialB,radialL,radialK]
   nlinarith
 
-/-- This theorem keeps the original source and target containment assumptions;
-no separating or contact conclusion is inserted into the hypotheses. -/
 lemma inward_circular_pos {a u A v z : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u=side a u) (hA : label A v=axial v)

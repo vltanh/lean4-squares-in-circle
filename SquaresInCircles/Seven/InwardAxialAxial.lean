@@ -2,12 +2,10 @@ import SquaresInCircles.Seven.InwardSideAxial
 import SquaresInCircles.Seven.AxialProfile
 
 /-!
-# Inward radial source: two positive axial-selected states
+# The inward axis, positive signs, two axial labels
 
-The proof uses the sharp axial sum bound and the universal axial profile.
-Both signs of the relative turn, including the zero turn, are covered.
-This sector is strictly positive even under closed candidate containment.
-Uncompiled checkpoint; it does not assert the remaining fixed-gap sectors.
+The axial sum bound and the axial profile give strict positivity, even for
+closed containment and for both signs of the relative turn.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -24,7 +22,7 @@ lemma axial_remainder_pos {a u : ℝ} (h : Admissible a u)
   have hle := h.label_le_side
   rw [hA,ha,hu] at hle
   dsimp [axial,side] at hle
-  linarith [pi_upper_22]
+  linarith [pi_lt_22_over_7]
 
 lemma inward_positive_signs_formula {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) :
@@ -120,7 +118,7 @@ theorem inward_axial_axial_pos {a u A v : ℝ}
         0 < 1-a-v+(A+1/2)*Real.sin z+(v-1/2)*(1-Real.cos z) := by
       rw [hid]
       by_cases hu : 1/20 ≤ u
-      · have hb : b0-u ≤ 7/8 := by dsimp [b0]; linarith [pi_upper_22]
+      · have hb : b0-u ≤ 7/8 := by dsimp [b0]; linarith [pi_lt_22_over_7]
         have hp := axial_profile_parameter_nonneg hb hz
         have hsum := axial_sum_lt h hA
         linarith [pi_lower_157]
@@ -129,7 +127,7 @@ theorem inward_axial_axial_pos {a u A v : ℝ}
           linarith [h.a_le_sqrt_three,sqrt_three_bounds.2]
         have hb : 0 ≤ b0-7/8 ∧ b0-7/8 < 1/20 := by
           dsimp [b0]
-          constructor <;> linarith [pi_lower_157,pi_upper_22]
+          constructor <;> linarith [pi_lower_157,pi_lt_22_over_7]
         have hprod := mul_le_mul_of_nonneg_left
           (show 1-Real.cos z ≤ 1 by linarith) hb.1
         have hupos := mul_nonneg h.1 hd0

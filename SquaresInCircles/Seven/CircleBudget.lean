@@ -1,12 +1,11 @@
-import Mathlib
 import SquaresInCircles.Common.AngularBudget
 
 /-!
-# Six separated markers cannot fit on the angular circle
+# Six markers
 
-This is a metric/measure theorem, independent of square geometry. It uses the
-repository's proved `closed_arc_budget`, avoiding cyclic sorting and any
-assumption that markers are themselves occupied-arc midpoints.
+Six directions cannot be pairwise more than `π/3` apart: closed arcs of a
+common half-width above `π/6` about them would be disjoint, which
+`closed_arc_budget` excludes.
 -/
 noncomputable section
 open scoped BigOperators

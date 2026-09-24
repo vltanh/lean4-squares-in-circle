@@ -14,8 +14,10 @@ OUT = Path(__file__).resolve().parent.parent / 'docs' / 'proof' / 'figures'
 
 INK = '#1f2937'
 FAINT = '#9ca3af'
-COLORS = ['#2563eb', '#ea580c', '#16a34a', '#9333ea', '#db2777']
-FILLS = ['#dbeafe', '#ffedd5', '#dcfce7', '#f3e8ff', '#fce7f3']
+COLORS = ['#2563eb', '#ea580c', '#16a34a', '#9333ea', '#db2777', '#0891b2',
+          '#ca8a04']
+FILLS = ['#dbeafe', '#ffedd5', '#dcfce7', '#f3e8ff', '#fce7f3', '#cffafe',
+         '#fef9c3']
 GREY = '#e5e7eb'
 SERIF = "Georgia, 'Times New Roman', serif"
 
@@ -1462,6 +1464,10 @@ def main():
     packing('five', 'The plus with the circle of radius 5/6',
             [(0, 0), (1, 0), (0, 1), (-1, 0), (0, -1)],
             math.sqrt(2.5), 5 / 6, grey=(0,))
+    packing('seven', 'Two columns of two squares beside a column of three, '
+            'with the unit circle',
+            [(1, -0.5), (1, 0.5), (-1, -0.5), (-1, 0.5), (0, -1), (0, 0),
+             (0, 1)], math.sqrt(13) / 2, 1, grey=(5,))
 
 
 if __name__ == '__main__':

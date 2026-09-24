@@ -1,15 +1,17 @@
-import Mathlib
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Basic.Real.Basic
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 /-!
-# Exact polynomial certificates from the analytical manuscript
+# Polynomial certificates
 
-No interval search or external computation is part of these statements.
-Every polynomial identity is checked by `ring`; all coefficient inequalities
-are rational arithmetic checked by `norm_num`. Bernstein positivity proves a
-whole interval at once, not a finite set of sample points.
+Three polynomials with positive coefficients in a Bernstein basis, and a
+sum-of-squares completion that makes `radialE` positive.
 -/
-set_option maxHeartbeats 4000000
-set_option maxRecDepth 4000
 noncomputable section
 open scoped BigOperators
 namespace SquaresInCircles.Seven
@@ -105,7 +107,7 @@ private def radialCoefficients : Fin 12 → ℝ :=
     4524018740302909/125753421201408000, 406318644428659/20958903533568000,
     125352005285647/418089296461824000]
 
-/-- A single Bernstein identity replaces the manuscript's derivative comparison. -/
+/-- One Bernstein identity instead of a derivative comparison. -/
 lemma radialPolynomial_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 5/8) :
     0 < radialPolynomial z := by
   let x := 8*z/5

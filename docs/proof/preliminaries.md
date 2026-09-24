@@ -32,6 +32,8 @@ Definitions 1 to 5 are on this page, Definitions 6 to 17 on the
 | $\theta_S$, $\varepsilon_S$, $t$ | the phase and orientation of the chart of $S$, and the chart angle | [Definition 15](common.md#definition-15-chart) |
 | $A_S$, $V_S$ | the cap angles of an exterior square $S$ | [Definition 16](common.md#definition-16-cap-angles) |
 | $\widehat{S}$ | the radial sweep of $S$ | [Definition 17](common.md#definition-17-radial-sweep) |
+| $r(a, u)$, $\ell(a, u)$ | the remainder and the label of a state, for seven squares | [Definitions 7.4, 7.5](seven.md#definition-74-states) |
+| $h(a, b, z)$, $\sigma_k(g)$ | the support function, and the support sums of a pair, for seven squares | [Definitions 7.8, 7.9](seven.md#definition-78-support-function) |
 
 ## Conventions
 
@@ -111,8 +113,9 @@ conditions above.*
 ## Packings and their normal forms
 
 The main theorem is about unit squares packed in a disk. For each $n$ it names
-the smallest radius, and says that at that radius the packing is unique up to a
-rotation about the disk centre and a relabelling of the squares.
+the smallest radius, and for $n \le 5$ it says that at that radius the packing
+is unique up to a rotation about the disk centre and a relabelling of the
+squares.
 
 ### Definition 3 (packing)
 

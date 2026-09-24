@@ -2,11 +2,11 @@ import SquaresInCircles.Seven.InwardBoundaryMinima
 import SquaresInCircles.Seven.CapReduction
 
 /-!
-# Completion of the inward opposite-transverse-sign sector
+# The inward axis with opposite signs
 
-Axial sources are moved monotonically to the axial/side transition. A side
-label on the target is reduced along its exact label segment to the axial tie.
-The zero-angle branch retains the original containment remainder.
+Axial sources move monotonically to the axial/side transition, and a side
+target moves along its label segment to the axial tie. The zero turn keeps the
+remainder of the original state.
 -/
 noncomputable section
 open Set
@@ -69,7 +69,7 @@ lemma inward_opposite_axial_nonpositive_turn {a u A v : ℝ}
   have hez : label a u+label A v-Real.pi/6=-z := by dsimp [z]; ring
   rw [hez,hid]
   by_cases hu : 1/20≤u
-  · have hb : b0-u≤7/8 := by dsimp [b0]; linarith [pi_upper_22]
+  · have hb : b0-u≤7/8 := by dsimp [b0]; linarith [pi_lt_22_over_7]
     have hp := axial_profile_parameter_nonneg hb hz
     have hsum := axial_sum_lt h hA
     linarith [pi_lower_157]
@@ -77,7 +77,7 @@ lemma inward_opposite_axial_nonpositive_turn {a u A v : ℝ}
     have hsum : a+u<77/60 := by linarith [h.a_le_sqrt_three,sqrt_three_bounds.2]
     have hb : 0≤b0-7/8 ∧ b0-7/8<1/20 := by
       dsimp [b0]
-      constructor <;> linarith [pi_lower_157,pi_upper_22]
+      constructor <;> linarith [pi_lower_157,pi_lt_22_over_7]
     have hp := axial_profile_nonneg hz
     have hc := mul_le_mul_of_nonneg_left (show 1-Real.cos z≤1 by linarith) hb.1
     have hup := mul_nonneg h.1 hc1
@@ -105,7 +105,7 @@ lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
   change 0 < inwardOpposite a A v z
   by_cases ht0 : s0≤t
   · have hu0 : u0≤u := by rw [hu]; dsimp [s0] at ht0; linarith
-    have hur : u≤rd := by linarith [huDom.2,pi_upper_22,rd_bounds.1]
+    have hur : u≤rd := by linarith [huDom.2,pi_lt_22_over_7,rd_bounds.1]
     have haup := axial_upper h hA
     rw [axialTop_right ⟨hu0,hur⟩] at haup
     have he : axialLine u=tieA t := by rw [hu]; dsimp [axialLine,tieA]; ring
@@ -151,7 +151,7 @@ lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
       have hz2 : z<2/3 := by
         dsimp [z]
         change t+label A v-Real.pi/6<2/3
-        linarith [htu,h'.label_le_quarter,transition_coarse.2.2.2.2.2,pi_upper_22]
+        linarith [htu,h'.label_le_quarter,transition_coarse.2.2.2.2.2,pi_lt_22_over_7]
       have hh := Real.one_sub_sq_div_two_le_cos (x := z)
       nlinarith [show 0<z from hz]
     have hd : v-vp=u0-u := by rw [hvEq]; dsimp [vp]; ring
@@ -183,7 +183,7 @@ lemma inward_opposite_side_target_reduction {a u A v : ℝ}
     have ht1 := h.label_le_quarter
     have hs0 := side_selected_label_gt h' hT
     dsimp [z,s]
-    constructor <;> linarith [h'.label_le_quarter,pi_upper_22]
+    constructor <;> linarith [h'.label_le_quarter,pi_lt_22_over_7]
   have hcoef : 0<Real.cos z-(4/9)*Real.sin z := by
     by_cases hz0 : 0≤z
     · have hC : 1/2≤Real.cos z := by
@@ -209,7 +209,7 @@ lemma inward_opposite_side_target_reduction {a u A v : ℝ}
   dsimp [inwardOpposite]
   nlinarith
 
-/-- All remaining inward (+,-) label cases, with original strictness. -/
+/-- The inward axis with signs `(+,-)`, all active labels. -/
 theorem fixed_gap_inward_opposite_active {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (ha : ActiveLabel a u) (hb : ActiveLabel A v) :

@@ -2,11 +2,10 @@ import SquaresInCircles.Seven.BoundaryProfiles
 import SquaresInCircles.Seven.PolynomialCertificates
 
 /-!
-# Monotonicity of the target support on axial boundary pieces
+# Monotonicity of the target support on the axial boundary
 
-The circular piece uses a rational derivative ratio whose sign reduces to the
-already proved degree-five polynomial. The straight piece uses an elementary
-sine/cosine comparison. No interval subdivision is used.
+On the circular piece by the sign of a derivative ratio, which reduces to a
+polynomial certificate; on the straight piece by a sine/cosine comparison.
 -/
 noncomputable section
 open Set
@@ -129,7 +128,7 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
       Real.pi/12 ≤ gap-t+s ∧ gap-t+s < Real.pi/2 := by
     have hc := transition_coarse
     dsimp [gap]
-    constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,pi_upper_22,Real.pi_pos]
+    constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,pi_lt_22_over_7,Real.pi_pos]
   have hEder (s : ℝ) (hs : s ∈ Icc 0 s0) :
       HasDerivAt E ((1-ratioD s)*Real.cos (gap-t+s)+ratio s*Real.sin (gap-t+s)) s := by
     have hd : HasDerivAt (fun x : ℝ => gap-t+x) 1 s := (hasDerivAt_id s).const_add (gap-t)
@@ -153,7 +152,7 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
       (by constructor <;> linarith [ha.1,ha.2,Real.pi_pos]) (by simpa using ha.1)
     have hl := Real.sin_ge_sub_cube (show 0 ≤ Real.pi/12 by positivity)
     have hc : (Real.pi/12)^3 ≤ (11/42:ℝ)^3 :=
-      pow_le_pow_left₀ (by positivity) (by linarith [pi_upper_22]) 3
+      pow_le_pow_left₀ (by positivity) (by linarith [pi_lt_22_over_7]) 3
     have hR := ratio_nonneg (s := 0) ⟨le_rfl,by linarith [transition_coarse.2.2.2.2.1]⟩
     have hm := mul_le_mul_of_nonneg_left (Real.cos_le_one (gap-t)) hR
     dsimp [E]
@@ -247,7 +246,7 @@ lemma lineTarget_derivative_positive {t s : ℝ}
   have hx : 0 < x ∧ x < Real.pi/2 := by
     have h0 := transition_coarse
     dsimp [x,gap]
-    constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,pi_upper_22,pi_lower_157]
+    constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,pi_lt_22_over_7,pi_lower_157]
   have hC : 0 < Real.cos x := Real.cos_pos_of_mem_Ioo ⟨by linarith [hx.1,Real.pi_pos],hx.2⟩
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi hx.1.le (by linarith [hx.2,Real.pi_pos])
   have hCS : Real.sin x ≤ (9/4)*Real.cos x := by
@@ -268,7 +267,7 @@ lemma lineTarget_derivative_positive {t s : ℝ}
       (show 0 ≤ (9/4)*Real.cos x-Real.sin x by linarith)
     have hcoef : (91:ℝ)/360 ≤ (13/10-tieA s)+(9/4)*(43/90-(4/5)*s) := by
       dsimp [tieA]
-      linarith [hs.2,pi_upper_22]
+      linarith [hs.2,pi_lt_22_over_7]
     have hpos := mul_pos (show 0 < (13/10-tieA s)+(9/4)*(43/90-(4/5)*s) by linarith) hC
     dsimp [x] at *
     nlinarith

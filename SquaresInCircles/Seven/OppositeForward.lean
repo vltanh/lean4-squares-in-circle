@@ -4,10 +4,10 @@ import SquaresInCircles.Seven.SideSide
 import SquaresInCircles.Seven.PolynomialCertificates
 
 /-!
-# Forward transverse source with signs (-,+)
+# The forward axis, signs `(-, +)`
 
-All four axial/side combinations are treated on their full admissible domains.
-Capped labels are eliminated separately by `CapReduction`.
+All four combinations of axial and side labels; capped labels reduce to these
+by `CapReduction`.
 -/
 noncomputable section
 open Set
@@ -45,7 +45,7 @@ lemma pairSupport_forward_opposite {a u A v : ℝ}
 
 lemma forward_turn_nonneg {w : ℝ} (hw : 0 ≤ w ∧ w ≤ Real.pi/6) :
     0 ≤ Real.sin w-(4/5)*w-(1/2)*(1-Real.cos w) := by
-  have hlim : w ≤ 8/15 := by linarith [hw.2,pi_upper_22]
+  have hlim : w ≤ 8/15 := by linarith [hw.2,pi_lt_22_over_7]
   have hs := Real.sin_ge_sub_cube hw.1
   have hc := Real.one_sub_sq_div_two_le_cos (x := w)
   have hsq : w^2 ≤ (8/15 : ℝ)^2 := by nlinarith [hw.1]
@@ -80,7 +80,7 @@ lemma opposite_support_negative_turn {u A v z : ℝ}
 lemma opposite_axial_scalar {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
     0 < 1-4*Real.pi/15+(4/5)*z-(Real.sqrt 3-1)*Real.sin z
       -(1/2)*(1-Real.cos z) := by
-  have hz1 : z ≤ 11/10 := by linarith [hz.2,pi_upper_22]
+  have hz1 : z ≤ 11/10 := by linarith [hz.2,pi_lt_22_over_7]
   have hp := axialPairPolynomial_pos ⟨hz.1,hz1⟩
   have c0 : 0 ≤ Real.sqrt 3-1 := by linarith [sqrt_three_bounds.1]
   have cL : 7/10 ≤ Real.sqrt 3-1 := by linarith [sqrt_three_bounds.1]
@@ -93,7 +93,7 @@ lemma opposite_axial_scalar {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
   have h5 := mul_nonneg (pow_nonneg hz.1 5)
     (show 0 ≤ 3/4-(Real.sqrt 3-1) by linarith)
   dsimp [axialPairPolynomial] at hp
-  nlinarith [pi_upper_22]
+  nlinarith [pi_lt_22_over_7]
 
 lemma opposite_axial_axial_pos {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -117,7 +117,7 @@ lemma opposite_axial_axial_pos {a u A v : ℝ}
   · have hl := opposite_support_positive_turn (u := u) h'.2.2.1 h'.1 ⟨hpos,hw.2⟩
     have hr := forward_turn_nonneg ⟨hpos,hw.2⟩
     dsimp [gap] at he
-    linarith [pi_upper_22]
+    linarith [pi_lt_22_over_7]
   · let z := -w
     have hz : 0 ≤ z ∧ z ≤ Real.pi/3 := by
       dsimp [z]
@@ -141,7 +141,7 @@ lemma mixedMargin_gt : (1 : ℝ)/168 < mixedMargin := by
   have hn := Real.sqrt_nonneg (2626 : ℝ)
   have hupper : Real.sqrt 2626 < 205/4 := by nlinarith
   dsimp [mixedMargin]
-  linarith [pi_upper_22]
+  linarith [pi_lt_22_over_7]
 
 lemma mixed_linear_bound {a u : ℝ} (h : Admissible a u) :
     (3/5)*a+(11/15)*u ≤ Real.sqrt 2626/30-2/3 := by
@@ -211,7 +211,7 @@ lemma side_axial_far_profile {z : ℝ} (hz : 1/3 ≤ z ∧ z ≤ 7/10) :
       (show (0 : ℝ) ≤ 1/3 by norm_num) (by linarith [pi_lower_157])
     have hp := mul_nonneg (show 0 ≤ 11/15-(Real.sqrt 3-1) by linarith) hsin0
     dsimp [B]
-    nlinarith [pi_upper_22]
+    nlinarith [pi_lt_22_over_7]
   exact hb.trans_le (hm (by constructor <;> norm_num) hz hz.1)
 
 lemma opposite_axial_side_pos {a u A v : ℝ}
@@ -237,7 +237,7 @@ lemma opposite_axial_side_pos {a u A v : ℝ}
       have ht := side_selected_label_gt h' hT
       have ha := h.label_nonneg
       dsimp [z,w,gap]
-      linarith [pi_upper_22]
+      linarith [pi_lt_22_over_7]
     have hl := opposite_support_negative_turn (u := u) h' hz
     have hsin0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
       (by linarith [hz.2,Real.pi_pos])
@@ -274,7 +274,7 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
       have ht := side_selected_label_gt h hT
       have ha := h'.label_nonneg
       dsimp [z,w,gap]
-      linarith [pi_upper_22]
+      linarith [pi_lt_22_over_7]
     have he : w = -z := by dsimp [z]; ring
     rw [he]
     rw [he] at hclear

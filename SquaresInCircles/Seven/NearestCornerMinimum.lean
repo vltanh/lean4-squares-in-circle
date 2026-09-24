@@ -1,12 +1,11 @@
 import SquaresInCircles.Seven.SmallAndParallelGaps
 
 /-!
-# The smooth intermediate-angle minimum
+# Smooth minima
 
-At a genuine smooth leftmost minimum the target support is negative. Its
-normal is opposite the nearest corner. The only potentially small source
-support is then an axial transverse support, and the side-label inequality
-forces it to exceed the target's nearest-corner distance.
+At a smooth leftmost minimum the target support is a negative stationary
+sinusoid, pointing away from the target's corner nearest the disk centre. The
+source support then exceeds the distance of that corner.
 -/
 noncomputable section
 open Set Filter
@@ -55,7 +54,7 @@ lemma first_octant_polar {x y : ℝ} (hx : 0<x) (hy : 0<y) (hxy : y≤x) :
 
 lemma corner_label_gt {A v : ℝ} (h : Admissible A v) (hv : 1/2<v) :
     Real.pi/6<label A v := by
-  have hax : Real.pi/6<axial v := by dsimp [axial]; linarith [pi_upper_22]
+  have hax : Real.pi/6<axial v := by dsimp [axial]; linarith [pi_lt_22_over_7]
   have hside : Real.pi/6<side A v := by
     rw [side_identity_transverse]
     linarith [h.remainder_nonneg]
@@ -167,7 +166,7 @@ lemma corner_source_margin {a u A v g d b : ℝ} (s t : TransverseSign) (k : Fin
   have hr1 : r≤Real.pi/4 := h'.label_le_quarter
   have hCrange : 0<C ∧ C<7*Real.pi/12 := by
     cases t <;> dsimp [C,TransverseSign.coe,gap] at * <;>
-      constructor <;> linarith [pi_upper_22,Real.pi_pos]
+      constructor <;> linarith [pi_lt_22_over_7,Real.pi_pos]
   have hNrange : -Real.pi/4≤N ∧ N≤7*Real.pi/4 := by
     have hk := cardinal_range k
     cases s <;> dsimp [N,TransverseSign.coe] <;> constructor <;> linarith
@@ -224,11 +223,11 @@ lemma corner_source_margin {a u A v g d b : ℝ} (s t : TransverseSign) (k : Fin
           linarith
         have hcosL : 1-b≤Real.cos b := by
           have hh := Real.one_sub_sq_div_two_le_cos (x := b)
-          have hb1 : b<1 := by linarith [hb.2,pi_upper_22]
+          have hb1 : b<1 := by linarith [hb.2,pi_lt_22_over_7]
           linarith [mul_pos hb.1 (sub_pos.mpr hb1)]
         have hsinU := Real.sin_le hb.1.le
         have hKL : 3/4-(13/12)*b≤K := by dsimp [K]; linarith
-        have hhpos : 0<1/2-(4/5)*p := by linarith [hp12,pi_upper_22]
+        have hhpos : 0<1/2-(4/5)*p := by linarith [hp12,pi_lt_22_over_7]
         have hmult := mul_le_mul_of_nonneg_left hKL hhpos.le
         have hcross := mul_nonneg hp0 hb.1.le
         have hstrict : 3/8-p-b < (1/2-(4/5)*p)*K := by linarith

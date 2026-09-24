@@ -1,11 +1,10 @@
 import SquaresInCircles.Seven.SectorBounds
 
 /-!
-# Scalar turn bounds for the inward-radial mixed sector
+# Turn bounds for the inward axis
 
-These are ordinary real inequalities on whole angle intervals. They retain
-explicit positive linear margins and use only the existing Taylor lemmas.
-This checkpoint has not been compiled; no interval or numerical oracle is used.
+Inequalities on whole intervals of the relative turn, with explicit linear
+margins, from Taylor bounds.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -23,7 +22,7 @@ lemma inward_positive_turn_bound {A v e : ℝ}
   have hc := Real.one_sub_sq_div_two_le_cos (x := e)
   have hroot : Real.sqrt 3 ≤ 26/15 := by linarith [sqrt_three_bounds.2]
   have hroot0 : 0 ≤ Real.sqrt 3-1 := by linarith [sqrt_three_bounds.1]
-  have he1 : e ≤ 11/42 := by linarith [he.2,pi_upper_22]
+  have he1 : e ≤ 11/42 := by linarith [he.2,pi_lt_22_over_7]
   have hAprod := mul_nonneg (sub_nonneg.mpr hA) hs0
   have hvprod := mul_nonneg hv hc0
   have hsinprod := mul_nonneg hroot0 (sub_nonneg.mpr hs)
@@ -35,7 +34,7 @@ lemma inward_positive_turn_bound {A v e : ℝ}
 /-- A positive whole-interval bound for the negative-turn trigonometric profile. -/
 lemma inward_negative_profile {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
     (59/3670)*z ≤ Real.sin z-(4/5)*z*Real.cos z-(3/4)*(1-Real.cos z) := by
-  have hz9 : z ≤ 9/8 := by linarith [hz.2,pi_upper_22]
+  have hz9 : z ≤ 9/8 := by linarith [hz.2,pi_lt_22_over_7]
   have hs := Real.sin_ge_sub_cube hz.1
   have hc := Real.one_sub_sq_div_two_le_cos (x := z)
   have hcu := cos_upper_four hz.1
@@ -50,8 +49,8 @@ lemma inward_negative_profile {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
   have hpoly' := mul_le_mul_of_nonneg_left hpoly hz.1
   nlinarith
 
-/-- Negative turn: the axial-label relation is encoded by the displayed
-transverse lower bound, which will be derived from the actual labels. -/
+/-- Negative turn, given the transverse lower bound that the axial label
+implies. -/
 lemma inward_negative_turn_bound {A v z : ℝ}
     (hA : 1/2 ≤ A) (hv : (4/5)*z-3/4 ≤ v-1/2)
     (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :

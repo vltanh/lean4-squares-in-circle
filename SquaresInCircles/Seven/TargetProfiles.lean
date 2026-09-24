@@ -2,13 +2,10 @@ import SquaresInCircles.Seven.ScalarPolynomials
 import SquaresInCircles.Seven.SectorBounds
 
 /-!
-# Scalar support profiles for negative transverse targets
+# Target profiles
 
-These lemmas connect the already proved polynomial certificates to the actual
-trigonometric expressions. Every comparison is on the whole stated interval.
-No sampled derivative or external verification result is a premise.
-
-Incremental, uncompiled proof draft.
+The support of a negative target along the boundary of the label regions,
+bounded below through the polynomial certificates.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -19,7 +16,7 @@ lemma large_axial_target_profile {z : ℝ}
     0 < 1+2*Real.pi/15-(4/5)*z+Real.cos z-
       Real.sqrt (13/2)*(Real.cos (z/2)-Real.sin (z/2)) := by
   have hz0 : 0 ≤ z := by linarith [hz.1]
-  have hzu : z ≤ 11/7 := by linarith [hz.2,pi_upper_22]
+  have hzu : z ≤ 11/7 := by linarith [hz.2,pi_lt_22_over_7]
   have hp := largeAxialP_pos ⟨hz.1,hzu⟩
   have hc := cos6_le hz0
   have hch := cos_le_cos4 (show 0 ≤ z/2 by linarith)
@@ -77,7 +74,7 @@ lemma smallTargetL_lower {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 1/3) :
     (show 0 ≤ 51/20+3*Real.pi/10-873/250 by linarith [pi_lower_157]) hs0
   have hpoly := mul_le_mul_of_nonneg_left hs (show (0:ℝ) ≤ 873/250 by norm_num)
   dsimp [smallAxialL,smallTargetL]
-  linarith [pi_upper_22]
+  linarith [pi_lt_22_over_7]
 
 lemma smallTargetRad_upper {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 1/3) :
     smallTargetRad z ≤ smallAxialU z := by

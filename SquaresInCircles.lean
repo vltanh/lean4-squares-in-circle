@@ -3,57 +3,64 @@ import SquaresInCircles.Two.Uniqueness
 import SquaresInCircles.Three.Uniqueness
 import SquaresInCircles.Four.Uniqueness
 import SquaresInCircles.Five.Uniqueness
+import SquaresInCircles.Seven.Optimality
 
 /-!
-# Packing one to five unit squares in a disk
+# Packing one to five, and seven, unit squares in a disk
 
-For `1 ≤ n ≤ 5`, `optimalRadius n` is the smallest radius of a disk containing
-`n` non-overlapping unit squares, and one packing attains it. That packing is
-unique up to a rotation about the disk centre and a relabelling of the squares.
-Each case can also be imported on its own, from its folder
-`SquaresInCircles/One/` to `SquaresInCircles/Five/`.
+For `1 ≤ n ≤ 5` and `n = 7`, `optimalRadius n` is the smallest radius of a disk
+containing `n` non-overlapping unit squares, and some packing attains it. For
+`n ≤ 5` that packing is unique up to a rotation about the disk centre and a
+relabelling of the squares. For `n = 7` it is not: the middle column of the
+optimal packing can slide. Each case can also be imported on its own, from its
+folder `SquaresInCircles/One/` to `SquaresInCircles/Seven/`.
 -/
 noncomputable section
 namespace SquaresInCircles
 
-/-- The optimal radius for `n` unit squares, `1 ≤ n ≤ 5`. -/
+/-- The optimal radius for `n` unit squares, `1 ≤ n ≤ 5` or `n = 7`. -/
 def optimalRadius : ℕ → ℝ
   | 1 => One.radius
   | 2 => Two.radius
   | 3 => Three.radius
   | 4 => Four.radius
   | 5 => Five.radius
+  | 7 => Seven.radius
   | _ => 0
 
-/-- The optimal packings, in the frame of their disk centres. -/
+/-- The optimal packings, in the frame of their disk centres. For `n = 7`, the
+one with the middle column centred. -/
 def modelCenters : (n : ℕ) → Fin n → Point
   | 1 => One.centers
   | 2 => Two.centers
   | 3 => Three.centers
   | 4 => Four.centers
   | 5 => Five.centers
+  | 7 => Seven.centers
   | _ => fun _ => (0,0)
 
-theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
+theorem optimality (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7)
     (S : Fin n → UnitSquare) (o : Point) (R : ℝ) (hp : Packing S o R) :
     optimalRadius n ≤ R := by
-  obtain ⟨h1,h5⟩ := hn
-  interval_cases n
-  · exact One.optimality S o R hp
-  · exact Two.optimality S o R hp
-  · exact Three.optimality S o R hp
-  · exact Four.optimality S o R hp
-  · exact Five.optimality S o R hp
+  rcases hn with ⟨h1,h5⟩ | rfl
+  · interval_cases n
+    · exact One.optimality S o R hp
+    · exact Two.optimality S o R hp
+    · exact Three.optimality S o R hp
+    · exact Four.optimality S o R hp
+    · exact Five.optimality S o R hp
+  · exact Seven.optimality S o R hp
 
-theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5) :
+theorem attainment (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5 ∨ n = 7) :
     ∃ (S : Fin n → UnitSquare) (o : Point), Packing S o (optimalRadius n) := by
-  obtain ⟨h1,h5⟩ := hn
-  interval_cases n
-  · exact One.attainment
-  · exact Two.attainment
-  · exact Three.attainment
-  · exact Four.attainment
-  · exact Five.attainment
+  rcases hn with ⟨h1,h5⟩ | rfl
+  · interval_cases n
+    · exact One.attainment
+    · exact Two.attainment
+    · exact Three.attainment
+    · exact Four.attainment
+    · exact Five.attainment
+  · exact Seven.attainment
 
 theorem uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5)
     (S : Fin n → UnitSquare) (o : Point) (hp : Packing S o (optimalRadius n)) :
@@ -83,6 +90,6 @@ theorem optimality_attainment_uniqueness (n : ℕ) (hn : 1 ≤ n ∧ n ≤ 5) :
     (∃ (S : Fin n → UnitSquare) (o : Point), Packing S o (optimalRadius n)) ∧
     (∀ (S : Fin n → UnitSquare) (o : Point),
       Packing S o (optimalRadius n) → HasNormalForm S o (modelCenters n)) :=
-  ⟨optimality n hn,attainment n hn,uniqueness n hn⟩
+  ⟨optimality n (Or.inl hn),attainment n (Or.inl hn),uniqueness n hn⟩
 
 end SquaresInCircles

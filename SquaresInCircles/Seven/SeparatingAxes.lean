@@ -1,12 +1,11 @@
-import Mathlib
 import SquaresInCircles.Common.Separation
 
 /-!
-# The separating-axis algebra
+# The separating-axis theorem
 
-Strict overlap on the two edge axes of each square implies strict overlap in
-every nonzero normal direction. This supplies the finite-axis reduction from
-the repository's general supporting-functional separation theorem.
+Strict overlap on the two edge axes of each of two squares implies overlap
+along every normal. With `support_separator`, disjoint squares are separated
+along one of their four edge axes.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven.SAT
