@@ -373,3 +373,115 @@ rational squared radius 2.85118. The local rigidity theorem proves the sharp
 value q_* inside the neighborhood, while a rational interval certificate
 excludes everything outside it. The final proof therefore need not compare
 every search box directly with an irrational endpoint.
+
+
+## Finite-certificate refinement
+
+The current closure strategy has been sharpened in two ways.
+
+### Rational search ceiling
+
+The global finite cover does not need to represent the irrational candidate
+value internally.  Put
+
+[
+ Q_0={142559over50000}=2.85118.
+]
+
+Using only
+
+[
+ {70710678over10^8}<1/sqrt2<{70710679over10^8}
+]
+
+and the defining quadratic for (s), exact rational arithmetic proves
+
+[
+ s<{84246over10^6},
+ qquad
+ q_*<Q_0.
+]
+
+More explicitly, for (r=84246/10^6),
+
+[
+p(r)=r^2-Ar+B<0,qquad r<A/2,
+]
+
+so (r) lies strictly between the two roots and the smaller root satisfies
+(s<r).  Since (2s^2+4s+5/2) is increasing for positive (s),
+
+[
+q_*<2r^2+4r+5/2<Q_0.
+]
+
+Therefore it suffices for the finite verifier to exclude the complement of
+the already-proved local candidate neighborhood under the slightly weaker
+assumption (R^2le Q_0).  The local theorem handles the neighborhood at the
+exact value (q_*).
+
+`scripts/n6_exact_interval.py` checks these comparisons using
+`fractions.Fraction` only.
+
+### Exact cardinal cap contraction
+
+For a unit square at acute frame deviation (	heta) from a chosen cardinal
+normal, the sharp maximum cap depth at squared radius (Q_0) is
+
+[
+ B(	heta)=
+ egin{cases}
+  (ho_0-	frac12)cos	heta-	frac12sin	heta,
+    &sqrt{Q_0}sin	hetale	frac12,\
+  sqrt{Q_0}-cos	heta-sin	heta,
+    &sqrt{Q_0}sin	hetage	frac12,
+ end{cases}
+]
+
+where
+
+[
+ ho_0=sqrt{Q_0-	frac14}-	frac12.
+]
+
+The function is decreasing on ([0,pi/4]).  Thus a selected cardinal
+separator gives a *bidirectional* contraction:
+
+* the current side depth gives an upper bound on (	heta);
+* the current lower bound on (	heta) gives a sharper central-coordinate
+  bound.
+
+This is substantially stronger than the earlier linear estimate.  For
+example, the global central bound forces every cardinal helper to have acute
+deviation below approximately (21.956^circ).  At (22.5^circ),
+
+[
+ B(pi/8)<3/2-ho_0,
+]
+
+so such a cardinal helper is already impossible.
+
+The diagnostic verifier now applies this contraction iteratively.
+
+### Discrete branch reduction
+
+The globally forced cyclic type has two west-category squares, (W,D).
+Since at most one exterior square can use any one central side, (W,D)
+cannot both select the west cardinal separator.  Hence 8 of the nominal
+32 central-separator patterns vanish immediately; 24 remain.
+
+A diagnostic branch-8 run after adding the sharp cap contraction left only
+7 depth-limit boxes in the first 30,000 visited boxes.  All seven had the
+same alternate outer contact signature:
+
+* (D-W) could separate only on (D)'s secondary axis;
+* (D-S) could separate only on (S)'s secondary axis.
+
+One further targeted split of each of those seven boxes made every child fail
+either the global foot-type constraint or the selected central-separator
+constraint.  This is useful evidence that those boxes were interval-dependency
+artifacts, but it is **not** a statement that branch 8, or the full 24-pattern
+cover, has been exhausted.
+
+The next computational milestone is a complete fast cover whose terminal
+boxes carry rule identifiers, followed by exact rational replay.
