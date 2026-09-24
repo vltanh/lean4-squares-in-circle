@@ -292,3 +292,84 @@ A complete proof still requires one of the following:
 
 The current branch should therefore be cited as **proof progress and verifier
 infrastructure**, not as a proof of unrestricted \(n=6\) optimality.
+
+
+## Verifier strengthening after the initial draft
+
+The following consequences of the analytical reduction are now being used to
+shrink the computer cover. They are mathematical constraints, not numerical
+heuristics.
+
+### Moving cap-piercing points
+
+After the normalization C_x,C_y >= 0, the distinguished east and north
+squares contain P_E=(C_x+1,0) and P_N=(0,C_y+1) in their open interiors,
+whether their separator from C is cardinal or their own primary normal.
+
+If an outer square actually uses a cardinal side of C, the cap-piercing lemma
+supplies the corresponding moving interior point as well: P_W=(C_x-1,0) and
+P_S=(0,C_y-1). These point constraints directly contract the local coordinates
+a,b against C_x,C_y,phi.
+
+In particular W and D, the two west-primary-category squares, cannot both use
+the west cardinal side: the global cap theorem already proves at most one
+square per side of C.
+
+### Sharp cap-depth angle constraint
+
+For a cardinally separated helper with acute deviation theta in [0,pi/4] from
+that cardinal axis, its possible cap depth is at most
+
+    B_R(theta) = (rho-1/2) cos(theta) - (1/2) sin(theta)
+                 when R sin(theta) <= 1/2,
+               = R - cos(theta) - sin(theta)
+                 when R sin(theta) >= 1/2.
+
+This function is decreasing. The verifier can reject a whole angle box as soon
+as the minimum required central-side depth exceeds B_R(theta_min).
+
+For four cardinal helpers this immediately reproduces theta_i < 2/5 and the
+opposite-side sums
+
+    theta_E + theta_W <= 4(rho-1),
+    theta_N + theta_S <= 4(rho-1).
+
+On a 50,000-box diagnostic run of the candidate separator pattern, adding
+these already-proved constraints reduced the depth-48 unresolved boxes from
+1,693 to 79 before further search-order changes. This count is diagnostic
+only; it is not a proof statistic.
+
+### Canonical separator patterns
+
+The original 32-pattern search allowed overlapping descriptions: a square
+could be placed in an own-primary branch even when its cardinal separator was
+also available. The cover can instead be made canonical: choose the cardinal
+separator whenever it is available, and use the own-primary branch only where
+the cardinal margin is strictly negative. A cardinal boundary tie belongs to
+the cardinal branch. This preserves full coverage while reducing duplicated
+continuous regions.
+
+### Exact arithmetic core
+
+scripts/n6_exact_intervals.py is the first replay-oriented component. It uses
+only Python integer/rational arithmetic for its proof-relevant calculations:
+
+* pi is enclosed from Machin's identity pi = 16 atan(1/5) - 4 atan(1/239),
+  using alternating rational series;
+* sine and cosine are enclosed by alternating Taylor polynomials after exact
+  reduction by quarter turns;
+* square roots are enclosed by integer square root after dyadic scaling;
+* the algebraic candidate h,s,t,d,q_* is enclosed directly from its exact
+  defining radicals.
+
+Its current self-test gives a rational enclosure of q_* of width below
+4e-30 and proves, by exact rational arithmetic,
+
+    q_* < 2.85118.
+
+This suggests the final computer-assisted architecture: search the complement
+of the already-proved local candidate neighborhood at the slightly larger
+rational squared radius 2.85118. The local rigidity theorem proves the sharp
+value q_* inside the neighborhood, while a rational interval certificate
+excludes everything outside it. The final proof therefore need not compare
+every search box directly with an irrational endpoint.
