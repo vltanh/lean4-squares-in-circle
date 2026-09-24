@@ -1,22 +1,17 @@
-import SquaresInCircles.Seven.Uniqueness.Classification
+import SquaresInCircles.Seven.Uniqueness
 
 /-!
-# Seven-square uniqueness up to the sliding column
+# Convenience entry point for seven-square sliding uniqueness
 
-Every optimal packing is congruent to a member of `Column`. This is not
-uniqueness of an individual packing and does not fix any of the four slots.
-The underlying object is the geometric square set, not its frame record.
+The primary theorem declarations live in `Seven/Uniqueness.lean`. This module
+adds explicit witnesses and convenient aliases; it does not duplicate those
+declarations or provide a second competing dependency chain.
 
-These are end-to-end proposed proof scripts, not a report of Lean acceptance.
-No compilation or CI work has been performed for this extension.
+This remains an uncompiled source draft depending on the uncompiled n=7
+optimality draft. No compilation, axiom audit, or CI operation is reported.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
-
-/-- Classification under the original packing assumptions only. -/
-theorem uniqueness (S : Fin 7 → UnitSquare) (o : Point)
-    (hp : Packing S o radius) : SlidingNormalForm S o :=
-  Equality.classify_optimal S o hp
 
 /-- Explicit frame-and-permutation version of the classification. -/
 theorem uniqueness_column (S : Fin 7 → UnitSquare) (o : Point)
@@ -29,19 +24,13 @@ theorem uniqueness_column (S : Fin 7 → UnitSquare) (o : Point)
           ClosedRect (slidingCenters c i) x y) :=
   uniqueness S o hp
 
-/-- The equivalence sends the canonical enclosing center to the supplied one
-and preserves Euclidean squared distances. It identifies open and closed sets. -/
-theorem rigid_uniqueness (S : Fin 7 → UnitSquare) (o : Point)
-    (hp : Packing S o radius) : CongruentToSliding S o :=
-  (uniqueness S o hp).rigid
-
-/-- Both directions: exactly the allowed sliding columns attain this radius. -/
+/-- Alias emphasizing the fixed candidate radius in both directions. -/
 theorem packing_at_radius_iff (S : Fin 7 → UnitSquare) (o : Point) :
     Packing S o radius ↔ SlidingNormalForm S o :=
-  ⟨uniqueness S o,fun h => h.packing⟩
+  packing_iff_sliding S o
 
 /-- A radius no greater than the candidate forces both optimality and the
-geometric normal form. There is no additional equality-contact hypothesis. -/
+geometric normal form, with no extra equality-contact hypothesis. -/
 theorem classification_of_radius_le (S : Fin 7 → UnitSquare) (o : Point) (R : ℝ)
     (hp : Packing S o R) (hR : R≤radius) :
     R=radius ∧ SlidingNormalForm S o := by
@@ -50,20 +39,30 @@ theorem classification_of_radius_le (S : Fin 7 → UnitSquare) (o : Point) (R : 
   rw [he] at hp
   exact uniqueness S o hp
 
-/-- Canonical parameterization by the four slots, with one affine constraint.
-This does not claim that distinct slot vectors are inequivalent under symmetry. -/
+/-- Every optimal packing has four nonnegative slots with the stated sum.
+Distinct slot vectors are not asserted to be inequivalent under symmetry. -/
 theorem uniqueness_slots (S : Fin 7 → UnitSquare) (o : Point)
     (hp : Packing S o radius) :
     ∃ g : SlotSimplex, HasNormalForm S o
-      (slidingCenters (columnSlotEquiv.symm g)) := by
-  obtain ⟨c,hc⟩ := uniqueness S o hp
-  refine ⟨columnSlotEquiv c,?_⟩
-  simpa only [Equiv.symm_apply_apply] using hc
+      (slidingCenters (columnSlotEquiv.symm g)) :=
+  (classification_by_slots S o).mp hp
 
-/-- The three-parameter freedom is preserved, not quotiented to one arrangement. -/
+/-- Every allowed column remains an attaining, classified packing. -/
 theorem sliding_classification (c : Column) :
     Packing (slidingModel c) (0,0) radius ∧
     SlidingNormalForm (slidingModel c) (0,0) :=
   ⟨sliding_packing c,slidingModel_normalForm c⟩
+
+/-- The family includes a middle square strictly above the enclosing center. -/
+theorem off_center_sliding_attainment :
+    ∃ c : Column, 0<c.middle ∧ Packing (slidingModel c) (0,0) radius := by
+  let g : Fin 4 → ℝ := ![2*Real.sqrt 3-3,0,0,0]
+  have hg (i : Fin 4) : 0≤g i := by
+    fin_cases i <;> simp [g] <;> linarith [sliding_slot_budget_pos]
+  have hs : ∑ i,g i=2*Real.sqrt 3-3 := by simp [g,Fin.sum_univ_succ]
+  let c := columnOfSlots g hg hs
+  refine ⟨c,?_,sliding_packing c⟩
+  dsimp [c,columnOfSlots,g,columnLimit]
+  linarith [sliding_slot_budget_pos]
 
 end SquaresInCircles.Seven
