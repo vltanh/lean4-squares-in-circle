@@ -8,9 +8,12 @@ This is the fixed proof plan. Do not switch proof frameworks unless one of the n
 
 Proved in `research/six/A1.md` under the original `c_x,c_y >= 0` normalization.
 
-If D were west-cardinal, W must be own-primary because at most one square may use a central side. The problem reduces to the two angles `(theta_W,theta_D)`. A fixed three-separator stress with weights `3/10, 9/20, 1/4`, together with the exact center-support inequality, excludes all eight directed W-D SAT axes.
+If D were west-cardinal, W must be own-primary because at most one square may use a central side. The problem reduces to the two angles `(theta_W,theta_D)`.
 
-`research/six/check_A1.py` replays only this two-angle inequality with exact rational/Taylor arithmetic: 3647 leaves total, maximum depth 19, about 22 seconds in the development run.
+The former two-angle interval replay has been replaced by a hand concavity argument. Axis-specific rational three-separator stresses reduce every one of the eight directed W--D SAT axes to a gap
+`C+F(theta_W)+G(theta_D)+H(theta_D-theta_W)`. On each of the three sign chambers the pieces are concave, so the minimum is attained at one of seven fixed chamber vertices.
+
+`research/six/check_A1_hand.py` checks only the scalar curvature inequalities and the 56 fixed endpoint evaluations with exact rational/Taylor arithmetic. There is no interval subdivision; the smallest certified endpoint gap is (>1/500).
 
 No center-coordinate search is used. The original sector/pin normalization is preserved for A2.
 
