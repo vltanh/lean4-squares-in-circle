@@ -640,3 +640,46 @@ The remaining issue is no longer the analytic complexity of these stresses.
 It is proving that the global normalized packing falls into the union of these
 graph families, the already-proved local-rigidity region, or another similarly
 simple graph family.
+
+
+## 9. Symmetry normalization: D may always be chosen own-primary
+
+One apparent global coverage obligation is actually only a labeling issue.
+
+The global sector theorem gives exactly two W-category exterior squares.  In
+cyclic primary-direction order they were called \(W,D\).  The cap-piercing
+side theorem proves that at most one exterior square can use the west cardinal
+side of \(C\).
+
+Now reflect the entire packing in the horizontal axis of the central frame.
+This preserves the disk and all incidences, fixes the E category, exchanges
+N and S, and reverses the order of the two W-category primary directions.
+After restoring the cyclic labels \(E,N,W,D,S\), the old \(W,D\) are
+interchanged.
+
+Consequently:
+
+* if both W-category squares use own-primary central separators, then of course
+  \(D\) is own-primary;
+* if exactly one uses the west cardinal side, choose between the packing and
+  its horizontal reflection so that the cardinal one is labeled \(W\).
+
+The forbidden case in which both use the west side has already been excluded
+globally.
+
+Therefore, **without loss of generality**,
+
+\[
+\boxed{\text{\(D\) uses its own-primary separator from \(C\).}}
+\]
+
+This removes the \(D\)-central separator bit from the global case split.  It
+does not use numerical optimization, angle bounds, or a contact assumption.
+
+The earlier convention \(c_x,c_y\ge0\) was only a convenience for deriving
+the sector lemmas.  Those conclusions are reflection invariant once proved,
+so the final optimality proof is free to spend the remaining reflection
+symmetry on this \(W/D\) labeling normalization instead.
+
+Thus the global hand proof should begin after the sector theorem with \(D\)
+already fixed as the oblique central square.
