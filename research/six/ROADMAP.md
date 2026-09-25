@@ -4,15 +4,15 @@ This is the fixed proof plan. Do not switch proof frameworks unless one of the n
 
 ## Phase A — Finish global structural reduction
 
-### A1. Force D to use its own-primary separator from C
+### A1. Force D to use its own-primary separator from C — CLOSED
 
-Prove: **D cardinal-west implies contradiction.**
+Proved in `research/six/A1.md` under the original `c_x,c_y >= 0` normalization.
 
-Start with the difficult subcase in which W is own-primary. Reduce it to the two angles theta_W and theta_D and prove the separating-axis contradiction analytically.
+If D were west-cardinal, W must be own-primary because at most one square may use a central side. The problem reduces to the two angles `(theta_W,theta_D)`. A fixed three-separator stress with weights `3/10, 9/20, 1/4`, together with the exact center-support inequality, excludes all eight directed W-D SAT axes.
 
-Deliverable: a standalone lemma in the n=6 hand-proof notes, with at most a tiny scalar checker.
+`research/six/check_A1.py` replays only this two-angle inequality with exact rational/Taylor arithmetic: 3647 leaves total, maximum depth 19, about 22 seconds in the development run.
 
-Do not proceed to A2 until A1 is either proved or shown false.
+No center-coordinate search is used. The original sector/pin normalization is preserved for A2.
 
 ### A2. Collapse the remaining central-separator patterns
 
@@ -129,6 +129,6 @@ Do not compile continuously while developing the mathematics.
 
 ## Immediate task
 
-**A1 only: D cannot use the west cardinal separator.**
+**A2 only: collapse the remaining central-separator patterns.**
 
-Do not move to A2 until A1 is proved or shown false.
+Do not move to Phase B until A2 is proved or one of its proposed implications is replaced by the precise correct statement.
