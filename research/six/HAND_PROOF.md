@@ -445,3 +445,198 @@ lemmas:
 The computer is now used only for fixed rational/Taylor arithmetic at a few
 scalar endpoints. The next target is the large-angle candidate contact graph,
 whose five-angle replay should be simplified in the same way.
+
+
+## 7. Large-angle candidate contact graph: concavity replaces 5D replay
+
+The third exact replay family is
+\`check_large_candidate_graph_certificate.py\`. Its domain is
+
+\[
+1/6\le\theta_E,\theta_N,\theta_W,\theta_S\le1/3,
+\qquad
+|\epsilon_D|\le1/4,
+\]
+
+with four possible source-axis choices for the mixed \(W\!-\!N\) and
+\(S\!-\!E\) separators.
+
+The only nonsmoothness comes from the signs of
+
+\[
+\theta_N-\theta_W,\qquad
+\theta_E-\theta_S.
+\]
+
+Hence there are four smooth sign chambers.
+
+### 7.1. Uniform separate concavity
+
+On every source choice and every sign chamber, the stress is strictly concave
+in each individual variable.  A coarse source-independent proof uses the
+following positive curvature contributions.
+
+Put \(a=1/6\), \(b=1/3\).  Lower bounds for the unary curvature magnitudes are
+
+\[
+T_E=
+\min\left\{
+{167\over500}\cos b,\,
+{6847\over35000}\sin a+{26263\over140500}\cos b
+\right\},
+\]
+
+\[
+T_N=
+\min\left\{
+{84\over125}(\sin a+\cos b),\,
+{1848\over6625}\sin a+{12043\over25625}\cos b
+\right\},
+\]
+
+\[
+T_S=
+\min\left\{
+{8003927\over9835000}\sin a+{18438\over35125}\cos b,\,
+{21714\over35125}\sin a+{84\over125}\cos b
+\right\},
+\]
+
+\[
+T_W=
+\min\left\{
+{13527\over102500}\cos b-{498416\over1358125}\sin b,\,
+{668\over25625}\sin a+{167\over500}\cos b
+\right\}.
+\]
+
+The common pair-curvature bounds are
+
+\[
+D_{DW}={189\sqrt2\over500}\cos(7/12),
+\]
+
+\[
+D_{NW}={31\over125}\bigl(\cos a-\sin a\bigr),
+\]
+
+\[
+D_{DS}={517\over1000\sqrt2}
+\bigl(\cos(1/12)-\sin(1/12)\bigr),
+\]
+
+while the only potentially wrong-sign pair term contributes at most
+
+\[
+P={97713\over197000}\sin a.
+\]
+
+These give the following strictly positive margins:
+
+\[
+T_E>0.20909,\qquad
+T_N>0.49037,
+\]
+
+\[
+T_W+D_{DW}+D_{NW}-P>0.57193,
+\]
+
+\[
+T_S+D_{DS}-P>0.88263,
+\]
+
+\[
+D_{DW}+D_{DS}>0.78004.
+\]
+
+Therefore the second derivative in each of the five coordinates is strictly
+negative on every chamber.
+
+### 7.2. Concavity on the two chamber diagonals
+
+To reduce an ordered pair triangle to its vertices, separate concavity alone is
+not quite enough: one must also control the equality boundary.
+
+Along \(\theta_N=\theta_W\), the \(N-W\) relative-angle term is constant.  A
+uniform lower curvature margin is
+
+\[
+T_N+T_W+D_{DW}-P>0.85889.
+\]
+
+Along \(\theta_E=\theta_S\), the \(E-S\) relative-angle term is constant and
+
+\[
+T_E+T_S+D_{DS}-P>1.09172.
+\]
+
+Thus both equality diagonals are strictly concave as one-variable functions.
+
+### 7.3. Chamber minima are vertices
+
+For a chamber \(\theta_N\ge\theta_W\), fix \(\theta_W\). Concavity in
+\(\theta_N\) sends the minimum to either
+\(\theta_N=\theta_W\) or \(\theta_N=1/3\).  On the second edge, concavity in
+\(\theta_W\) sends the minimum to an endpoint; on the equality edge, diagonal
+concavity does the same.  Therefore the \((\theta_N,\theta_W)\) triangle has
+its minimum at its three vertices.
+
+The same argument applies to the opposite \(N/W\) chamber and to both \(E/S\)
+chambers.  Finally the stress is concave in \(\epsilon_D\), so its minimum is
+at \(\epsilon_D=\pm1/4\).
+
+Taking the union of the four chambers, every possible minimum is therefore
+among
+
+\[
+(\theta_N,\theta_W)\in\{1/6,1/3\}^2,
+\qquad
+(\theta_E,\theta_S)\in\{1/6,1/3\}^2,
+\qquad
+\epsilon_D\in\{-1/4,1/4\}.
+\]
+
+That is only \(4\cdot4\cdot2=32\) angle vertices per source-axis choice, or
+128 fixed evaluations total.
+
+### 7.4. Endpoint margin
+
+The exact point-evaluation checker finds the same worst vertex for all four
+source-axis choices:
+
+\[
+\boxed{
+\theta_E=\theta_N=\theta_W=\theta_S=1/6,\qquad
+\epsilon_D=1/4.
+}
+\]
+
+At that vertex,
+
+\[
+F-Q_0>0.01834164.
+\]
+
+Thus the former five-dimensional replay tree for this entire large-angle
+family reduces to:
+
+1. seven uniform scalar concavity inequalities;
+2. 128 fixed endpoint evaluations.
+
+The companion script \`check_large_hand.py\` performs exactly those checks and
+contains no recursive subdivision.
+
+## 8. Status after the three hand reductions
+
+All three existing nonlocal exact replay families now have hand-proof
+reductions:
+
+1. alternate \(D-W\) secondary axis: monotonicity/concavity, one final corner;
+2. both \(D-W,D-S\) on \(D\)-secondary: one base stress plus source corrections;
+3. large-angle candidate graph: chamber concavity plus 128 endpoint values.
+
+The remaining issue is no longer the analytic complexity of these stresses.
+It is proving that the global normalized packing falls into the union of these
+graph families, the already-proved local-rigidity region, or another similarly
+simple graph family.
