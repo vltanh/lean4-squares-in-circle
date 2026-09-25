@@ -70,7 +70,9 @@ for name,margin in checks.items():
     assert margin>0,(name,margin)
     print(name,'margin >',float(margin))
 
-assert F(11,50)-F(17,128) > F(1,12)
-print('11/50 - 17/128 > 1/12 margin >',
-      float(F(11,50)-F(17,128)-F(1,12)))
+PAIR = F(11,50)-F(17,256)
+assert PAIR == F(983,6400)
+assert PAIR > F(3,20)
+print('pairwise strip coercivity =',float(PAIR))
+print('pairwise strip coercivity - 3/20 >',float(PAIR-F(3,20)))
 print('A2.1 unified central-pattern tangent constants: PASS')
