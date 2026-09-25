@@ -14,19 +14,27 @@ If D were west-cardinal, W must be own-primary because at most one square may us
 
 No center-coordinate search is used. The original sector/pin normalization is preserved for A2.
 
-### A2. Collapse the remaining central-separator patterns
+### A2. Collapse the remaining central-separator patterns modulo local rigidity
 
-Starting from D own-primary, prove the implications suggested by the surviving-pattern analysis:
+The raw bit implications are not treated as standalone geometric statements: own-primary and cardinal separation meet on the candidate boundary. The correct classification is radius-sensitive.
 
-- N own implies E own.
-- W own implies N own.
+Starting from D own-primary, prove:
+
+**Outside the already-proved 1/100 full-dimensional local-rigidity neighborhood, every candidate-sized packing has central pattern**
+
+    8, 9, 11, 15, 24, 25, or 27.
+
+Equivalently, outside the local neighborhood establish the three implications
+
+- N own implies E own;
+- W own implies N own;
 - S own implies W cardinal.
 
-If any implication is false, replace it with the precise correct statement.
+Near the candidate no bit-classification lemma is needed: local rigidity already proves R^2 >= q_* regardless of which endpoint supplies a tied separator.
 
-Target: reduce the original 2^5 choices to the seven observed patterns 8, 9, 11, 15, 24, 25, 27 without computer enumeration.
+Target: reduce the nonlocal central-pattern analysis to the seven observed patterns without a 17-variable search.
 
-Deliverable: a short finite classification theorem.
+Deliverable: a short radius-sensitive classification theorem, with only low-dimensional scalar/stress checks if needed.
 
 ## Phase B — Classify outer separating axes
 
