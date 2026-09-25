@@ -26,3 +26,19 @@ for name,margin in checks.items():
     print(name,"margin >",float(margin))
 
 print("A2.1 pattern-10 tangent coercivity checks: PASS")
+
+
+# Uniform tangent along |eps| <= 1/4.
+from n6_exact_intervals import sqrt_bounds
+qstar = 2*s*s+4*s+F(5,2)
+rad = qstar-F(1,4)
+rho_lo = sqrt_bounds(rad.lo,bits=120).lo-F(1,2)
+rho_hi = sqrt_bounds(rad.hi,bits=120).hi-F(1,2)
+mh = m*h
+assert mh.hi < 1
+assert rho_lo > 1
+assert rho_hi < F(9,8)
+assert F(1,3)-F(17,128) > F(1,5)
+print("m*h < 1 margin >",float(1-mh.hi))
+print("rho in (1,9/8) margins >",float(rho_lo-1),float(F(9,8)-rho_hi))
+print("uniform eps-strip tangent constant > 1/5: PASS")
