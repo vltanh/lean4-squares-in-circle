@@ -292,3 +292,156 @@ The robust ingredients are instead:
 5. local rigidity at the unique equality configuration.
 
 That is the route being pursued from here.
+
+
+## 5. Both D--W and D--S on D-secondary: one common base stress
+
+The second exact replay script, \`check_alt_ds_d_certificate.py\`, originally
+subdivided four separate W--N source-axis cases. Its full angle domain is
+
+\[
+|\theta_N|,|\theta_W|\le1/5,\qquad
+1/6\le\theta_S\le1/2,\qquad
+|\epsilon|\le1/6.
+\]
+
+A symbolic expansion shows that all four source cases dominate one common
+base function
+
+\[
+\begin{aligned}
+B(n,w,s,e)={}&
+ -b\sin(e-w)+r\cos n+r\cos s-r\cos w\\
+&-j\cos(e+\pi/4)
+ +A\cos(e-s)+C\cos(e-w)\\
+&+u\cos(n-w)-{1071\over800},
+\end{aligned}
+\tag{B}
+\]
+
+where
+
+\[
+b={43\sqrt2\over1200},\quad
+r={3\over50},\quad
+j={17\over160},\quad
+A={17\sqrt2\over10},\quad
+C={2107\sqrt2\over1200},\quad
+u={1\over25}.
+\]
+
+Put
+
+\[
+a={1\over6},\qquad c={1\over5},\qquad d=a+c={11\over30}.
+\]
+
+For fixed \(w\), the \(n\)-part
+\[
+g(n)=r\cos n+u\cos(n-w)
+\]
+is concave. Thus its minimum is at \(n=\pm c\); for \(w\ge0\),
+\[
+g(-c)-g(c)=-2u\sin c\sin w\le0,
+\]
+so \(n=-c\).
+
+The \(e\)-dependent part is concave because
+\[
+b\sin d+j-A\cos(2/3)-C\cos d<0.
+\]
+For \(w\ge0\), the endpoint difference has sign
+\[
+-b\cos w+j/\sqrt2+A\sin s+C\sin w,
+\]
+which is increasing in \(s,w\) and is positive already at \((s,w)=(a,0)\):
+\[
+-b+j/\sqrt2+A\sin a>0.
+\]
+Hence \(e=-a\).
+
+Then the \(s\)-derivative is
+\[
+-r\sin s-A\sin(a+s)<0,
+\]
+so \(s=1/2\). Finally,
+\[
+{dB\over dw}\le r\sin c+b-C\sin a<0,
+\]
+hence \(w=c\).
+
+Therefore the \(w\ge0\) half-domain is minimized at
+\[
+\boxed{(n,w,s,e)=(-1/5,1/5,1/2,-1/6)}.
+\]
+
+For \(w\le0\), write \(x=-w\). The same \(n\)-concavity gives \(n=c\).
+The \(e\)-part is concave, so \(e=\pm a\); for either endpoint the
+\(s\)-derivative is negative, so \(s=1/2\). For each fixed \(e\), the remaining
+function of \(x\) is concave; the crude positive lower bound
+\[
+C\cos d-b\sin d-r>0
+\]
+is already enough to prove this. Hence only four scalar endpoint pairs
+\[
+(e,x)\in\{(-a,0),(-a,c),(a,0),(a,c)\}
+\]
+remain. All four are above the preceding hard corner; the smallest excess is
+greater than \(0.122\).
+
+At the hard corner,
+\[
+\begin{aligned}
+B_{\min}={}&
+ b\sin d+r\cos(1/2)
+ -j{(\cos a+\sin a)\over\sqrt2}\\
+&+A\cos(a+1/2)+C\cos d+u\cos(2c)-{1071\over800}.
+\end{aligned}
+\]
+Exact Taylor bounds give
+\[
+B_{\min}-{142559\over50000}>0.038647324.
+\]
+
+The other three W--N source-axis formulas differ from this common base by
+small explicitly bounded terms. Uniform lower corrections are
+
+\[
+L_{Wp}={1\over25}+r(\cos c-\sin c)-2b,
+\]
+\[
+L_{Np}={1\over25}+r\cos c-2b(\sin d+\cos d),
+\]
+\[
+L_{Ns}=-r+r\cos c-2b\sin d.
+\]
+
+After these worst-case corrections the remaining squared-radius margins are
+
+\[
+B_{\min}-Q_0+L_{Wp}>0.02417918,
+\]
+\[
+B_{\min}-Q_0+L_{Np}>0.00650120,
+\]
+\[
+B_{\min}-Q_0+L_{Ns}>0.00111606.
+\]
+
+Thus all four source-axis cases in this second alternate-D family are excluded
+by one hand minimization and three scalar comparisons.
+
+The script \`check_alt_ds_d_hand.py\` verifies only these scalar signs and
+endpoint comparisons; it performs no multidimensional subdivision.
+
+## 6. Updated computational role
+
+Two formerly expensive exact replay families are now reduced to short analytic
+lemmas:
+
+1. alternate D--W secondary axis;
+2. both D--W and D--S on D-secondary.
+
+The computer is now used only for fixed rational/Taylor arithmetic at a few
+scalar endpoints. The next target is the large-angle candidate contact graph,
+whose five-angle replay should be simplified in the same way.
