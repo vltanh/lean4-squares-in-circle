@@ -536,3 +536,78 @@ at maximum subdivision depths 21 and 19.
 
 This is the first nonlocal survivor family converted from a diagnostic search
 observation into a compact exact terminal certificate.
+
+
+## Hand-proof simplification of the exact survivor certificates
+
+The exact replay scripts are no longer the intended final presentation.
+
+Three previously multidimensional certificate families have now been reduced
+to elementary hand arguments in \`research/six/HAND_PROOF.md\`.
+
+### Alternate D--W secondary axis
+
+The former 5,110/3,854-leaf replay expands to a four-angle chain
+trigonometric polynomial.  On the difficult W-source half-domain,
+monotonicity and concavity force the minimum to the single corner
+
+\[
+(\theta_N,\theta_W,\theta_S,\epsilon_D)
+=(0,2/5,1/6,-1/6).
+\]
+
+Nine fixed scalar Taylor inequalities prove a squared-radius margin greater
+than \(0.0309368\).  See \`check_alt_dw_hand.py\`.
+
+### Both D--W and D--S on D-secondary
+
+All four possible W--N source axes dominate one common base stress.  The base
+is minimized by a short concavity argument at
+
+\[
+(\theta_N,\theta_W,\theta_S,\epsilon_D)
+=(-1/5,1/5,1/2,-1/6).
+\]
+
+Its margin over \(Q_0\) is greater than \(0.0386473\).  Three explicit
+source-axis correction bounds leave positive margins in all four source
+cases; the smallest is greater than \(0.00111606\).
+See \`check_alt_ds_d_hand.py\`.
+
+### Large-angle candidate contact graph
+
+On each sign chamber determined by
+\(\theta_N-\theta_W\) and \(\theta_E-\theta_S\), the stress is separately
+concave in all five angles.  It is also concave on both equality diagonals
+\(\theta_N=\theta_W\) and \(\theta_E=\theta_S\).
+
+Uniform source-independent curvature margins are all large; the smallest
+separate-coordinate margin is greater than \(0.209\), and the diagonal
+margins exceed \(0.858\).
+
+Therefore every chamber minimum occurs at a chamber vertex.  Across the four
+source-axis choices this leaves only 128 fixed evaluations, with worst margin
+
+\[
+F-Q_0>0.01834164.
+\]
+
+See \`check_large_hand.py\`.
+
+### Consequence
+
+The computational bottleneck is no longer the analysis of these stress
+families.  Their recursive interval trees can be replaced by short analytic
+lemmas plus fixed rational endpoint arithmetic.
+
+The remaining unrestricted issue is **global contact-graph coverage**:
+prove that every normalized candidate-sized packing either lies in the local
+rigidity neighborhood, one of the analytically covered one-oblique branches,
+or one of the hand-reduced contact graphs above (or identify the small number
+of additional graph families requiring analogous stresses).
+
+A relaxed experiment confirms that the five fixed pins plus one-square
+containment alone do **not** rule out the nominally wrong source axes for the
+four adjacent outer pairs.  Any global graph reduction must use the central
+square/cyclic packing constraints as well; pin-only axis exclusion would be
+invalid.
