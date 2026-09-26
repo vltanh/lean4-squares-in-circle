@@ -1,69 +1,18 @@
 import SquaresInCircles.Seven.Labels
 import SquaresInCircles.Seven.Construction
 
-/-! The support function of the square at a state, and its marker point. -/
+/-!
+# The support function
+
+The support function of the closed square at a state, bounded below by the
+points of the square and by the distance of its centre from the disk centre,
+and the Cauchy–Schwarz bound for a linear form on the disk of radius `radius`.
+-/
 noncomputable section
 namespace SquaresInCircles.Seven
 
 def support (a b z : ℝ) : ℝ :=
   a*Real.cos z+b*Real.sin z+(|Real.cos z|+|Real.sin z|)/2
-
-lemma label_ge_sixth {a u : ℝ} (h : Admissible a u) (hu : 1/2 ≤ u) :
-    Real.pi/6 ≤ label a u := by
-  have hpi := Real.pi_lt_d4
-  have hA : Real.pi/6 ≤ axial u := by dsimp [axial]; linarith
-  have hT : Real.pi/6 ≤ side a u := by
-    rw [side_identity_transverse]
-    linarith [h.remainder_nonneg]
-  unfold label
-  exact le_min (le_min hA hT) (by linarith [Real.pi_pos])
-
-theorem marker_point_magnitude {a u : ℝ} (h : Admissible a u) :
-    |Real.cos (label a u)-a| ≤ 1/2 ∧
-    |Real.sin (label a u)-u| ≤ 1/2 := by
-  let t := label a u
-  have ht0 : 0 ≤ t := h.label_nonneg
-  have htq : t ≤ Real.pi/4 := h.label_le_quarter
-  have hpi := Real.pi_lt_d4
-  have ht8 : t ≤ 4/5 := by linarith
-  have hquad := Real.one_sub_sq_div_two_le_cos (x := t)
-  have hcos := Real.cos_le_one t
-  have hprod := mul_nonneg ht0 (show 0 ≤ 4/5-t by linarith)
-  have ha := h.radial_label_bound
-  change a ≤ 1+2*Real.pi/15-(4/5)*t at ha
-  have hc0 : -1/2 ≤ Real.cos t-a := by nlinarith
-  have hc1 : Real.cos t-a ≤ 1/2 := by linarith [h.2.2.1]
-  have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi ht0
-    (show t ≤ Real.pi by linarith [Real.pi_pos])
-  have hs1 := Real.sin_le ht0
-  have htA : t ≤ 5*u/4 := h.label_le_axial
-  have hy1 : Real.sin t-u ≤ 1/2 := by linarith [h.u_lt]
-  have hy0 : -1/2 ≤ Real.sin t-u := by
-    by_cases hu : u ≤ 1/2
-    · linarith
-    · have ht6 : Real.pi/6 ≤ t := label_ge_sixth h (le_of_not_ge hu)
-      have hmon := Real.strictMonoOn_sin.monotoneOn
-        (show Real.pi/6 ∈ Set.Icc (-(Real.pi/2)) (Real.pi/2) by
-          constructor <;> linarith [Real.pi_pos])
-        (show t ∈ Set.Icc (-(Real.pi/2)) (Real.pi/2) by
-          constructor <;> linarith [Real.pi_pos]) ht6
-      rw [Real.sin_pi_div_six] at hmon
-      linarith [h.u_lt]
-  exact ⟨abs_le.mpr ⟨by linarith,hc1⟩,abs_le.mpr ⟨by linarith,hy1⟩⟩
-
-lemma marker_point_signed {a b : ℝ} (h : Admissible a |b|) :
-    |Real.cos (signedLabel a b)-a| ≤ 1/2 ∧
-    |Real.sin (signedLabel a b)-b| ≤ 1/2 := by
-  have hh := marker_point_magnitude h
-  by_cases hb : b < 0
-  · simp only [signedLabel, ite_eq_left hb, Real.cos_neg, Real.sin_neg]
-    refine ⟨hh.1,?_⟩
-    have hid : -Real.sin (label a |b|)-b = -(Real.sin (label a |b|)-|b|) := by
-      rw [abs_of_neg hb]
-      ring
-    rw [hid,abs_neg]
-    exact hh.2
-  · simpa only [signedLabel, ite_eq_right hb, abs_of_nonneg (le_of_not_gt hb)] using hh
 
 lemma point_le_support {a b x y : ℝ}
     (hx : |x-a| ≤ 1/2) (hy : |y-b| ≤ 1/2) (z : ℝ) :
@@ -79,13 +28,7 @@ lemma point_le_support {a b x y : ℝ}
       _ = |y-b| * |Real.sin z| := abs_mul _ _
       _ ≤ _ := mul_le_mul_of_nonneg_right hy (abs_nonneg _)
   dsimp [support]
-  nlinarith
-
-lemma marker_support_lower {a b : ℝ} (h : Admissible a |b|) (z : ℝ) :
-    Real.cos (z-signedLabel a b) ≤ support a b z := by
-  have hp := marker_point_signed h
-  have hh := point_le_support hp.1 hp.2 z
-  simpa only [Real.cos_sub, mul_comm] using hh
+  linarith
 
 lemma center_norm_bound {a u : ℝ} (h : Admissible a u) :
     a^2+u^2 ≤ (Real.sqrt 3-1/2)^2 := by
@@ -99,13 +42,13 @@ lemma center_norm_bound {a u : ℝ} (h : Admissible a u) :
   dsimp [phi,targetSq] at hp
   have hle : d ≤ Real.sqrt 3-1/2 := by nlinarith
   have hprod := mul_nonneg (sub_nonneg.mpr hle)
-    (show 0 ≤ Real.sqrt 3-1/2+d by nlinarith)
-  nlinarith
+    (show 0 ≤ Real.sqrt 3-1/2+d by linarith)
+  linarith
 
 lemma direction_width_ge_one (z : ℝ) : 1 ≤ |Real.cos z|+|Real.sin z| := by
   have he : |Real.cos z|^2+|Real.sin z|^2=1 := by
     simp only [sq_abs]
-    nlinarith [Real.sin_sq_add_cos_sq z]
+    linarith [Real.sin_sq_add_cos_sq z]
   have hmul := mul_nonneg (abs_nonneg (Real.cos z)) (abs_nonneg (Real.sin z))
   have h0 := abs_nonneg (Real.cos z)
   have h1 := abs_nonneg (Real.sin z)
@@ -124,14 +67,14 @@ lemma support_lower {a b : ℝ} (h : Admissible a |b|) (z : ℝ) :
   have hr := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
   have hr0 := Real.sqrt_nonneg (3 : ℝ)
   have hd2 : (a*Real.cos z+b*Real.sin z)^2 ≤ (Real.sqrt 3-1/2)^2 := by
-    nlinarith only [hid,hn,hsq]
+    linarith only [hid,hn,hsq]
   have hdot : -(Real.sqrt 3-1/2) ≤ a*Real.cos z+b*Real.sin z := by
     generalize a*Real.cos z+b*Real.sin z = D at hd2 ⊢
     have hc : 0 ≤ Real.sqrt 3-1/2 := by nlinarith only [hr,hr0]
     by_contra hn
     have hp := mul_pos (show 0 < -D-(Real.sqrt 3-1/2) by linarith)
       (show 0 < -D+(Real.sqrt 3-1/2) by linarith)
-    nlinarith only [hp,hd2]
+    linarith only [hp,hd2]
   have hw := direction_width_ge_one z
   dsimp [support]
   linarith

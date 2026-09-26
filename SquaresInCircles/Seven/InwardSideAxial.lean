@@ -1,5 +1,6 @@
 import SquaresInCircles.Seven.InwardTurnBounds
 import SquaresInCircles.Seven.CapReduction
+import SquaresInCircles.Seven.PairModel
 
 /-!
 # The inward axis, positive signs, side and axial labels

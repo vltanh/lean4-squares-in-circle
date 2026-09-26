@@ -1,5 +1,6 @@
 import SquaresInCircles.Seven.InwardOppositeGeometry
 import SquaresInCircles.Seven.PolynomialCertificates
+import SquaresInCircles.Seven.TaylorBounds
 
 /-!
 # A two-circle certificate for the inward axis
@@ -11,7 +12,7 @@ certificate.
 noncomputable section
 open Set
 namespace SquaresInCircles.Seven
-open Boundary TaylorPoly
+open Boundary
 
 lemma circle_quadratic_upper {v : ℝ} (hv : 0 ≤ v ∧ v ≤ 3/10) :
     circle v-1/2 ≤ Real.sqrt 3-1-(15/52)*v-(15/52+1/42)*v^2 := by
@@ -25,7 +26,7 @@ lemma circle_quadratic_upper {v : ℝ} (hv : 0 ≤ v ∧ v ≤ 3/10) :
   have hB0 : 0 < B := by
     have hv2 : v^2 ≤ (3/10:ℝ)^2 := by nlinarith
     dsimp [B,a,b]
-    nlinarith [sqrt_three_bounds.1]
+    linarith [sqrt_three_bounds.1]
   have hcoeff1 : 0 ≤ 1-2*Real.sqrt 3*a := by
     dsimp [a]
     linarith [sqrt_three_bounds.2]
@@ -39,7 +40,7 @@ lemma circle_quadratic_upper {v : ℝ} (hv : 0 ≤ v ∧ v ≤ 3/10) :
   have hid : B^2-(3-v-v^2)=v*(1-2*Real.sqrt 3*a)+
       v^2*(1-2*Real.sqrt 3*b+a^2)+2*a*b*v^3+b^2*v^4 := by
     dsimp [B]
-    nlinarith
+    linarith
   have hle : Real.sqrt (3-v-v^2) ≤ B := by nlinarith
   have he : targetSq-(v+1/2)^2=3-v-v^2 := by dsimp [targetSq]; ring
   dsimp [circle]
@@ -68,7 +69,7 @@ lemma radial_trig_lower {z v r : ℝ}
   have hcos := mul_le_mul_of_nonneg_left hcosL
     (show 0 ≤ v+1/2 by linarith)
   dsimp [radialB,radialL,radialK]
-  nlinarith
+  linarith
 
 lemma inward_circular_pos {a u A v z : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -95,7 +96,7 @@ lemma inward_circular_pos {a u A v z : ℝ}
   rw [inward_opposite_side_identity hT hA he]
   rw [abs_of_nonneg hs0]
   dsimp [radialE] at hp
-  nlinarith
+  linarith
 
 lemma line_to_circle_turn_margin {z : ℝ}
     (hz : 19/100 ≤ z ∧ z ≤ Real.pi/3) :
@@ -114,7 +115,7 @@ lemma line_to_circle_turn_margin {z : ℝ}
   have hsign (x : ℝ) (hx : x ∈ Icc (19/100) (Real.pi/3)) : dd x ≤ 0 := by
     have hs := Real.sin_nonneg_of_nonneg_of_le_pi (x := x)
       (by linarith [hx.1]) (by linarith [hx.2,Real.pi_pos])
-    have hc := cos_nonneg_quarter (x := x)
+    have hc := Real.cos_nonneg_of_mem_Icc (x := x)
       ⟨by linarith [hx.1,Real.pi_pos],by linarith [hx.2,Real.pi_pos]⟩
     dsimp [dd]
     linarith

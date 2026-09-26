@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.SectorBounds
+import SquaresInCircles.Seven.PairModel
 
 /-!
 # The forward axis, both signs positive

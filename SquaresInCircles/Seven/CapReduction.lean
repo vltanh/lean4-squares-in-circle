@@ -1,4 +1,6 @@
 import SquaresInCircles.Seven.Contacts
+import SquaresInCircles.Seven.SectorBounds
+import SquaresInCircles.Seven.PairModel
 
 /-!
 # Capped labels

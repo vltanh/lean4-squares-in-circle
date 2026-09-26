@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.TargetBoundaryMonotonicity
+import SquaresInCircles.Seven.BoundaryProfiles
 import SquaresInCircles.Seven.EasySectors
 import SquaresInCircles.Seven.CapReduction
 

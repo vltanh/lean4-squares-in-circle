@@ -1,4 +1,4 @@
-import SquaresInCircles.Seven.SectorBounds
+import SquaresInCircles.Seven.Labels
 
 /-!
 # The boundary of the label regions
@@ -39,35 +39,23 @@ def diagonal (t : ℝ) : ℝ := (2*Real.pi+7-12*t)/5
 def sideTopU (t : ℝ) : ℝ := if t ≤ td then sideU t else diagonal t
 def sideTopA (t : ℝ) : ℝ := if t ≤ td then sideA t else diagonal t
 
-lemma pi_bounds : (3141592:ℝ)/1000000 < Real.pi ∧ Real.pi < 3141593/1000000 := by
-  constructor
-  · linarith [Real.pi_gt_d6]
-  · linarith [Real.pi_lt_d6]
-
 lemma J_sq : J^2=202*targetSq-M^2 := by
   apply Real.sq_sqrt
-  have hp := pi_bounds
   dsimp [M,targetSq]
-  nlinarith
+  nlinarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma J_bounds : (1069547:ℝ)/100000 < J ∧ J < 1069549/100000 := by
-  have hp := pi_bounds
   have hsq := J_sq
   have hn : 0 ≤ J := Real.sqrt_nonneg _
   dsimp [M,targetSq] at hsq
-  constructor <;> nlinarith
+  constructor <;> nlinarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma transition_bounds :
     (111979:ℝ)/100000 < a0 ∧ a0 < 111980/100000 ∧
     (29136:ℝ)/100000 < u0 ∧ u0 < 29137/100000 := by
-  have hp := pi_bounds
   have hj := J_bounds
   dsimp [a0,u0,X0,Y0,M]
-  constructor
-  · linarith
-  constructor
-  · linarith
-  constructor <;> linarith
+  refine ⟨?_,?_,?_,?_⟩ <;> linarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma transition_coarse :
     (11:ℝ)/10 < a0 ∧ a0 < 9/8 ∧
@@ -80,7 +68,7 @@ lemma transition_coarse :
 lemma transition_circle : X0^2+Y0^2=targetSq := by
   have hj := J_sq
   dsimp [X0,Y0]
-  nlinarith
+  linarith
 
 lemma transition_line : 9*a0+11*u0=2*Real.pi+7 := by
   dsimp [a0,u0,X0,Y0,M]
@@ -91,7 +79,7 @@ lemma transition_admissible : Admissible a0 u0 := by
   have he := transition_circle
   refine ⟨by linarith,by linarith,by linarith,?_⟩
   dsimp [phi,a0,u0]
-  nlinarith
+  linarith
 
 lemma transition_labels : label a0 u0=axial u0 ∧ label a0 u0=side a0 u0 := by
   have hl := transition_line
@@ -108,11 +96,14 @@ lemma rd_bounds : (77475:ℝ)/100000 < rd ∧ rd < 77476/100000 := by
   dsimp [rd]
   constructor <;> nlinarith
 
+lemma rd_sq : (rd+1/2)^2=targetSq/2 := by
+  dsimp [rd,targetSq]
+  rw [sub_add_cancel,Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)]; norm_num
+
 lemma td_bounds : (18:ℝ)/25 < td ∧ td < Real.pi/4 := by
-  have hp := pi_bounds
   have hr := rd_bounds
   dsimp [td]
-  constructor <;> linarith
+  constructor <;> linarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma D_td : D td=(5/12)*(rd+1/2) := by
   dsimp [D,td]
@@ -127,10 +118,9 @@ lemma D_range {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     (1:ℝ)/2 < D t ∧ D t < 1 := by
   have hr := rd_bounds
   have hs := transition_coarse
-  have hp := pi_bounds
   dsimp [D,td] at *
   dsimp [s0] at ht
-  constructor <;> linarith
+  constructor <;> linarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma radicand_pos {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     0 < N*targetSq-(D t)^2 := by
@@ -151,7 +141,7 @@ lemma circle_identities {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
   have hz := Z_sq ht
   constructor
   · dsimp [X,Y,N] at *
-    nlinarith
+    linarith
   constructor <;> dsimp [X,Y,N] <;> ring
 
 lemma circle_label {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
@@ -181,9 +171,7 @@ lemma side_at_transition : sideA s0=a0 ∧ sideU s0=u0 := by
 
 lemma side_at_diagonal : sideA td=rd ∧ sideU td=rd := by
   have hr := rd_bounds
-  have hs : (rd+1/2)^2=targetSq/2 := by
-    dsimp [rd,targetSq]
-    rw [sub_add_cancel,Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)]; norm_num
+  have hs := rd_sq
   have ht : s0 ≤ td ∧ td ≤ td := ⟨by linarith [transition_coarse.2.2.2.2.2,td_bounds.1],le_rfl⟩
   have hz := Z_sq ht
   have hp := Z_pos ht
@@ -223,9 +211,7 @@ lemma circle_bounds {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
   have hYpos : 0 < Y t := by dsimp [u0] at h0; linarith
   have hXpos : 0 < X t := by dsimp [X,N]; linarith [hd.1]
   have hXY : Y t ≤ X t := by
-    have hrd : (rd+1/2)^2=targetSq/2 := by
-      dsimp [rd,targetSq]
-      rw [sub_add_cancel,Real.sq_sqrt (show (0:ℝ) ≤ 13/8 by norm_num)]; norm_num
+    have hrd := rd_sq
     rw [D_td] at hdz
     have hprod := mul_nonneg (sub_nonneg.mpr hdz)
       (show 0 ≤ D t+(5/12)*(rd+1/2) by linarith)
@@ -303,19 +289,7 @@ lemma hasDerivAt_Y_prime {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
     linear_combination (3/4)*hc.1-X t*hc.2.1-Y t*hc.2.2
   convert hd using 1
   field_simp [hz0]
-  nlinarith
-
-lemma hasDerivAt_X_prime {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
-    HasDerivAt (fun x => -Y x/Z x) (-(1/3)*targetSq/(Z t)^3) t := by
-  have hz0 : Z t ≠ 0 := ne_of_gt (Z_pos ht)
-  have hd := (hasDerivAt_Y ht).neg.div (hasDerivAt_Z ht) hz0
-  have hc := circle_identities ht
-  have hid : X t*Z t-Y t*D t=(1/3)*targetSq := by
-    linear_combination (1/3)*hc.1-X t*hc.2.2+Y t*hc.2.1
-  convert hd using 1
-  simp only [Pi.neg_apply]
-  field_simp [hz0]
-  nlinarith
+  linarith
 
 end Boundary
 end SquaresInCircles.Seven

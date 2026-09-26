@@ -9,24 +9,27 @@ import Mathlib.Tactic.Ring
 /-!
 # Polynomial certificates
 
-Three polynomials with positive coefficients in a Bernstein basis, and a
-sum-of-squares completion that makes `radialE` positive.
+The Bernstein basis on `[0, 1]`, three polynomials with positive coefficients
+in it, and a sum-of-squares completion that makes `radialE` positive.
 -/
 noncomputable section
 open scoped BigOperators
 namespace SquaresInCircles.Seven
 
-private def bernstein (n : ℕ) (i : Fin (n+1)) (x : ℝ) : ℝ :=
+/-- The Bernstein basis polynomials of degree `n` on `[0, 1]`. -/
+def bernstein (n : ℕ) (i : Fin (n+1)) (x : ℝ) : ℝ :=
   (n.choose i.val : ℝ) * x^i.val * (1-x)^(n-i.val)
 
-private lemma bernstein_nonneg (n : ℕ) (i : Fin (n+1)) {x : ℝ}
+lemma bernstein_nonneg (n : ℕ) (i : Fin (n+1)) {x : ℝ}
     (hx : 0 ≤ x ∧ x ≤ 1) : 0 ≤ bernstein n i x := by
   have hx0 := hx.1
   have hx1 : 0 ≤ 1-x := sub_nonneg.mpr hx.2
   unfold bernstein
   positivity
 
-private lemma positive_bernstein_sum (n : ℕ) (c : Fin (n+1) → ℝ)
+/-- A polynomial with positive coefficients in the Bernstein basis is positive
+on `[0, 1]`. -/
+lemma positive_bernstein_sum (n : ℕ) (c : Fin (n+1) → ℝ)
     (hc : ∀ i, 0 < c i) {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 1) :
     0 < ∑ i, c i * bernstein n i x := by
   have hnon (i : Fin (n+1)) : 0 ≤ c i * bernstein n i x :=
@@ -37,9 +40,7 @@ private lemma positive_bernstein_sum (n : ℕ) (c : Fin (n+1) → ℝ)
       simpa [bernstein] using hc (Fin.last n)
     exact ht.trans_le (Finset.single_le_sum (fun i _ => hnon i)
       (Finset.mem_univ (Fin.last n)))
-  · have hx' : 0 < 1-x := by
-      by_contra hn
-      exact h (le_antisymm hx.2 (by linarith))
+  · have hx' : 0 < 1-x := sub_pos.mpr (lt_of_le_of_ne hx.2 h)
     have ht : 0 < c 0 * bernstein n 0 x := by
       have he : bernstein n 0 x = (1-x)^n := by simp [bernstein]
       rw [he]
@@ -47,7 +48,9 @@ private lemma positive_bernstein_sum (n : ℕ) (c : Fin (n+1) → ℝ)
     exact ht.trans_le (Finset.single_le_sum (fun i _ => hnon i)
       (Finset.mem_univ (0 : Fin (n+1))))
 
-/-- Scalar appendix 4.1. -/
+/-- A Taylor lower bound for `1 - 4π/15 + (4/5)z - (√3 - 1) sin z - (1 - cos z)/2`,
+which bounds the forward support of two axial states with opposite signs at
+the turn `-z`. -/
 def axialPairPolynomial (z : ℝ) : ℝ :=
   17/105 + z/20 - z^2/4 + 7*z^3/60 - z^5/160
 
@@ -61,16 +64,17 @@ lemma axialPairPolynomial_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 11/10) :
   have hx : 0 ≤ x ∧ x ≤ 1 := by dsimp [x]; constructor <;> linarith
   have hc (i : Fin 6) : 0 < axialPairCoefficients i := by
     fin_cases i <;> norm_num [axialPairCoefficients]
-  have hp := positive_bernstein_sum 5 axialPairCoefficients hc hx
   have hid : axialPairPolynomial z =
       ∑ i : Fin 6, axialPairCoefficients i * bernstein 5 i x := by
-    norm_num [Nat.choose, axialPairPolynomial, axialPairCoefficients, bernstein,
-      Fin.sum_univ_succ, x]
+    simp only [axialPairPolynomial, axialPairCoefficients, bernstein, Fin.sum_univ_succ,
+      Fin.sum_univ_zero, x]
+    norm_num [Nat.choose]
     ring
   rw [hid]
-  exact hp
+  exact positive_bernstein_sum 5 axialPairCoefficients hc hx
 
-/-- Scalar appendix 4.2, the numerator of an axial-circle derivative comparison. -/
+/-- The numerator of `1 - Boundary.ratioD s` on the circular piece of the axial
+boundary, as a polynomial in `X = Boundary.axialX s`. -/
 def axialRatioPolynomial (X : ℝ) : ℝ :=
   -500*X^5+800*X^4+1705*X^3-3900*X^2+3120*X-1872
 
@@ -83,16 +87,17 @@ lemma axialRatioPolynomial_pos {X : ℝ} (hX : 8/5 ≤ X ∧ X ≤ 7/4) :
   have hx : 0 ≤ x ∧ x ≤ 1 := by dsimp [x]; constructor <;> linarith
   have hc (i : Fin 6) : 0 < axialRatioCoefficients i := by
     fin_cases i <;> norm_num [axialRatioCoefficients]
-  have hp := positive_bernstein_sum 5 axialRatioCoefficients hc hx
   have hid : axialRatioPolynomial X =
       ∑ i : Fin 6, axialRatioCoefficients i * bernstein 5 i x := by
-    norm_num [Nat.choose, axialRatioPolynomial, axialRatioCoefficients, bernstein,
-      Fin.sum_univ_succ, x]
+    simp only [axialRatioPolynomial, axialRatioCoefficients, bernstein, Fin.sum_univ_succ,
+      Fin.sum_univ_zero, x]
+    norm_num [Nat.choose]
     ring
   rw [hid]
-  exact hp
+  exact positive_bernstein_sum 5 axialRatioCoefficients hc hx
 
-/-- The degree-eleven discriminant polynomial in scalar appendix 6. -/
+/-- Minus the discriminant of `radialE z` as a quadratic in `v`, divided by `z`
+(`radial_discriminant_identity`). -/
 def radialPolynomial (z : ℝ) : ℝ :=
   201/2000 - (201353/7098000)*z - (3091/21840)*z^2
   - (1571239/14196000)*z^3 - (23103/7280000)*z^4
@@ -107,21 +112,20 @@ private def radialCoefficients : Fin 12 → ℝ :=
     4524018740302909/125753421201408000, 406318644428659/20958903533568000,
     125352005285647/418089296461824000]
 
-/-- One Bernstein identity instead of a derivative comparison. -/
 lemma radialPolynomial_pos {z : ℝ} (hz : 0 ≤ z ∧ z ≤ 5/8) :
     0 < radialPolynomial z := by
   let x := 8*z/5
   have hx : 0 ≤ x ∧ x ≤ 1 := by dsimp [x]; constructor <;> linarith
   have hc (i : Fin 12) : 0 < radialCoefficients i := by
     fin_cases i <;> norm_num [radialCoefficients]
-  have hp := positive_bernstein_sum 11 radialCoefficients hc hx
   have hid : radialPolynomial z =
       ∑ i : Fin 12, radialCoefficients i * bernstein 11 i x := by
-    norm_num [Nat.choose, radialPolynomial, radialCoefficients, bernstein,
-      Fin.sum_univ_succ, x]
+    simp only [radialPolynomial, radialCoefficients, bernstein, Fin.sum_univ_succ,
+      Fin.sum_univ_zero, x]
+    norm_num [Nat.choose]
     ring
   rw [hid]
-  exact hp
+  exact positive_bernstein_sum 11 radialCoefficients hc hx
 
 def radialB (z : ℝ) : ℝ :=
   67*z/1000-z^2/4+73*z^3/600+z^4/48-733*z^5/120000-z^6/1440
@@ -147,11 +151,11 @@ lemma radial_completion (z v : ℝ) :
   unfold radialE
   ring
 
-/-- The final polynomial lower bound is positive for every real v. -/
+/-- `radialE z` is positive for every `v`, by completing the square in `v`. -/
 theorem radialE_pos {z : ℝ} (hz : 0 < z ∧ z ≤ 5/8) (v : ℝ) :
     0 < radialE z v := by
   have hm := mul_nonneg hz.1.le (show 0 ≤ 1-z^2 by nlinarith)
-  have ht : 0 < z-z^3/6 := by nlinarith
+  have ht : 0 < z-z^3/6 := by linarith
   have hK : 0 < radialK z := by
     unfold radialK
     exact mul_pos (by norm_num) ht

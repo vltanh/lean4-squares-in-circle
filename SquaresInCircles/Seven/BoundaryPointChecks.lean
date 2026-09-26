@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.BoundarySegments
+import SquaresInCircles.Seven.TaylorBounds
 
 /-!
 # Two fixed-point estimates
@@ -17,22 +18,12 @@ def s9 (x : ℝ) : ℝ := x-x^3/6+x^5/120-x^7/5040+x^9/362880
 def c10 (x : ℝ) : ℝ := c8 x-x^10/3628800
 def s11 (x : ℝ) : ℝ := s9 x-x^11/39916800
 
-private lemma nonneg_primitive {f : ℝ → ℝ} (hf : Differentiable ℝ f)
-    (h0 : f 0=0) (hd : ∀ x,0 ≤ x → 0 ≤ deriv f x) {x : ℝ} (hx : 0 ≤ x) :
-    0 ≤ f x := by
-  have hm : MonotoneOn f (Icc 0 x) := monoOn_of_hasDeriv_nonneg
-    hf.continuous.continuousOn
-    (fun y hy => (hf y).hasDerivAt)
-    (fun y hy => hd y hy.1.le)
-  have h := hm ⟨le_rfl,hx⟩ ⟨hx,le_rfl⟩ hx
-  simpa only [h0] using h
-
 lemma cos_le_c8 {x : ℝ} (hx : 0 ≤ x) : Real.cos x ≤ c8 x := by
   let f : ℝ → ℝ := fun y => c8 y-Real.cos y
   have hd (y : ℝ) : deriv f y = Real.sin y-(y-y^3/6+y^5/120-y^7/5040) := by
     simp (disch := fun_prop) [f,c8]
     ring
-  have hh := nonneg_primitive (f := f) (by dsimp [f,c8]; fun_prop)
+  have hh := nonneg_of_deriv_nonneg f (by dsimp [f,c8]; fun_prop)
     (by norm_num [f,c8]) (fun y hy => by rw [hd]; linarith [sin_lower_seven hy]) hx
   dsimp [f] at hh
   linarith
@@ -42,7 +33,7 @@ lemma sin_le_s9 {x : ℝ} (hx : 0 ≤ x) : Real.sin x ≤ s9 x := by
   have hd (y : ℝ) : deriv f y = c8 y-Real.cos y := by
     simp (disch := fun_prop) [f,s9,c8]
     ring
-  have hh := nonneg_primitive (f := f) (by dsimp [f,s9]; fun_prop)
+  have hh := nonneg_of_deriv_nonneg f (by dsimp [f,s9]; fun_prop)
     (by norm_num [f,s9]) (fun y hy => by rw [hd]; linarith [cos_le_c8 hy]) hx
   dsimp [f] at hh
   linarith
@@ -52,7 +43,7 @@ lemma c10_le_cos {x : ℝ} (hx : 0 ≤ x) : c10 x ≤ Real.cos x := by
   have hd (y : ℝ) : deriv f y = s9 y-Real.sin y := by
     simp (disch := fun_prop) [f,c10,c8,s9]
     ring
-  have hh := nonneg_primitive (f := f) (by dsimp [f,c10,c8]; fun_prop)
+  have hh := nonneg_of_deriv_nonneg f (by dsimp [f,c10,c8]; fun_prop)
     (by norm_num [f,c10,c8]) (fun y hy => by rw [hd]; linarith [sin_le_s9 hy]) hx
   dsimp [f] at hh
   linarith
@@ -62,7 +53,7 @@ lemma s11_le_sin {x : ℝ} (hx : 0 ≤ x) : s11 x ≤ Real.sin x := by
   have hd (y : ℝ) : deriv f y = Real.cos y-c10 y := by
     simp (disch := fun_prop) [f,s11,s9,c10,c8]
     ring
-  have hh := nonneg_primitive (f := f) (by dsimp [f,s11,s9]; fun_prop)
+  have hh := nonneg_of_deriv_nonneg f (by dsimp [f,s11,s9]; fun_prop)
     (by norm_num [f,s11,s9]) (fun y hy => by rw [hd]; linarith [c10_le_cos hy]) hx
   dsimp [f] at hh
   linarith
@@ -73,18 +64,11 @@ lemma trig_bracket {l u x : ℝ} (hl : 0 ≤ l) (hu : u ≤ Real.pi/2)
     c10 u ≤ Real.cos x ∧ Real.cos x ≤ c8 l := by
   have hx0 : 0 ≤ x := hl.trans hx.1
   have hu0 : 0 ≤ u := hx0.trans hx.2
-  have sl := sin_le_sin_half
-    (by constructor <;> linarith [Real.pi_pos])
-    (by constructor <;> linarith [Real.pi_pos]) hx.1
-  have su := sin_le_sin_half
-    (by constructor <;> linarith [Real.pi_pos])
-    (by constructor <;> linarith [Real.pi_pos]) hx.2
-  have cl := Real.strictAntiOn_cos.antitoneOn
-    (show l ∈ Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos])
-    (show x ∈ Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos]) hx.1
-  have cu := Real.strictAntiOn_cos.antitoneOn
-    (show x ∈ Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos])
-    (show u ∈ Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos]) hx.2
+  have sl := Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [Real.pi_pos])
+    (hx.2.trans hu) hx.1
+  have su := Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [Real.pi_pos]) hu hx.2
+  have cl := Real.cos_le_cos_of_nonneg_of_le_pi hl (by linarith [Real.pi_pos]) hx.1
+  have cu := Real.cos_le_cos_of_nonneg_of_le_pi hx0 (by linarith [Real.pi_pos]) hx.2
   exact ⟨(s11_le_sin hl).trans sl,su.trans (sin_le_s9 hu0),
     (c10_le_cos hu0).trans cu,cl.trans (cos_le_c8 hl)⟩
 end PointTaylor
@@ -109,23 +93,20 @@ lemma test_radical_bounds :
     (13545829:ℝ)/10000000 < Z testLabel ∧ Z testLabel < 13545832/10000000 := by
   have hs := Z_sq test_mem
   have hp := Z_pos test_mem
-  have hpi := pi_bounds
   dsimp [D,testLabel,N,targetSq] at hs hp ⊢
-  constructor <;> nlinarith
+  constructor <;> nlinarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma test_coordinate_bounds :
     (133307:ℝ)/100000 < X testLabel ∧ X testLabel < 133309/100000 ∧
     (121362:ℝ)/100000 < Y testLabel ∧ Y testLabel < 121365/100000 := by
   have hz := test_radical_bounds
-  have hp := pi_bounds
   dsimp [X,Y,D,N,testLabel] at hz ⊢
-  exact ⟨by linarith,by linarith,by linarith,by linarith⟩
+  refine ⟨?_,?_,?_,?_⟩ <;> linarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma test_angle_bounds : (691397:ℝ)/1000000 ≤ testAngle ∧ testAngle ≤ 691411/1000000 := by
   have hu := transition_bounds
-  have hp := pi_bounds
   dsimp [testAngle,gap,testLabel,s0]
-  constructor <;> linarith
+  constructor <;> linarith [Real.pi_gt_d6,Real.pi_lt_d6]
 
 lemma test_trig_bounds :
     (63761:ℝ)/100000 < Real.sin testAngle ∧ Real.sin testAngle < 63763/100000 ∧
@@ -176,10 +157,10 @@ lemma test_slope_bound : |testSlope| < (1:ℝ)/400 := by
     gcongr <;> linarith
   have hlo : (133307:ℝ)/100000/(13545832/10000000) < X testLabel/Z testLabel := by
     apply (div_lt_div_iff₀ (by norm_num) (Z_pos test_mem)).mpr
-    nlinarith
+    linarith
   have hup : X testLabel/Z testLabel < (133309:ℝ)/100000/(13545829/10000000) := by
     apply (div_lt_div_iff₀ (Z_pos test_mem) (by norm_num)).mpr
-    nlinarith
+    linarith
   rw [abs_lt]
   dsimp [testSlope]
   rw [neg_div]

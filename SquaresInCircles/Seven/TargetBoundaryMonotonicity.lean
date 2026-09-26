@@ -1,4 +1,4 @@
-import SquaresInCircles.Seven.BoundaryProfiles
+import SquaresInCircles.Seven.BoundarySegments
 import SquaresInCircles.Seven.PolynomialCertificates
 
 /-!
@@ -99,7 +99,7 @@ lemma ratio_derivative_lt_one {s : ℝ} (hs : 0 ≤ s ∧ s ≤ s0) : ratioD s <
     rw [hy2]
     dsimp [axialRatioPolynomial]
     field_simp [hx,show axialX s*5-4 ≠ 0 by linarith [hb.1],
-      ne_of_gt hrad,show 13/4-(axialX s)^2 ≠ 0 by nlinarith]
+      ne_of_gt hrad,show 13/4-(axialX s)^2 ≠ 0 by linarith]
     ring
   have hp := div_pos hpoly hden
   linarith
@@ -118,8 +118,8 @@ lemma ratio_zero_lt : ratio 0 < (51:ℝ)/200 := by
   have heY : axialY 0=1/2 := by norm_num [axialY]
   dsimp [ratio]
   rw [heX,heY]
-  apply (div_lt_iff₀ (by nlinarith : 0 < (1/2:ℝ)*(Real.sqrt 3-4/5))).mpr
-  nlinarith [Real.sq_sqrt (show (0:ℝ) ≤ 3 by norm_num)]
+  apply (div_lt_iff₀ (by linarith : 0 < (1/2:ℝ)*(Real.sqrt 3-4/5))).mpr
+  linarith [Real.sq_sqrt (show (0:ℝ) ≤ 3 by norm_num)]
 
 lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
     AntitoneOn (circleTarget t) (Icc 0 s0) := by
@@ -141,15 +141,14 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
       have hp := ratio_derivative_lt_one ⟨hs.1.le,hs.2.le⟩
       have hn := ratio_nonneg ⟨hs.1.le,hs.2.le⟩
       have ha := hangle s ⟨hs.1.le,hs.2.le⟩
-      have hc := cos_nonneg_quarter ⟨by linarith [ha.1,Real.pi_pos],ha.2.le⟩
+      have hc := Real.cos_nonneg_of_mem_Icc ⟨by linarith [ha.1,Real.pi_pos],ha.2.le⟩
       have hh := Real.sin_nonneg_of_nonneg_of_le_pi (x := gap-t+s)
         (by linarith [ha.1,Real.pi_pos]) (by linarith [ha.2,Real.pi_pos])
       exact add_nonneg (mul_nonneg (by linarith) hc) (mul_nonneg hn hh))
   have hE0 : 0 < E 0 := by
     have ha := hangle 0 ⟨le_rfl,by linarith [transition_coarse.2.2.2.2.1]⟩
-    have hs := sin_le_sin_half (x := Real.pi/12) (y := gap-t)
-      (by constructor <;> linarith [Real.pi_pos])
-      (by constructor <;> linarith [ha.1,ha.2,Real.pi_pos]) (by simpa using ha.1)
+    have hs := Real.sin_le_sin_of_le_of_le_pi_div_two (x := Real.pi/12) (y := gap-t)
+      (by linarith [Real.pi_pos]) (by simpa using ha.2.le) (by simpa using ha.1)
     have hl := Real.sin_ge_sub_cube (show 0 ≤ Real.pi/12 by positivity)
     have hc : (Real.pi/12)^3 ≤ (11/42:ℝ)^3 :=
       pow_le_pow_left₀ (by positivity) (by linarith [pi_lt_22_over_7]) 3
@@ -157,7 +156,7 @@ lemma circleTarget_decreases {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) :
     have hm := mul_le_mul_of_nonneg_left (Real.cos_le_one (gap-t)) hR
     dsimp [E]
     simp only [add_zero]
-    nlinarith [ratio_zero_lt,pi_lower_157]
+    linarith [ratio_zero_lt,pi_lower_157]
   have hEpos (s : ℝ) (hs : s ∈ Icc 0 s0) : 0 < E s :=
     hE0.trans_le (hEmono ⟨le_rfl,by linarith [transition_coarse.2.2.2.2.1]⟩ hs hs.1)
   have hder (s : ℝ) (hs : s ∈ Icc 0 s0) :
@@ -221,20 +220,16 @@ lemma switch_iff {x : ℝ} (hx : 0 ≤ x ∧ x ≤ Real.pi/2) :
   · intro h
     by_contra hn
     have hlt : switchAngle < x := lt_of_not_ge hn
-    have hsin := Real.strictMonoOn_sin
-      (show switchAngle ∈ Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [Real.pi_pos])
-      (show x ∈ Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [hx.1,hx.2,Real.pi_pos]) hlt
-    have hcos := Real.strictAntiOn_cos.antitoneOn
-      (show switchAngle ∈ Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos])
-      (show x ∈ Icc 0 Real.pi by constructor <;> linarith [hx.1,hx.2,Real.pi_pos]) hlt.le
+    have hsin := Real.sin_lt_sin_of_lt_of_le_pi_div_two
+      (by linarith [hs.1,Real.pi_pos]) hx.2 hlt
+    have hcos := Real.cos_le_cos_of_nonneg_of_le_pi hs.1.le
+      (by linarith [hx.2,Real.pi_pos]) hlt.le
     linarith [switch_zero]
   · intro h
-    have hsin := sin_le_sin_half
-      (by constructor <;> linarith [hx.1,hx.2,Real.pi_pos])
-      (by constructor <;> linarith [hs.1,hs.2,Real.pi_pos]) h
-    have hcos := Real.strictAntiOn_cos.antitoneOn
-      (show x ∈ Icc 0 Real.pi by constructor <;> linarith [hx.1,hx.2,Real.pi_pos])
-      (show switchAngle ∈ Icc 0 Real.pi by constructor <;> linarith [hs.1,hs.2,Real.pi_pos]) h
+    have hsin := Real.sin_le_sin_of_le_of_le_pi_div_two
+      (by linarith [hx.1,Real.pi_pos]) hs.2.le h
+    have hcos := Real.cos_le_cos_of_nonneg_of_le_pi hx.1
+      (by linarith [hs.2,Real.pi_pos]) h
     linarith [switch_zero]
 
 lemma lineTarget_derivative_positive {t s : ℝ}
@@ -270,7 +265,7 @@ lemma lineTarget_derivative_positive {t s : ℝ}
       linarith [hs.2,pi_lt_22_over_7]
     have hpos := mul_pos (show 0 < (13/10-tieA s)+(9/4)*(43/90-(4/5)*s) by linarith) hC
     dsimp [x] at *
-    nlinarith
+    linarith
 
 lemma lineTarget_low_min {t s : ℝ}
     (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4)

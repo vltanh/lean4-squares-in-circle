@@ -1,44 +1,18 @@
-import SquaresInCircles.Seven.Support
-import SquaresInCircles.Seven.TaylorBounds
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import SquaresInCircles.Seven.Labels
+import SquaresInCircles.Seven.PolynomialCertificates
+import SquaresInCircles.Seven.AnalyticOrder
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 
 /-!
 # Estimates for the marker arc
 
-Monotonicity from derivatives, arcsine bounds, and the envelope that bounds the
-near-edge angle of the marker arc: it is concave, by one polynomial with
-positive coefficients in a Bernstein basis, and its maximum is explicit.
+Arcsine bounds, and the envelope that bounds the near-edge angle of the marker
+arc: it is concave, by one polynomial with positive coefficients in a Bernstein
+basis, and bounded by an explicit constant.
 -/
 noncomputable section
 open Set
 namespace SquaresInCircles.Seven
-
-lemma monoOn_of_hasDeriv_nonneg {l u : ℝ} {f d : ℝ → ℝ}
-    (hc : ContinuousOn f (Icc l u))
-    (hd : ∀ x ∈ Ioo l u, HasDerivAt f (d x) x)
-    (hs : ∀ x ∈ Ioo l u, 0 ≤ d x) : MonotoneOn f (Icc l u) := by
-  apply monotoneOn_of_deriv_nonneg (convex_Icc l u) hc
-  · intro x hx
-    have hx' : x ∈ Ioo l u := by simpa only [interior_Icc] using hx
-    exact (hd x hx').differentiableAt.differentiableWithinAt
-  · intro x hx
-    have hx' : x ∈ Ioo l u := by simpa only [interior_Icc] using hx
-    rw [(hd x hx').deriv]
-    exact hs x hx'
-
-lemma antiOn_of_hasDeriv_nonpos {l u : ℝ} {f d : ℝ → ℝ}
-    (hc : ContinuousOn f (Icc l u))
-    (hd : ∀ x ∈ Ioo l u, HasDerivAt f (d x) x)
-    (hs : ∀ x ∈ Ioo l u, d x ≤ 0) : AntitoneOn f (Icc l u) := by
-  apply antitoneOn_of_deriv_nonpos (convex_Icc l u) hc
-  · intro x hx
-    have hx' : x ∈ Ioo l u := by simpa only [interior_Icc] using hx
-    exact (hd x hx').differentiableAt.differentiableWithinAt
-  · intro x hx
-    have hx' : x ∈ Ioo l u := by simpa only [interior_Icc] using hx
-    rw [(hd x hx').deriv]
-    exact hs x hx'
 
 lemma asin_half : Real.arcsin (1/2 : ℝ) = Real.pi/6 := by
   have h := Real.arcsin_sin (x := Real.pi/6)
@@ -50,53 +24,32 @@ lemma asin_upper_remainder {y : ℝ} (hy : -1/2 ≤ y ∧ y ≤ 11/40) :
   by_cases h : 0 ≤ y
   · have hb := arcsin_le_cubic h (by linarith [hy.2])
     have hc : y^3 ≤ (11/40 : ℝ)^3 := pow_le_pow_left₀ h hy.2 3
-    nlinarith
+    linarith
   · have hb := arcsin_le_self_of_nonpos (by linarith [hy.1]) (by linarith)
     linarith
 
-lemma weighted_center_bound {a u p r : ℝ} (h : Admissible a u) :
-    p*(a+1/2)+r*(u+1/2) ≤ radius*Real.sqrt (p^2+r^2) := by
-  have hlow := dot_lower_candidate (p := -p) (r := -r) h.2.2.2
-  simpa only [neg_sq] using (show p*(a+1/2)+r*(u+1/2) ≤
-      radius*Real.sqrt ((-p)^2+(-r)^2) by linarith)
-
-/-- The positive numerator of the curvature of the vertical-endpoint envelope. -/
+/-- `64((13/4)²(1 - x²)³ - 9x²(13/4 - (x+1)²)³)`: on `[0, 3/4]` it is positive
+exactly where the second derivative of `arcEnvelope` is negative. -/
 def arcCurvaturePolynomial (x : ℝ) : ℝ :=
   676*(1-x^2)^3-9*x^2*(9-8*x-4*x^2)^3
 
-private def arcPowerCoefficients : Fin 9 → ℝ :=
-  ![692224,5537792,14435008,16639232,10490656,
-    6552896,3921235,805934,55780]
+private def arcCurvatureCoefficients : Fin 9 → ℝ :=
+  ![676,676,32221/64,64997/224,327833/2240,14627/128,
+    3921235/28672,402967/4096,13945/256]
 
 lemma arcCurvaturePolynomial_pos {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 3/4) :
     0 < arcCurvaturePolynomial x := by
   let z := 4*x/3
   have hz : 0 ≤ z ∧ z ≤ 1 := by dsimp [z]; constructor <;> linarith [hx.1,hx.2]
-  let term : Fin 9 → ℝ := fun i =>
-    arcPowerCoefficients i*z^i.val*(1-z)^(8-i.val)
-  have hc (i : Fin 9) : 0 < arcPowerCoefficients i := by
-    fin_cases i <;> norm_num [arcPowerCoefficients]
-  have ht (i : Fin 9) : 0 ≤ term i := by
-    have hc' := (hc i).le
-    have h0 := hz.1
-    have h1 : 0 ≤ 1-z := sub_nonneg.mpr hz.2
-    dsimp [term]
-    positivity
-  have hsum : 0 < ∑ i, term i := by
-    by_cases he : z = 1
-    · have hlast : 0 < term 8 := by norm_num [term,he,arcPowerCoefficients]
-      exact hlast.trans_le (Finset.single_le_sum (fun i _ => ht i) (Finset.mem_univ _))
-    · have h1 : 0 < 1-z := by
-        by_contra hn
-        exact he (le_antisymm hz.2 (by linarith))
-      have hfirst : 0 < term 0 := by
-        norm_num [term,arcPowerCoefficients]
-        positivity
-      exact hfirst.trans_le (Finset.single_le_sum (fun i _ => ht i) (Finset.mem_univ _))
-  have hid : 1024*arcCurvaturePolynomial x = ∑ i, term i := by
-    simp [term,arcPowerCoefficients,Fin.sum_univ_succ,z,arcCurvaturePolynomial]
+  have hc (i : Fin 9) : 0 < arcCurvatureCoefficients i := by
+    fin_cases i <;> norm_num [arcCurvatureCoefficients]
+  have he : arcCurvaturePolynomial x = ∑ i,arcCurvatureCoefficients i*bernstein 8 i z := by
+    simp only [arcCurvaturePolynomial,arcCurvatureCoefficients,bernstein,Fin.sum_univ_succ,
+      Fin.sum_univ_zero,z]
+    norm_num [Nat.choose]
     ring
-  linarith
+  rw [he]
+  exact positive_bernstein_sum 8 arcCurvatureCoefficients hc hz
 
 /-- Upper envelope for side label plus arcsine of the near vertical edge. -/
 def arcEnvelope (x : ℝ) : ℝ :=
@@ -214,9 +167,9 @@ lemma arcEnvelopeDeriv_quarter_neg : arcEnvelopeDeriv (1/4) < 0 := by
   have hb2 : B^2=27/16 := Real.sq_sqrt (by norm_num)
   have hAa : 20/21 < A := by nlinarith
   have hBb : B < 25/18 := by nlinarith
-  have ha : 1/A < 21/20 := (div_lt_iff₀ hA).mpr (by nlinarith)
+  have ha : 1/A < 21/20 := (div_lt_iff₀ hA).mpr (by linarith)
   have hb : (3/10 : ℝ) < (5/4)/(3*B) :=
-    (lt_div_iff₀ (by positivity)).mpr (by nlinarith)
+    (lt_div_iff₀ (by positivity)).mpr (by linarith)
   have he : arcEnvelopeDeriv (1/4) = 1/A-3/4-(5/4)/(3*B) := by
     norm_num [arcEnvelopeDeriv,targetSq,A,B]
   rw [he]
@@ -238,7 +191,7 @@ lemma arcEnvelope_bound_small {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 1/4) :
     arcEnvelope x ≤ Real.pi/6+(Real.sqrt 87061-86)/384 := by
   have ha := arcsin_le_cubic hx.1 (by linarith [hx.2])
   have hm := mul_nonneg hx.1 (show 0 ≤ 1/16-x^2 by nlinarith [hx.2])
-  have hasin : Real.arcsin x ≤ (65/64)*x := by nlinarith
+  have hasin : Real.arcsin x ≤ (65/64)*x := by linarith
   let B := Real.sqrt (targetSq-(x+1)^2)
   have hp := (arc_radicands ⟨hx.1,by linarith [hx.2]⟩).2
   have hB : 0 ≤ B := Real.sqrt_nonneg _
@@ -252,8 +205,7 @@ lemma arcEnvelope_bound_small {x : ℝ} (hx : 0 ≤ x ∧ x ≤ 1/4) :
   have hcs : (17/64)*(x+1)+(1/3)*B ≤ r/384 := by
     have he : (x+1)^2+B^2=13/4 := by dsimp [targetSq] at hB2; linarith
     rw [he] at hid
-    have hsq := sq_nonneg ((1/3)*(x+1)-(17/64)*B)
-    nlinarith
+    nlinarith only [hid,hr,hr2,sq_nonneg ((1/3)*(x+1)-(17/64)*B)]
   dsimp [arcEnvelope]
   change Real.pi/6+1/24+(1/3)*B+Real.arcsin x-3*x/4 ≤ _
   dsimp [r] at hcs

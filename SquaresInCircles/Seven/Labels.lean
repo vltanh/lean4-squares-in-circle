@@ -1,6 +1,5 @@
 import SquaresInCircles.Common.ElementaryTrig
 import SquaresInCircles.Common.Charts
-import SquaresInCircles.Common.Tangents
 
 /-!
 # States, labels and markers
@@ -54,17 +53,12 @@ lemma slack_nonneg : 0 ≤ targetSq - phi a u := sub_nonneg.mpr h.2.2.2
 
 lemma remainder_nonneg : 0 ≤ remainder a u := by
   rw [remainder_identity]
-  nlinarith [sq_nonneg (a-1), sq_nonneg (u-1/2), h.slack_nonneg]
+  linarith [sq_nonneg (a-1), sq_nonneg (u-1/2), h.slack_nonneg]
 
 lemma tangent : 3*a + 2*u ≤ 4 := by
   have hw := h.remainder_nonneg
   dsimp [remainder] at hw
   linarith
-
-lemma a_lt_five_fourths : a < 5/4 := by
-  have hp := h.2.2.2
-  dsimp [phi, targetSq] at hp
-  nlinarith [h.1, h.2.2.1, sq_nonneg u]
 
 lemma a_le_sqrt_three : a ≤ Real.sqrt 3 - 1/2 := by
   have hp := h.2.2.2
@@ -72,6 +66,9 @@ lemma a_le_sqrt_three : a ≤ Real.sqrt 3 - 1/2 := by
   have hn := Real.sqrt_nonneg (3 : ℝ)
   dsimp [phi, targetSq] at hp
   nlinarith [h.1, h.2.2.1, sq_nonneg u]
+
+lemma a_lt_five_fourths : a < 5/4 := by
+  nlinarith [h.a_le_sqrt_three, Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num), Real.sqrt_nonneg 3]
 
 lemma sum_lt : a+u < 31/20 := by
   have hp := h.2.2.2
@@ -147,7 +144,7 @@ end Admissible
 lemma StrictlyAdmissible.remainder_pos {a u : ℝ} (h : StrictlyAdmissible a u) :
     0 < remainder a u := by
   rw [remainder_identity]
-  nlinarith [h.2.2.2, sq_nonneg (a-1), sq_nonneg (u-1/2)]
+  linarith [h.2.2.2, sq_nonneg (a-1), sq_nonneg (u-1/2)]
 
 lemma StrictlyAdmissible.tangent {a u : ℝ} (h : StrictlyAdmissible a u) :
     3*a + 2*u < 4 := by
@@ -155,42 +152,53 @@ lemma StrictlyAdmissible.tangent {a u : ℝ} (h : StrictlyAdmissible a u) :
   dsimp [remainder] at hh
   linarith
 
+lemma side_selected_label_gt {a u : ℝ} (h : Admissible a u)
+    (hsel : label a u = side a u) : (9 : ℝ)/25 < label a u := by
+  let t := label a u
+  have ht0 : 0 ≤ t := h.label_nonneg
+  have htu : (4/5)*t ≤ u := by
+    have ht := h.label_le_axial
+    dsimp [axial] at ht
+    dsimp [t]
+    linarith
+  have he : 9*a-4*u = 2*Real.pi+7-12*t := by
+    dsimp [t] at *
+    rw [hsel]
+    dsimp [side]
+    ring
+  by_contra hn
+  have ht1 : t ≤ 9/25 := le_of_not_gt hn
+  have ha : 332/225-(44/45)*t < a := by linarith [pi_lower_157]
+  have hp := h.2.2.2
+  dsimp [phi,targetSq] at hp
+  have hsqA := sq_nonneg (a-(332/225-(44/45)*t))
+  have hsqU := sq_nonneg (u-(4/5)*t)
+  have hlinA := mul_nonneg
+    (show 0 ≤ a-(332/225-(44/45)*t) by linarith)
+    (show 0 ≤ 2*(332/225-(44/45)*t)+1 by linarith)
+  have hlinU := mul_nonneg
+    (show 0 ≤ u-(4/5)*t by linarith)
+    (show 0 ≤ 2*(4/5)*t+1 by linarith)
+  have hquad := mul_nonneg (show 0 ≤ 9/25-t by linarith)
+    (show 0 ≤ 139744/50625-(3232/2025)*(t+9/25) by linarith)
+  linarith
+
 lemma side_selected_gt_twelfth {a u : ℝ} (h : Admissible a u)
     (hsel : label a u = side a u) : Real.pi/12 < side a u := by
-  have hle := h.label_le_axial
-  rw [hsel] at hle
-  have ha := h.a_lt_five_fourths
-  have hpi := Real.pi_gt_d2
-  have hu : 7/40 < u := by dsimp [side, axial] at hle; linarith
-  have ha' : a < 6/5 := by
-    have hp := h.2.2.2
-    dsimp [phi, targetSq] at hp
-    by_contra hn
-    have hm := mul_nonneg (show 0 ≤ a-6/5 by linarith)
-      (show 0 ≤ a+11/5 by linarith [h.a_nonneg])
-    have hm' := mul_nonneg (show 0 ≤ u-7/40 by linarith)
-      (show 0 ≤ u+47/40 by linarith [h.1])
-    nlinarith
-  dsimp [side]
-  linarith
+  linarith [side_selected_label_gt h hsel,Real.pi_lt_d2]
 
 lemma side_selected_a_lt {a u : ℝ} (h : Admissible a u)
     (hsel : label a u = side a u) : a < 9/8 := by
-  have hle := h.label_le_axial
-  rw [hsel] at hle
-  have hlin : 332/25 < 9*a+11*u := by
-    have hp := Real.pi_gt_d2
-    dsimp [side, axial] at hle
-    linarith
+  have hl := side_selected_label_gt h hsel
   have hp := h.2.2.2
+  rw [hsel] at hl
+  dsimp [side] at hl
   dsimp [phi, targetSq] at hp
   by_contra hn
-  have hda : 0 ≤ a-9/8 := by linarith
-  have hx := sq_nonneg (a-9/8)
-  have hy := sq_nonneg (u-631/2200)
-  nlinarith
+  linarith [Real.pi_lt_d2, sq_nonneg (u-2862/10000), sq_nonneg (a-9/8)]
 
-/-- Signed transverse coordinates without any orientation normalization assumption. -/
+/-- The label of a state whose transverse offset `b` may be negative, with the
+sign of `b`. -/
 def signedLabel (a b : ℝ) : ℝ := if b < 0 then -label a |b| else label a |b|
 
 lemma signedLabel_neg {a b : ℝ} (h : Admissible a |b|) :
@@ -206,12 +214,6 @@ lemma signedLabel_neg {a b : ℝ} (h : Admissible a |b|) :
         by_contra hle
         exact hb (le_antisymm (le_of_not_gt hle) (le_of_not_gt hn))
       simp [signedLabel, hn, show -b < 0 by linarith, abs_neg]
-
-lemma abs_signedLabel_le {a b : ℝ} (h : Admissible a |b|) :
-    |signedLabel a b| ≤ Real.pi/4 := by
-  unfold signedLabel
-  split_ifs <;> simp only [abs_neg, abs_of_nonneg h.label_nonneg] <;>
-    exact h.label_le_quarter
 
 /-- The marker in an existing square chart. Reflections are not lost. -/
 def chartMarker {S : UnitSquare} {o : Point} (C : SquareChart S o) : Direction :=

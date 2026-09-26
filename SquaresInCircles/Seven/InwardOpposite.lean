@@ -1,5 +1,5 @@
 import SquaresInCircles.Seven.InwardBoundaryMinima
-import SquaresInCircles.Seven.AxialProfile
+import SquaresInCircles.Seven.InwardAxialAxial
 import SquaresInCircles.Seven.CapReduction
 
 /-!

@@ -4,9 +4,10 @@ import SquaresInCircles.Seven.MarkerArc
 /-!
 # Three sectors valid for every label
 
-At the gap `π/3`: the outward axis, by the size of the other square; the
-backward axis, by its marker point; and the inward axis with a negative source
-sign, by its marker arc.
+At the gap `π/3`: the outward axis, because the centre of the other square is
+within `√3 - 1/2` of the disk centre; the backward axis, by the marker point of
+the other square; and the inward axis with a negative source sign, by its
+marker arc.
 -/
 noncomputable section
 open Set
@@ -48,8 +49,8 @@ theorem fixed_gap_backward {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) (s t : TransverseSign) :
     0 < pairSupport a u A v s t 3 gap := by
   rw [pairSupport_three]
-  have hp := marker_support_lower (sign_admissible h' t)
-    (5*Real.pi/2-gap-s.coe*label a u+t.coe*label A v)
+  have hp := marker_arc_support (x := signedLabel A (t.coe*v)) (sign_admissible h' t)
+    (by norm_num) (5*Real.pi/2-gap-s.coe*label a u+t.coe*label A v)
   rw [sign_label h' t] at hp
   have he : 5*Real.pi/2-gap-s.coe*label a u+t.coe*label A v-t.coe*label A v =
       5*Real.pi/2-(gap+s.coe*label a u) := by ring
@@ -78,7 +79,7 @@ theorem fixed_gap_backward {a u A v : ℝ}
     linarith [h.1]
 
 /-- The inward radial source is uniformly positive when its transverse sign
-is negative. The other square may have either sign and any active label. -/
+is negative. The other square may have either sign and any label. -/
 theorem fixed_gap_inward_negative {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) (t : TransverseSign) :
     0 < pairSupport a u A v .negative t 2 gap := by
@@ -92,7 +93,7 @@ theorem fixed_gap_inward_negative {a u A v : ℝ}
     norm_num
   have hp := marker_arc_support (sign_admissible h' t) hx z
   have he : z-x = 2*Real.pi- (gap-label a u-801/1600) := by dsimp [z,x]; ring
-  rw [he,cos_two_pi_sub] at hp
+  rw [he,Real.cos_two_pi_sub] at hp
   have hb : -(2/3 : ℝ) < gap-label a u-801/1600 ∧
       gap-label a u-801/1600 < 2/3 := by
     have h0 := h.label_nonneg

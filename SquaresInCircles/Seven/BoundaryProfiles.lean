@@ -52,21 +52,19 @@ lemma transition_curvature {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ td) :
   have hlead : (7:ℝ)/8 < (3/4)*targetSq/(Z t)^3 := by
     apply (lt_div_iff₀ (pow_pos hZ0 3)).mpr
     dsimp [targetSq]
-    nlinarith
+    linarith
   have hangle : Real.pi/6 < transitionAngle t ∧ transitionAngle t < Real.pi/2 := by
     dsimp [transitionAngle,gap]
     constructor <;> linarith [ht.1,ht.2,td_bounds.2,pi_lt_22_over_7,pi_lower_157]
   have hsin : 1/2 ≤ Real.sin (transitionAngle t) := by
-    have hh := sin_le_sin_half
-      (x := Real.pi/6) (y := transitionAngle t)
-      (by constructor <;> linarith [Real.pi_pos])
-      (by constructor <;> linarith [hangle.1,hangle.2,Real.pi_pos]) hangle.1.le
+    have hh := Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [Real.pi_pos])
+      hangle.2.le hangle.1.le
     simpa only [Real.sin_pi_div_six] using hh
-  have hc0 : 0 ≤ Real.cos (transitionAngle t) := cos_nonneg_quarter
+  have hc0 : 0 ≤ Real.cos (transitionAngle t) := Real.cos_nonneg_of_mem_Icc
     ⟨by linarith [hangle.1,Real.pi_pos],hangle.2.le⟩
   have hlow : (3:ℝ)/10 < (a0-1/2)*Real.sin (transitionAngle t) := by
     have ha : (3:ℝ)/5 < a0-1/2 := by linarith
-    nlinarith [mul_nonneg (sub_nonneg.mpr hsin) (show 0 ≤ a0-1/2 by linarith)]
+    linarith [mul_nonneg (sub_nonneg.mpr hsin) (show 0 ≤ a0-1/2 by linarith)]
   have hu : Y0*Real.cos (transitionAngle t) < (4:ℝ)/5 := by
     have hy : 0 ≤ Y0 ∧ Y0 < 4/5 := by dsimp [u0] at hs; constructor <;> linarith
     have hh := mul_le_mul_of_nonneg_left (Real.cos_le_one (transitionAngle t)) hy.1
@@ -80,17 +78,11 @@ lemma transitionF_pos {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ td) : 0 < transitionF 
   have htest : testLabel ∈ Icc (2/5) td := by
     dsimp [testLabel]
     exact ⟨by norm_num,td_bounds.1.le⟩
-  have hf : ContinuousOn transitionF (Icc (2/5) td) := by
-    intro x hx
-    exact (hasDerivAt_transitionF (sub x hx)).continuousAt.continuousWithinAt
-  have hdf : ContinuousOn transitionFD (Icc (2/5) td) := by
-    intro x hx
-    exact (hasDerivAt_transitionFD (sub x hx)).continuousAt.continuousWithinAt
   have hv : (3:ℝ)/4000 < transitionF testLabel := by
     simpa only [transitionF,transitionAngle,testValue,testAngle] using test_value_lower
   have hd : |transitionFD testLabel| < 1/400 := by
     simpa only [transitionFD,transitionAngle,testSlope,testAngle] using test_slope_bound
-  exact positive_of_curvature_and_point ht htest hf hdf
+  exact positive_of_curvature_and_point ht htest
     (fun x hx => hasDerivAt_transitionF (sub x hx))
     (fun x hx => hasDerivAt_transitionFD (sub x hx))
     (fun x hx => (transition_curvature hx).le) hv hd
@@ -119,7 +111,7 @@ lemma transitionDiagonalF_pos {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
         dsimp [transitionAngle,gap]
         constructor <;> linarith [hx.1,hx.2,td_bounds.1,pi_lt_22_over_7,pi_lower_157]
       have hsin := Real.sin_nonneg_of_nonneg_of_le_pi hang.1 (by linarith [hang.2,Real.pi_pos])
-      have hcos := cos_nonneg_quarter ⟨by linarith [hang.1,Real.pi_pos],hang.2⟩
+      have hcos := Real.cos_nonneg_of_mem_Icc ⟨by linarith [hang.1,Real.pi_pos],hang.2⟩
       have hy0 : 0 ≤ Y0 := by dsimp [u0] at hs; linarith
       have ha0 : 0 ≤ a0-1/2 := by linarith
       linarith [mul_nonneg ha0 hcos,mul_nonneg hy0 hsin]
@@ -127,7 +119,7 @@ lemma transitionDiagonalF_pos {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
     have hh := side_at_diagonal.2
     dsimp [sideU] at hh
     dsimp [transitionDiagonalF,transitionF,diagonal,td] at *
-    nlinarith
+    linarith
   have hbase : 0 < transitionDiagonalF td := by
     rw [he]
     exact transitionF_pos ⟨by linarith [td_bounds.1],le_rfl⟩
@@ -171,7 +163,7 @@ lemma diagonalSlope_gt {x : ℝ}
     have hy0 : 0 ≤ y := by linarith [hy.1,Real.pi_pos]
     have hyp : y ≤ Real.pi/2 := by linarith [hy.2,pi_lt_22_over_7]
     have hs := Real.sin_nonneg_of_nonneg_of_le_pi hy0 (by linarith [hyp,Real.pi_pos])
-    have hc := cos_nonneg_quarter ⟨by linarith [hy0,Real.pi_pos],hyp⟩
+    have hc := Real.cos_nonneg_of_mem_Icc ⟨by linarith [hy0,Real.pi_pos],hyp⟩
     dsimp [dd,diagonalSlope]
     linarith
   have hl : 0 < f (Real.pi/3) := by
@@ -181,11 +173,10 @@ lemma diagonalSlope_gt {x : ℝ}
   have hu : 0 < f (7*Real.pi/12-2/5) := by
     let z := 7*Real.pi/12-2/5
     have hz : 7/5 < z ∧ z < Real.pi/2 := by dsimp [z]; constructor <;> linarith [pi_lower_157,pi_lt_22_over_7]
-    have hs := sin_le_sin_half (x := 7/5) (y := z)
-      (by constructor <;> linarith [pi_lower_157])
-      (by constructor <;> linarith [hz.1,hz.2,Real.pi_pos]) hz.1.le
+    have hs := Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [Real.pi_pos])
+      hz.2.le hz.1.le
     have hlow := Real.sin_ge_sub_cube (show (0:ℝ) ≤ 7/5 by norm_num)
-    have hc := cos_nonneg_quarter ⟨by linarith [hz.1,Real.pi_pos],hz.2.le⟩
+    have hc := Real.cos_nonneg_of_mem_Icc ⟨by linarith [hz.1,Real.pi_pos],hz.2.le⟩
     change 0 < diagonalSlope z-6/5
     dsimp [diagonalSlope]
     linarith
@@ -217,7 +208,7 @@ lemma diagonalK_pos {t : ℝ} (ht : 2/5 ≤ t ∧ t ≤ Real.pi/4) : 0 < diagona
     have hs := Real.sin_ge_sub_cube (show 0 ≤ e by linarith)
     have he3 : e^3 ≤ (3/20:ℝ)^3 := pow_le_pow_left₀ (by linarith [he.1]) he.2.le 3
     have heL : 29/210 ≤ e := by dsimp [e]; linarith [pi_lt_22_over_7]
-    have hsL : 27/200 < Real.sin e := by nlinarith
+    have hsL : 27/200 < Real.sin e := by linarith
     have hid : Real.cos (7*Real.pi/12-2/5)=Real.sin e := by
       rw [show 7*Real.pi/12-2/5=Real.pi/2-e by dsimp [e]; ring,
         Real.cos_pi_div_two_sub]

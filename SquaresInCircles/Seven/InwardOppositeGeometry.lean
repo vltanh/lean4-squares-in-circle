@@ -1,5 +1,5 @@
 import SquaresInCircles.Seven.BoundarySegments
-import SquaresInCircles.Seven.InwardAxialAxial
+import SquaresInCircles.Seven.PairModel
 
 /-!
 # The inward axis with opposite signs: formula and displacements
@@ -27,7 +27,7 @@ lemma inward_opposite_formula {a u A v : ℝ}
     have hs1 := h'.label_le_quarter
     dsimp [e]
     constructor <;> linarith
-  have hc : 0 ≤ Real.cos e := cos_nonneg_quarter
+  have hc : 0 ≤ Real.cos e := Real.cos_nonneg_of_mem_Icc
     ⟨by linarith [hr.1,Real.pi_pos],by linarith [hr.2,Real.pi_pos]⟩
   have he : 2*Real.pi-gap-label a u+-label A v=3*Real.pi/2-e := by
     dsimp [e,gap]; ring
@@ -51,7 +51,7 @@ lemma inward_opposite_side_identity {a u A v e : ℝ}
         (v+1/2)*(1-Real.cos e) := by
   rw [hT,hA] at he
   dsimp [inwardOpposite,side,axial,remainder] at *
-  nlinarith
+  linarith
 
 lemma inward_opposite_negative_turn {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -83,7 +83,7 @@ lemma inward_opposite_negative_turn {a u A v : ℝ}
   have hez : label a u+label A v-Real.pi/6 = -z := by dsimp [z]; ring
   rw [hez,Real.sin_neg,Real.cos_neg,abs_neg z,abs_neg (Real.sin z),abs_of_nonneg hs0,
     abs_of_nonneg hz.1]
-  nlinarith
+  linarith
 
 namespace Boundary
 
@@ -126,13 +126,13 @@ lemma circle_displacement_half {u v : ℝ}
   have hbounds := transition_bounds
   have hratio : 2*(u+v+1) ≤ circle u+circle v+1 := by linarith
   have hid : (circle u-circle v)*(circle u+circle v+1) = (v-u)*(u+v+1) := by
-    nlinarith
+    linarith
   have hmul := mul_nonneg (sub_nonneg.mpr huv) (sub_nonneg.mpr hratio)
   have hden : 0 < circle u+circle v+1 := by linarith [transition_coarse.1]
   by_contra hn
   have hh := mul_pos
     (show 0 < circle u-circle v-(1/2)*(v-u) by linarith) hden
-  nlinarith
+  linarith
 
 lemma sideA_displacement {t s : ℝ}
     (ht : s0 ≤ t) (hts : t ≤ s) (hs : s ≤ td) :

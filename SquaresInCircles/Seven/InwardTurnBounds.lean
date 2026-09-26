@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.SectorBounds
+import SquaresInCircles.Seven.TaylorBounds
 
 /-!
 # Turn bounds for the inward axis
@@ -29,7 +30,7 @@ lemma inward_positive_turn_bound {A v e : ℝ}
   have hrootprod := mul_nonneg he.1 (show 0 ≤ 26/15-Real.sqrt 3 by linarith)
   have heprod := mul_nonneg he.1 (show 0 ≤ 11/42-e by linarith)
   rw [abs_of_nonneg hs0]
-  nlinarith
+  linarith
 
 /-- A positive whole-interval bound for the negative-turn trigonometric profile. -/
 lemma inward_negative_profile {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
@@ -45,9 +46,9 @@ lemma inward_negative_profile {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
   have hpoly : (59/3670 : ℝ) ≤ 1/5-(3/8)*z+(367/1920)*z^2 := by
     have hid : 1/5-(3/8)*z+(367/1920)*z^2-59/3670 =
         (367/1920)*(z-360/367)^2 := by ring
-    nlinarith [sq_nonneg (z-360/367)]
+    linarith [sq_nonneg (z-360/367)]
   have hpoly' := mul_le_mul_of_nonneg_left hpoly hz.1
-  nlinarith
+  linarith
 
 /-- Negative turn, given the transverse lower bound that the axial label
 implies. -/
@@ -63,6 +64,6 @@ lemma inward_negative_turn_bound {A v z : ℝ}
   have hvprod := mul_nonneg (sub_nonneg.mpr hv) hc0
   have hp := inward_negative_profile hz
   rw [Real.sin_neg,Real.cos_neg,abs_neg,abs_of_nonneg hs0]
-  nlinarith
+  linarith
 
 end SquaresInCircles.Seven

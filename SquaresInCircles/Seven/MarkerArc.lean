@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.ArcAnalysis
+import SquaresInCircles.Seven.TaylorBounds
 
 /-!
 # The marker arc
@@ -31,7 +32,7 @@ lemma axial_minus_asin_lower {u : ℝ} (hu : 0 ≤ u ∧ u ≤ 31/40) :
       have hs := Real.sq_sqrt hp.le
       have hlo : 4/5 ≤ Real.sqrt (1-y^2) := by nlinarith [hy.1,hy.2]
       have hi : 1/Real.sqrt (1-y^2) ≤ 5/4 :=
-        (div_le_iff₀ hr).mpr (by nlinarith)
+        (div_le_iff₀ hr).mpr (by linarith)
       linarith
   have hm := hmono
     (show (-1/2 : ℝ) ∈ Icc (-1/2 : ℝ) (1/2) by norm_num)
@@ -111,7 +112,7 @@ lemma asin_tangent_three_fifths {x : ℝ} (hx : 1/2 ≤ x ∧ x ≤ 1) :
         have hs := Real.sq_sqrt (show 0 ≤ 1-y^2 by nlinarith [hy.1,hy.2])
         have hlo : 4/5 ≤ Real.sqrt (1-y^2) := by nlinarith [hy.1,hy.2]
         have hi : 1/Real.sqrt (1-y^2) ≤ 5/4 :=
-          (div_le_iff₀ hr).mpr (by nlinarith)
+          (div_le_iff₀ hr).mpr (by linarith)
         linarith
     have hh := hm ⟨hx.1,hxc⟩ (show (3/5 : ℝ) ∈ Icc (1/2 : ℝ) (3/5) by norm_num) hxc
     dsimp [f] at hh
@@ -125,7 +126,7 @@ lemma asin_tangent_three_fifths {x : ℝ} (hx : 1/2 ≤ x ∧ x ≤ 1) :
         have hs := Real.sq_sqrt (show 0 ≤ 1-y^2 by nlinarith [hy.1,hy.2])
         have hup : Real.sqrt (1-y^2) ≤ 4/5 := by nlinarith [hy.1,hy.2]
         have hi : (5/4 : ℝ) ≤ 1/Real.sqrt (1-y^2) :=
-          (le_div_iff₀ hr).mpr (by nlinarith)
+          (le_div_iff₀ hr).mpr (by linarith)
         linarith
     have hh := hm (show (3/5 : ℝ) ∈ Icc (3/5 : ℝ) 1 by norm_num)
       ⟨le_of_not_ge hxc,hx.2⟩ (le_of_not_ge hxc)

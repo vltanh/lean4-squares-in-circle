@@ -1,151 +1,86 @@
-import SquaresInCircles.Seven.ArcAnalysis
+import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Order lemmas from derivatives
 
-Tangent-line and quadratic lower bounds from monotone or bounded derivatives,
-minima at the endpoints of concave functions, and positivity from one value, a
-small slope and a curvature bound. Also: the disk `φ ≤ 13/4` is convex.
+Monotonicity on a closed interval from the sign of the derivative inside it,
+and two positivity criteria on an interval: from one value, a small slope and
+a lower bound on the second derivative, and from the values at both ends and a
+nonpositive second derivative.
 -/
 noncomputable section
 open Set
 namespace SquaresInCircles.Seven
 
-lemma tangent_lower_of_mono_derivative {l u x t : ℝ} {f d : ℝ → ℝ}
-    (hx : x ∈ Icc l u) (ht : t ∈ Icc l u)
-    (hf : ContinuousOn f (Icc l u))
-    (hd : ∀ y ∈ Icc l u, HasDerivAt f (d y) y)
-    (hmono : MonotoneOn d (Icc l u)) :
-    f t+d t*(x-t) ≤ f x := by
-  let g : ℝ → ℝ := fun y => f y-f t-d t*(y-t)
-  have hgc : ContinuousOn g (Icc l u) := by
-    dsimp [g]
-    exact (hf.sub continuousOn_const).sub
-      (continuousOn_const.mul (continuousOn_id.sub continuousOn_const))
-  have hgd (y : ℝ) (hy : y ∈ Icc l u) : HasDerivAt g (d y-d t) y := by
-    convert ((hd y hy).sub_const (f t)).sub
-      (((hasDerivAt_id y).sub_const t).const_mul (d t)) using 1
-    · rfl
-    · ring
-  have hz : g t=0 := by dsimp [g]; ring
-  by_cases hxt : t ≤ x
-  · have hsub : Icc t x ⊆ Icc l u := by intro y hy; constructor <;> linarith [hx.1,hx.2,ht.1,ht.2,hy.1,hy.2]
-    have hm : MonotoneOn g (Icc t x) := monoOn_of_hasDeriv_nonneg
-      (hgc.mono hsub)
-      (fun y hy => hgd y (hsub ⟨hy.1.le,hy.2.le⟩))
-      (fun y hy => sub_nonneg.mpr (hmono ht (hsub ⟨hy.1.le,hy.2.le⟩) hy.1.le))
-    have hh := hm ⟨le_rfl,hxt⟩ ⟨hxt,le_rfl⟩ hxt
-    rw [hz] at hh
-    dsimp [g] at hh
-    linarith
-  · have hxt' : x ≤ t := le_of_not_ge hxt
-    have hsub : Icc x t ⊆ Icc l u := by intro y hy; constructor <;> linarith [hx.1,hx.2,ht.1,ht.2,hy.1,hy.2]
-    have hm : AntitoneOn g (Icc x t) := antiOn_of_hasDeriv_nonpos
-      (hgc.mono hsub)
-      (fun y hy => hgd y (hsub ⟨hy.1.le,hy.2.le⟩))
-      (fun y hy => sub_nonpos.mpr (hmono (hsub ⟨hy.1.le,hy.2.le⟩) ht hy.2.le))
-    have hh := hm ⟨le_rfl,hxt'⟩ ⟨hxt',le_rfl⟩ hxt'
-    rw [hz] at hh
-    dsimp [g] at hh
-    linarith
+lemma monoOn_of_hasDeriv_nonneg {l u : ℝ} {f d : ℝ → ℝ}
+    (hc : ContinuousOn f (Icc l u))
+    (hd : ∀ x ∈ Ioo l u, HasDerivAt f (d x) x)
+    (hs : ∀ x ∈ Ioo l u, 0 ≤ d x) : MonotoneOn f (Icc l u) :=
+  monotoneOn_of_hasDerivWithinAt_nonneg (convex_Icc l u) hc
+    (by simpa only [interior_Icc] using fun x hx => (hd x hx).hasDerivWithinAt)
+    (by simpa only [interior_Icc] using hs)
 
-lemma quadratic_tangent_lower {l u x t m : ℝ} {f d dd : ℝ → ℝ}
-    (hx : x ∈ Icc l u) (ht : t ∈ Icc l u)
-    (hf : ContinuousOn f (Icc l u)) (hdf : ContinuousOn d (Icc l u))
-    (hd : ∀ y ∈ Icc l u, HasDerivAt f (d y) y)
-    (hdd : ∀ y ∈ Icc l u, HasDerivAt d (dd y) y)
-    (hm : ∀ y ∈ Icc l u, m ≤ dd y) :
-    f t+d t*(x-t)+(m/2)*(x-t)^2 ≤ f x := by
-  let g : ℝ → ℝ := fun y => f y-(m/2)*y^2
-  let dg : ℝ → ℝ := fun y => d y-m*y
-  have hgc : ContinuousOn g (Icc l u) := by
-    dsimp [g]
-    exact hf.sub (continuousOn_const.mul (continuousOn_id.pow 2))
-  have hdgc : ContinuousOn dg (Icc l u) := by
-    dsimp [dg]
-    exact hdf.sub (continuousOn_const.mul continuousOn_id)
-  have hgd (y : ℝ) (hy : y ∈ Icc l u) : HasDerivAt g (dg y) y := by
-    convert (hd y hy).sub (((hasDerivAt_id y).pow 2).const_mul (m/2)) using 1
-    · rfl
-    · dsimp [dg]; ring
-  have hdgd (y : ℝ) (hy : y ∈ Icc l u) : HasDerivAt dg (dd y-m) y := by
-    convert (hdd y hy).sub ((hasDerivAt_id y).const_mul m) using 1
-    · rfl
-    · ring
-  have hmono : MonotoneOn dg (Icc l u) := monoOn_of_hasDeriv_nonneg hdgc
-    (fun y hy => hdgd y ⟨hy.1.le,hy.2.le⟩)
-    (fun y hy => sub_nonneg.mpr (hm y ⟨hy.1.le,hy.2.le⟩))
-  have hh := tangent_lower_of_mono_derivative hx ht hgc hgd hmono
-  dsimp [g,dg] at hh
-  nlinarith
+lemma antiOn_of_hasDeriv_nonpos {l u : ℝ} {f d : ℝ → ℝ}
+    (hc : ContinuousOn f (Icc l u))
+    (hd : ∀ x ∈ Ioo l u, HasDerivAt f (d x) x)
+    (hs : ∀ x ∈ Ioo l u, d x ≤ 0) : AntitoneOn f (Icc l u) :=
+  antitoneOn_of_hasDerivWithinAt_nonpos (convex_Icc l u) hc
+    (by simpa only [interior_Icc] using fun x hx => (hd x hx).hasDerivWithinAt)
+    (by simpa only [interior_Icc] using hs)
 
+/-- A function on `[l, u]` with second derivative at least `3/8` is positive
+if at one point its value exceeds `3/4000` and its slope is below `1/400`. -/
 lemma positive_of_curvature_and_point {l u x t : ℝ} {f d dd : ℝ → ℝ}
     (hx : x ∈ Icc l u) (ht : t ∈ Icc l u)
-    (hf : ContinuousOn f (Icc l u)) (hdf : ContinuousOn d (Icc l u))
     (hd : ∀ y ∈ Icc l u, HasDerivAt f (d y) y)
     (hdd : ∀ y ∈ Icc l u, HasDerivAt d (dd y) y)
     (hm : ∀ y ∈ Icc l u, (3:ℝ)/8 ≤ dd y)
     (hval : (3:ℝ)/4000 < f t) (hslope : |d t| < 1/400) : 0 < f x := by
-  have htan := quadratic_tangent_lower hx ht hf hdf hd hdd hm
+  let g : ℝ → ℝ := fun y => f y-(3/16)*y^2
+  have hg (y : ℝ) (hy : y ∈ Icc l u) : HasDerivAt g (d y-(3/8)*y) y := by
+    convert (hd y hy).sub (((hasDerivAt_id y).pow 2).const_mul (3/16 : ℝ)) using 1
+    · rfl
+    · dsimp; ring
+  have hc : ConvexOn ℝ (Icc l u) g := convexOn_of_hasDerivWithinAt2_nonneg (convex_Icc l u)
+    (fun y hy => (hg y hy).continuousAt.continuousWithinAt)
+    (fun y hy => (hg y (interior_subset hy)).hasDerivWithinAt)
+    (fun y hy => ((hdd y (interior_subset hy)).sub
+      ((hasDerivAt_id y).const_mul (3/8 : ℝ))).hasDerivWithinAt)
+    (fun y hy => by linarith [hm y (interior_subset hy)])
+  have htan : g t+(d t-(3/8)*t)*(x-t) ≤ g x := by
+    rcases lt_trichotomy t x with h | rfl | h
+    · have hs := hc.le_slope_of_hasDerivAt ht hx h (hg t ht)
+      rw [slope_def_field,le_div_iff₀ (sub_pos.2 h)] at hs
+      linarith
+    · simp
+    · have hs := hc.slope_le_of_hasDerivAt hx ht h (hg t ht)
+      rw [slope_def_field,div_le_iff₀ (sub_pos.2 h)] at hs
+      linarith
   have hs := abs_lt.mp hslope
   have hsq : (d t)^2 < (1/400:ℝ)^2 := by nlinarith
   have hcomplete := sq_nonneg ((3/8)*(x-t)+d t)
-  nlinarith
+  dsimp [g] at htan
+  linarith
 
-lemma min_endpoints_of_anti_derivative {l u x : ℝ} {f d : ℝ → ℝ}
-    (hx : x ∈ Icc l u) (hf : ContinuousOn f (Icc l u))
-    (hd : ∀ y ∈ Icc l u, HasDerivAt f (d y) y)
-    (hanti : AntitoneOn d (Icc l u)) : min (f l) (f u) ≤ f x := by
-  by_cases hdx : 0 ≤ d x
-  · have hsub : Icc l x ⊆ Icc l u := by
-      intro y hy; exact ⟨hy.1,hy.2.trans hx.2⟩
-    have hm : MonotoneOn f (Icc l x) := monoOn_of_hasDeriv_nonneg
-      (hf.mono hsub)
-      (fun y hy => hd y (hsub ⟨hy.1.le,hy.2.le⟩))
-      (fun y hy => hdx.trans (hanti (hsub ⟨hy.1.le,hy.2.le⟩) hx hy.2.le))
-    exact (min_le_left _ _).trans (hm ⟨le_rfl,hx.1⟩ ⟨hx.1,le_rfl⟩ hx.1)
-  · have hdx' : d x ≤ 0 := le_of_not_ge hdx
-    have hsub : Icc x u ⊆ Icc l u := by
-      intro y hy; exact ⟨hx.1.trans hy.1,hy.2⟩
-    have hm : AntitoneOn f (Icc x u) := antiOn_of_hasDeriv_nonpos
-      (hf.mono hsub)
-      (fun y hy => hd y (hsub ⟨hy.1.le,hy.2.le⟩))
-      (fun y hy => (hanti hx (hsub ⟨hy.1.le,hy.2.le⟩) hy.1.le).trans hdx')
-    exact (min_le_right _ _).trans (hm ⟨le_rfl,hx.2⟩ ⟨hx.2,le_rfl⟩ hx.2)
-
-lemma min_endpoints_of_second_nonpos {l u x : ℝ} {f d dd : ℝ → ℝ}
-    (hx : x ∈ Icc l u) (hf : ContinuousOn f (Icc l u))
-    (hdf : ContinuousOn d (Icc l u))
-    (hd : ∀ y ∈ Icc l u, HasDerivAt f (d y) y)
-    (hdd : ∀ y ∈ Icc l u, HasDerivAt d (dd y) y)
-    (hm : ∀ y ∈ Icc l u, dd y ≤ 0) : min (f l) (f u) ≤ f x := by
-  apply min_endpoints_of_anti_derivative hx hf hd
-  exact antiOn_of_hasDeriv_nonpos hdf
-    (fun y hy => hdd y ⟨hy.1.le,hy.2.le⟩)
-    (fun y hy => hm y ⟨hy.1.le,hy.2.le⟩)
-
+/-- A function on `[l, u]` with nonpositive second derivative is positive if it
+is positive at both ends. -/
 lemma positive_of_second_nonpos {l u x : ℝ} {f d dd : ℝ → ℝ}
     (hx : x ∈ Icc l u) (hf : ContinuousOn f (Icc l u))
     (hdf : ContinuousOn d (Icc l u))
     (hd : ∀ y ∈ Icc l u, HasDerivAt f (d y) y)
     (hdd : ∀ y ∈ Icc l u, HasDerivAt d (dd y) y)
     (hm : ∀ y ∈ Icc l u, dd y ≤ 0)
-    (hl : 0 < f l) (hu : 0 < f u) : 0 < f x :=
-  (lt_min hl hu).trans_le (min_endpoints_of_second_nonpos hx hf hdf hd hdd hm)
-
-/-- A continuous affine image of a segment stays in the quadratic disk when
-both endpoints do. The exact nonnegative remainder proves the assertion. -/
-lemma phi_segment {a u A v r : ℝ} (hr : 0 ≤ r ∧ r ≤ 1)
-    (h : phi a u ≤ targetSq) (h' : phi A v ≤ targetSq) :
-    phi ((1-r)*a+r*A) ((1-r)*u+r*v) ≤ targetSq := by
-  have hmul := mul_nonneg hr.1 (sub_nonneg.mpr hr.2)
-  have hrem := mul_nonneg hmul (add_nonneg (sq_nonneg (a-A)) (sq_nonneg (u-v)))
-  have hp := mul_le_mul_of_nonneg_left h (sub_nonneg.mpr hr.2)
-  have hp' := mul_le_mul_of_nonneg_left h' hr.1
-  have hid : phi ((1-r)*a+r*A) ((1-r)*u+r*v) =
-      (1-r)*phi a u+r*phi A v-r*(1-r)*((a-A)^2+(u-v)^2) := by
-    dsimp [phi]; ring
-  rw [hid]
-  nlinarith
+    (hl : 0 < f l) (hu : 0 < f u) : 0 < f x := by
+  have hanti := antitoneOn_of_hasDerivWithinAt_nonpos (convex_Icc l u) hdf
+    (fun y hy => (hdd y (interior_subset hy)).hasDerivWithinAt)
+    (fun y hy => hm y (interior_subset hy))
+  have hconc : ConcaveOn ℝ (Icc l u) f := AntitoneOn.concaveOn_of_deriv (convex_Icc l u) hf
+    (fun y hy => (hd y (interior_subset hy)).differentiableAt.differentiableWithinAt)
+    (fun a ha b hb hab => by
+      rw [(hd a (interior_subset ha)).deriv,(hd b (interior_subset hb)).deriv]
+      exact hanti (interior_subset ha) (interior_subset hb) hab)
+  exact (lt_min hl hu).trans_le (hconc.min_le_of_mem_Icc
+    (left_mem_Icc.mpr (hx.1.trans hx.2)) (right_mem_Icc.mpr (hx.1.trans hx.2)) hx)
 
 end SquaresInCircles.Seven

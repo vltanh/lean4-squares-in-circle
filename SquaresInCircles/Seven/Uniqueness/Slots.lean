@@ -1,4 +1,4 @@
-import SquaresInCircles.Seven.Uniqueness.NormalForm
+import SquaresInCircles.Seven.Construction
 
 /-!
 # The column as a simplex
@@ -37,8 +37,7 @@ def columnOfSlots (g : Fin 4 → ℝ) (hg : ∀ i, 0 ≤ g i)
   gap_lower := by linarith [hg 1]
   gap_upper := by linarith [hg 2]
   upper := by
-    have he : g 0 + g 1 + g 2 + g 3 = 2 * Real.sqrt 3 - 3 := by
-      simpa [Fin.sum_univ_succ, add_assoc] using hs
+    have he := (Fin.sum_univ_four g).symm.trans hs
     dsimp [columnLimit]
     linarith [hg 3]
 
@@ -46,8 +45,7 @@ lemma columnOfSlots_slots (g : Fin 4 → ℝ) (hg : ∀ i, 0 ≤ g i)
     (hs : ∑ i, g i = 2 * Real.sqrt 3 - 3) :
     (columnOfSlots g hg hs).slots = g := by
   funext i
-  have he : g 0 + g 1 + g 2 + g 3 = 2 * Real.sqrt 3 - 3 := by
-    simpa [Fin.sum_univ_succ, add_assoc] using hs
+  have he := (Fin.sum_univ_four g).symm.trans hs
   fin_cases i <;> dsimp [columnOfSlots, Column.slots, columnLimit] <;> linarith
 
 lemma columnOfSlots_roundtrip (c : Column) :

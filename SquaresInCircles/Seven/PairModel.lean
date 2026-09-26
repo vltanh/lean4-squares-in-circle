@@ -1,14 +1,18 @@
 import SquaresInCircles.Seven.Support
 
-/-! The support sums of a canonical pair on the four edge axes, and their sign
-symmetries. -/
+/-!
+# Support sums of a canonical pair
+
+The support sum of a canonical pair on each of the four edge axes of the first
+square, and its value on each axis. A sign `s` turns the state `(a, u)` into
+the offset `s u` and the label `s * label a u`.
+-/
 noncomputable section
 namespace SquaresInCircles.Seven
 
 inductive TransverseSign where
   | positive
   | negative
-  deriving DecidableEq
 
 def TransverseSign.coe : TransverseSign → ℝ
   | .positive => 1
@@ -48,11 +52,7 @@ lemma support_three_half_pi (a b : ℝ) : support a b (3*Real.pi/2) = -b+1/2 := 
   rw [show 3*Real.pi/2 = Real.pi+Real.pi/2 by ring]
   norm_num [support,Real.cos_add,Real.sin_add]
 
-lemma support_two_pi (a b z : ℝ) : support a b (z+2*Real.pi) = support a b z := by
-  simp [support,Real.cos_add_two_pi,Real.sin_add_two_pi]
-
-lemma cos_two_pi_sub (z : ℝ) : Real.cos (2*Real.pi-z) = Real.cos z := by
-  simp [Real.cos_sub]
+lemma cos_two_pi_sub (z : ℝ) : Real.cos (2*Real.pi-z) = Real.cos z := Real.cos_two_pi_sub z
 
 lemma cos_five_half_pi_sub (z : ℝ) : Real.cos (5*Real.pi/2-z) = Real.sin z := by
   rw [show 5*Real.pi/2-z = (Real.pi/2-z)+2*Real.pi by ring,Real.cos_add_two_pi,
