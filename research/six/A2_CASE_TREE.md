@@ -439,13 +439,114 @@ No A22+L residual remains.
 
 #### A22+S : s < 1/6
 
-None of P11--P16 has this lower-s domain as a stated hypothesis. Keep
+Here S-cardinality gives `-2/5<s<1/6`.  Keep
 
-    R22-c: w>=0, s<1/6, D--W=W-secondary,
-           D--S any source axis.
+    delta=d-w,    t=d-s,    H(q)=(1+cos q+sin q)/2.
 
-Do **not** assume `s>=1/6`: diagnostic residual boxes reach below that
-threshold, so it is not an established structural consequence.
+By (DW+),
+
+    0<=delta<=pi/4,
+    d>pi/4-1/4.
+
+Hence
+
+    11/30 < t < 6/5 < pi/2.                        (S3-range)
+
+The first two rational bounds follow from `157/50<pi<19/6`.
+
+##### Structural lemma S3: S-primary is impossible throughout A22+S
+
+As in S1, put
+
+    z(q)=a_D sin q+b_D cos q.
+
+The forced W-secondary D--W separation gives
+
+    z(delta)>H(delta)-B >= 1-B = 133/250.          (S3-DW)
+
+Let
+
+    U=a_S-z(t)
+
+be the signed D--S difference on S-primary.
+
+Its negative side is harmless. Since `0<t<pi/2`,
+
+    z(t)<rho0+B<397/250,
+
+so
+
+    U>a0-(rho0+B)>-703/1000>-1>=-H(t).
+
+For the positive side it is enough to prove
+
+    z(t)>rho0-H(t).
+
+Because `H(t)>=1` and `rho0-1<3/25`, it suffices to show
+`z(t)>3/25`.
+
+Put `r=w-s=t-delta`.
+
+- If `r>=0`, then
+
+      z(t)=z(delta) cos r+z'(delta) sin r.
+
+  On `0<=delta<=pi/4`,
+
+      z'(delta)
+        =a_D cos delta-b_D sin delta
+        >=a0 cos delta-B sin delta
+        >(a0-B)/sqrt(2)>0.
+
+  Also `0<=r<pi/4+2/5<6/5`.  The fixed scalar bound
+  `cos(6/5)>7/20` therefore gives
+
+      z(t)>(133/250)(7/20)=931/5000>3/25.
+
+- If `r<0`, put `u=s-w=-r`. Then `0<u<1/6` and
+  `t=delta-u<pi/4`. Solving (S3-DW) for `b_D` and substituting at t gives
+
+      z(t)
+        > [cos t (H(delta)-B)-rho0 sin u]/cos delta.
+
+  Since `cos t>1/sqrt(2)>7/10`, `H(delta)>=1`,
+  `rho0<28/25`, and `sin u<u<1/6`,
+
+      z(t)
+        > (7/10)(133/250)-(28/25)(1/6)
+        = 1393/7500
+        > 3/25.
+
+Thus `|U|<H(t)`, so S-primary cannot separate D from S anywhere in A22+S.
+
+##### S2 also extends to A22+S
+
+The proof of S2 used the lower bound `s>=1/6` only to keep
+`t=d-s` in a range where `sin t>=0`.  By (S3-range) we still have
+
+    0<t<pi/2.
+
+Therefore the same argument applies verbatim: if D--S uses D-secondary and
+`w>1/5`, then
+
+    Y-H(t)
+      < A(t)-N(delta)/cos delta,
+
+with `A(t)<3/25` and `N(delta)/cos delta>3/25`, a contradiction.
+Hence
+
+    D--S=D-secondary  =>  0<=w<=1/5.               (S3-Ds)
+
+##### Residual after S3
+
+The small-s residual has therefore been reduced structurally to
+
+    R22-c:
+      w>=0, -2/5<s<1/6, D--W=W-secondary,
+      D--S in {D-primary,S-secondary},
+      or D--S=D-secondary with 0<=w<=1/5.
+
+S-primary is gone, and the large-w D-secondary branch is gone.
 
 ### A22- : w < 0
 
