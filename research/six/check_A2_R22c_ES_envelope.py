@@ -162,14 +162,17 @@ def support_E(x, y):
 
 
 def support_S(x, y):
-    """S force is positive-component and always on the vertex branch."""
+    """S force is positive-component and rigorously on the vertex branch."""
     x, y = jj(x), jj(y)
     assert x.v.lo > 0 and y.v.lo > 0, (x.v.f(), y.v.f())
     norm = jsqrt(x*x + y*y)
+    V = FI(min(x.v.lo, y.v.lo), min(x.v.hi, y.v.hi))
+    switch = FI.point_int(2) * R * V - norm.v
+    assert switch.lo > 0, switch.f()
     return norm * R - (x + y).half()
 
 
-def B(e, s, pattern13, src, qsign=None, check_s_vertex=False):
+def B(e, s, pattern13, src, qsign=None):
     se, ce = jsin(e), jcos(e)
     sn, cs = jsin(s), jcos(s)
     q = e - s
@@ -201,13 +204,6 @@ def B(e, s, pattern13, src, qsign=None, check_s_vertex=False):
     GSx = muS*cs - cS*r
     GSy = -muS*sn - sS*r + m
 
-    if check_s_vertex:
-        ax, ay = GSx.v, GSy.v
-        V = FI(min(ax.lo, ay.lo), min(ax.hi, ay.hi))
-        norm = sqrt_fi(ax*ax + ay*ay)
-        sw = FI.point_int(2)*R*V - norm
-        assert sw.lo > 0, sw.f()
-
     return (muE*HCE + muS*HSC + HSE*r + J(m).half()
             - support_E(GEx, GEy) - support_S(GSx, GSy))
 
@@ -220,17 +216,6 @@ def frange(lo, hi, step):
         out.append((x, y))
         x = y
     return out
-
-
-def check_support_domain(pattern13, src, ER, SR, step):
-    count = 0
-    for ea, eb in frange(*ER, step):
-        for sa, sb in frange(*SR, step):
-            B(J(box(ea,eb), 0), J(box(sa,sb), 0), pattern13, src,
-              check_s_vertex=True)
-            count += 1
-    print(('P13 ' if pattern13 else 'P12 ')+src,
-          'support-domain boxes', count, 'PASS')
 
 
 def check_der(name, pattern13, src, ER, SR, step, *, lower=None, upper=None,
@@ -279,13 +264,6 @@ def main():
     Sneg = (F(-2,5), F(0))
     Spos = (F(0), F(1,6))
     Sall = (F(-2,5), F(1,6))
-
-    # Verify the support formulas once on a coarse cover.  Every later call
-    # also rechecks E positivity and x-dominance locally.
-    for pat13, ER in ((False,(F(-2,5),F(2,5))),
-                      (True,(F(-5,12),F(3,10)))):
-        for src in ('Sp','Es'):
-            check_support_domain(pat13, src, ER, Sall, F(1,50))
 
     # E-secondary is minimized at e=0 for every s.
     check_der('P12 Es e<0', False, 'Es', (F(-2,5),F(0)), Sall,
