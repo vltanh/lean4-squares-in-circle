@@ -100,6 +100,16 @@ k=(tt+F(1,2))/(F(3,2)-ss)
 m=(1+r)*k
 rt2I=sqrt_bounds(F(2),140)
 
+# Exact side conditions used to sharpen the D-support branch ranges below.
+# Cap: 2*R*|sin delta| <= 1 and R>5/3 force |delta|<31/100.
+# Vertex: 2*R*|sin delta| >= 1 and R<17/10 force
+# |sin delta|>5/17; with delta<=1/5 this gives delta<-5/17.
+assert R.lo > F(5,3)
+assert R.hi < F(17,10)
+assert sin_pos_pt(F(31,100)).lo > F(3,10)
+assert sin_pos_pt(F(1,5)).hi < F(5,17)
+assert sin_pos_pt(F(5,17)).hi < F(5,17)
+
 def support_xy(x,y,signy):
     x=jj(x); y=jj(y)
     yy=y if signy>0 else -y
