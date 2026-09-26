@@ -594,6 +594,32 @@ F-Q_0>0.01834164.
 
 See \`check_large_hand.py\`.
 
+### Final A2.2 nonnegative-w small-s branch
+
+The residual \`R22-c\` is now closed exactly.  The final stress factors as
+
+\[
+\Phi=A_u(n,w)+B_v(e,s)+D(w,s,\epsilon).
+\]
+
+Exact source reduction leaves only
+\(u\in\{W\text{-primary},N\text{-secondary}\}\) and
+\(v\in\{S\text{-primary},E\text{-secondary}\}\).  The fixed N/W and E/S
+envelope checkers reduce these pair terms to \(n=e=0\); the fixed reduced
+monotonicity checker then forces \(w=s=0\).  The remaining identity is
+
+\[
+\Phi(0,0,\epsilon)
+ =2m(d_*-1/\sqrt2)(1-\cos\epsilon)\ge0,
+\]
+
+with equality only at \(\epsilon=0\).  See
+\`check_A2_R22c_NW_envelope.py\`, \`check_A2_R22c_ES_envelope.py\`, and
+\`check_A2_R22c_reduced_monotonicity.py\`.
+
+Within A2.2, the only explicit residual family now recorded by the case tree is
+the negative-\(w\) family \`R22-d\`.
+
 ### Consequence
 
 The computational bottleneck is no longer the analysis of these stress
