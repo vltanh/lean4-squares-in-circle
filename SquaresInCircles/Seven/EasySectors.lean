@@ -102,7 +102,7 @@ theorem fixed_gap_inward_negative {a u A v : ℝ}
     constructor <;> linarith [Real.pi_gt_d2,Real.pi_lt_d4]
   have hc := Real.one_sub_sq_div_two_le_cos (x := gap-label a u-801/1600)
   have hsq : (gap-label a u-801/1600)^2 < (2/3 : ℝ)^2 := by nlinarith [hb.1,hb.2]
-  have ha := h.a_le_sqrt_three
+  have ha := h.a_le_sqrt_three_sub_half
   have hr : Real.sqrt 3 < 7/4 := by
     have hh := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
     nlinarith [Real.sqrt_nonneg (3 : ℝ)]

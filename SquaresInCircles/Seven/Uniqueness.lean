@@ -26,12 +26,6 @@ theorem uniqueness (S : Fin 7 → UnitSquare) (o : Point)
     (hp : Packing S o radius) : SlidingNormalForm S o :=
   (Equality.exists_containing S o hp).elim (Equality.normal_form_of_containing S o hp)
 
-/-- Every packing at the optimal radius is a sliding packing moved by an explicit
-isometry of the plane. -/
-theorem rigid_uniqueness (S : Fin 7 → UnitSquare) (o : Point)
-    (hp : Packing S o radius) : CongruentToSliding S o :=
-  (uniqueness S o hp).rigid
-
 /-- Complete classification at the optimum, including the converse. -/
 theorem packing_iff_sliding (S : Fin 7 → UnitSquare) (o : Point) :
     Packing S o radius ↔ SlidingNormalForm S o :=

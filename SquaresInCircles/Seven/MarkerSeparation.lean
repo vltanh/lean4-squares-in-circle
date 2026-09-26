@@ -1,6 +1,5 @@
 import SquaresInCircles.Seven.CanonicalPair
 import SquaresInCircles.Seven.AllGaps
-import SquaresInCircles.Common.Coordinates
 
 /-!
 # The pair theorem for actual squares

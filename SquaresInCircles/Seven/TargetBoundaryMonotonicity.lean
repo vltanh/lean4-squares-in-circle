@@ -1,5 +1,6 @@
 import SquaresInCircles.Seven.BoundarySegments
 import SquaresInCircles.Seven.PolynomialCertificates
+import SquaresInCircles.Seven.AnalyticOrder
 
 /-!
 # Monotonicity of the target support on the axial boundary
@@ -45,7 +46,7 @@ lemma axial_circle_bounds {s : ℝ} (hs : 0 ≤ s ∧ s ≤ s0) :
   have hnorm := circle_eq ⟨hu.1,huR⟩
   rw [he,hey]
   have ha := transition_coarse
-  have hbound := hstate.a_le_sqrt_three
+  have hbound := hstate.a_le_sqrt_three_sub_half
   exact ⟨by linarith,by linarith [sqrt_three_bounds.2],by linarith,
     by dsimp [u0] at hu; linarith,by simpa [add_comm] using hnorm⟩
 

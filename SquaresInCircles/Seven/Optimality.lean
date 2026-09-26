@@ -1,7 +1,6 @@
 import SquaresInCircles.Seven.MarkerSeparation
 import SquaresInCircles.Seven.CircleBudget
 import SquaresInCircles.Seven.ExteriorSelection
-import SquaresInCircles.Seven.Construction
 
 /-!
 # The seven-square optimum

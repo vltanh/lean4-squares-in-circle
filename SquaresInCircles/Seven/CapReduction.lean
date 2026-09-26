@@ -1,6 +1,4 @@
 import SquaresInCircles.Seven.Contacts
-import SquaresInCircles.Seven.SectorBounds
-import SquaresInCircles.Seven.PairModel
 
 /-!
 # Capped labels
@@ -55,7 +53,7 @@ lemma capVertex_admissible (i : Fin 3) :
     have hU := mul_nonneg (show 0 ≤ 193/250-u by linarith)
       (show 0 ≤ 193/250+u+1 by linarith)
     dsimp [phi,targetSq]
-    nlinarith
+    linarith
   fin_cases i <;> apply hr <;> norm_num [capVertex] <;> linarith
 
 @[simp] lemma capVertex_label (i : Fin 3) :
@@ -119,7 +117,7 @@ lemma support_barycentric (w x y : Fin 3 → ℝ) (hw : ∑ i,w i=1) (c z : ℝ)
     t*((|Real.cos z|+|Real.sin z|)/2)) hw
   simp only [Fin.sum_univ_three] at hw hconst ⊢
   dsimp [support]
-  nlinarith [hconst]
+  linarith [hconst]
 
 lemma cap_pair_first {a u : ℝ} (hcap : label a u = Real.pi/4)
     (A v : ℝ) (s t : TransverseSign) (k : Fin 4) (g : ℝ) :
@@ -134,7 +132,7 @@ lemma cap_pair_first {a u : ℝ} (hcap : label a u = Real.pi/4)
     (cardinalAngle k+Real.pi-g-s.coe*(Real.pi/4)+t.coe*label A v))
     (capWeights_sum a u)
   simp only [pairSupport,hcap,capVertex_label,Fin.sum_univ_three] at hm hc ⊢
-  nlinarith [hm,hc]
+  linarith [hm,hc]
 
 lemma cap_pair_second {A v : ℝ} (hcap : label A v = Real.pi/4)
     (a u : ℝ) (s t : TransverseSign) (k : Fin 4) (g : ℝ) :
@@ -149,7 +147,7 @@ lemma cap_pair_second {A v : ℝ} (hcap : label A v = Real.pi/4)
   have hc := congrArg (fun w : ℝ => w*support a (s.coe*u) (cardinalAngle k))
     (capWeights_sum A v)
   simp only [pairSupport,hcap,capVertex_label,Fin.sum_univ_three] at hm hc ⊢
-  nlinarith [hm,hc]
+  linarith [hm,hc]
 
 /-- A convex combination of three values is at least one of them. -/
 lemma exists_le_weighted_sum {w f : Fin 3 → ℝ} (hw : ∀ i,0 ≤ w i) (hs : ∑ i,w i = 1) :

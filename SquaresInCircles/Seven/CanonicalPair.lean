@@ -1,4 +1,3 @@
-import SquaresInCircles.Seven.ForwardPositive
 import SquaresInCircles.Seven.Contacts
 import SquaresInCircles.Seven.SeparatingAxes
 
@@ -30,47 +29,15 @@ lemma pair_support_axis_values (a u A v g : ℝ) (s t : TransverseSign) :
     pairSupport a u A v s t 2 g=pairWidth (relativePhase a u A v g s t)+centerDX a u A v g s t ∧
     pairSupport a u A v s t 3 g=pairWidth (relativePhase a u A v g s t)+centerDY a u A v g s t := by
   let d := relativePhase a u A v g s t
-  have he (k : Fin 4) : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v=
-      cardinalAngle k+Real.pi-d := by dsimp [d,relativePhase]; ring
-  have h0 : support A (t.coe*v) (Real.pi-d)=
-      -A*Real.cos d+t.coe*v*Real.sin d+(|Real.cos d|+|Real.sin d|)/2 := by
-    simp only [support,Real.cos_pi_sub,Real.sin_pi_sub,abs_neg]
+  have he (c : ℝ) : c-g-s.coe*label a u+t.coe*label A v=c-d := by
+    dsimp [d,relativePhase]
     ring
-  have h1 : support A (t.coe*v) (3*Real.pi/2-d)=
-      -A*Real.sin d-t.coe*v*Real.cos d+(|Real.sin d|+|Real.cos d|)/2 :=
-    support_three_half_sub A (t.coe*v) d
-  have h2 : support A (t.coe*v) (2*Real.pi-d)=
-      A*Real.cos d-t.coe*v*Real.sin d+(|Real.cos d|+|Real.sin d|)/2 :=
-    support_two_pi_sub A (t.coe*v) d
-  have h3 : support A (t.coe*v) (5*Real.pi/2-d)=
-      A*Real.sin d+t.coe*v*Real.cos d+(|Real.sin d|+|Real.cos d|)/2 := by
-    have hang : 5*Real.pi/2-d=2*Real.pi+(Real.pi/2-d) := by ring
-    rw [hang]
-    simp only [support,Real.cos_add,Real.sin_add,Real.cos_two_pi,Real.sin_two_pi,
-      one_mul,zero_mul,sub_zero,zero_add,Real.cos_pi_div_two_sub,Real.sin_pi_div_two_sub]
-  constructor
-  · rw [pairSupport,he]
-    norm_num only [cardinalAngle,Fin.val_zero,Nat.cast_zero,zero_mul,zero_div,zero_add,support_zero]
-    rw [h0]
-    dsimp [pairWidth,centerDX,d]
-    ring
-  constructor
-  · rw [pairSupport,he]
-    have hk : cardinalAngle (1:Fin 4)=Real.pi/2 := by norm_num [cardinalAngle]
-    rw [hk,support_half_pi,show Real.pi/2+Real.pi-d=3*Real.pi/2-d by ring,h1]
-    dsimp [pairWidth,centerDY,d]
-    ring
-  constructor
-  · rw [pairSupport,he]
-    have hk : cardinalAngle (2:Fin 4)=Real.pi := by norm_num [cardinalAngle]
-    rw [hk,support_pi,show Real.pi+Real.pi-d=2*Real.pi-d by ring,h2]
-    dsimp [pairWidth,centerDX,d]
-    ring
-  · rw [pairSupport,he]
-    have hk : cardinalAngle (3:Fin 4)=3*Real.pi/2 := by norm_num [cardinalAngle]
-    rw [hk,support_three_half_pi,show 3*Real.pi/2+Real.pi-d=5*Real.pi/2-d by ring,h3]
-    dsimp [pairWidth,centerDY,d]
-    ring
+  rw [pairSupport_zero,pairSupport_one,pairSupport_two,pairSupport_three,he,he,he,he,
+    support_three_half_sub,support_two_pi_sub,
+    show 5*Real.pi/2-d=(Real.pi/2-d)+2*Real.pi by ring]
+  simp only [support,Real.cos_pi_sub,Real.sin_pi_sub,Real.cos_add_two_pi,Real.sin_add_two_pi,
+    Real.cos_pi_div_two_sub,Real.sin_pi_div_two_sub,abs_neg,pairWidth,centerDX,centerDY,d]
+  refine ⟨?_,?_,?_,?_⟩ <;> ring
 
 lemma reverse_reflected_phase (a u A v g : ℝ) (s t : TransverseSign) :
     relativePhase A v a u g t.flip s.flip=relativePhase a u A v g s t := by
@@ -82,7 +49,7 @@ def rotatedState (a b d : ℝ) : UnitSquare where
   center := (a*Real.cos d-b*Real.sin d,a*Real.sin d+b*Real.cos d)
   cosine := Real.cos d
   sine := Real.sin d
-  unit := by nlinarith [Real.sin_sq_add_cos_sq d]
+  unit := Real.cos_sq_add_sin_sq d
 
 lemma rotatedState_local (a b d : ℝ) (p : Point) :
     localX (rotatedState a b d) p=Real.cos d*p.1+Real.sin d*p.2-a ∧
@@ -90,9 +57,9 @@ lemma rotatedState_local (a b d : ℝ) (p : Point) :
   have hu := Real.sin_sq_add_cos_sq d
   constructor
   · dsimp [localX,rotatedState]
-    nlinarith [congrArg (fun x : ℝ => a*x) hu]
+    linear_combination -a*hu
   · dsimp [localY,rotatedState]
-    nlinarith [congrArg (fun x : ℝ => b*x) hu]
+    linear_combination -b*hu
 
 namespace Equality
 
@@ -132,10 +99,10 @@ lemma reverse_center_coordinates (a u A v g : ℝ) (s t : TransverseSign) :
     rw [reverse_reflected_phase] <;> simp only [TransverseSign.coe_flip]
   · change Real.cos d*(A*Real.cos d-t.coe*v*Real.sin d-a)+
       Real.sin d*(A*Real.sin d+t.coe*v*Real.cos d-s.coe*u) = _
-    nlinarith [congrArg (fun z : ℝ => A*z) hu]
+    linear_combination A*hu
   · change -Real.sin d*(A*Real.cos d-t.coe*v*Real.sin d-a)+
       Real.cos d*(A*Real.sin d+t.coe*v*Real.cos d-s.coe*u) = _
-    nlinarith [congrArg (fun z : ℝ => t.coe*v*z) hu]
+    linear_combination t.coe*v*hu
 
 /-- A disjoint canonical pair has a nonpositive support in one of its frames. -/
 lemma canonical_has_separator {a u A v g : ℝ} (s t : TransverseSign)

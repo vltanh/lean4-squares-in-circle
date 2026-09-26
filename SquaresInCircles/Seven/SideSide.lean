@@ -71,15 +71,15 @@ lemma sideSide_margin_pos {w : ℝ}
     have hcu := cos_upper_four h.le
     have hxc := mul_le_mul_of_nonneg_left hcu h.le
     have hc2 : 1-w^2 ≤ Real.cos w^2 := by
-      nlinarith [Real.sin_sq_le_sq (x := w), Real.sin_sq_add_cos_sq w]
+      linarith [Real.sin_sq_le_sq (x := w), Real.sin_sq_add_cos_sq w]
     have hpoly :
         w*(468-724*w+90*w^2-40*w^4) ≤
         (19+20*Real.cos w-24*w)^2-
           13*(197-180*Real.sin w-80*Real.cos w) := by
-      nlinarith
+      linarith
     have hw4 : w^4 ≤ (8/15 : ℝ)^4 := by gcongr
     have hp : 0 < 468-724*w+90*w^2-40*w^4 := by
-      nlinarith [sq_nonneg w]
+      linarith [sq_nonneg w]
     have hn := mul_pos h hp
     have hid :
         400*((sideSideL w)^2-targetSq*sideSideRadicand w) =
@@ -87,7 +87,7 @@ lemma sideSide_margin_pos {w : ℝ}
           13*(197-180*Real.sin w-80*Real.cos w) := by
       unfold sideSideL sideSideRadicand targetSq
       rw [min_eq_right hs0]
-      nlinarith [Real.sin_sq_add_cos_sq w]
+      linear_combination (-1300)*Real.sin_sq_add_cos_sq w
     linarith
   · let z := -w
     have hz : 0 < z := by dsimp [z]; linarith [lt_of_le_of_ne (not_lt.mp h) hne]
@@ -105,7 +105,7 @@ lemma sideSide_margin_pos {w : ℝ}
       1800*(Real.cos z-1)+960*z*Real.sin z-1580*Real.sin z+576*z^2+912*z
     have hN : z*(212+z*(636-160*z^2)) ≤ N := by
       dsimp [N]
-      nlinarith
+      linarith
     have hp : 0 < 212+z*(636-160*z^2) := by
       have hi : 0 < 636-160*z^2 := by nlinarith
       have hm := mul_nonneg hz.le hi.le
@@ -117,7 +117,7 @@ lemma sideSide_margin_pos {w : ℝ}
       unfold sideSideL sideSideRadicand targetSq
       rw [Real.cos_neg,Real.sin_neg,min_eq_left (neg_nonpos.mpr hs0)]
       dsimp [N]
-      nlinarith [Real.sin_sq_add_cos_sq z]
+      linear_combination (-900)*Real.sin_sq_add_cos_sq z
     linarith
 
 lemma sideSide_margin_nonneg {w : ℝ}
@@ -153,17 +153,14 @@ lemma sideSide_support_identity {a u A v w : ℝ}
   unfold sideSideSupport sideSideL
   rw [abs_min_identity]
   dsimp [side, gap] at hw
-  nlinarith
+  linear_combination (6/5)*hw
 
 private lemma fixed_dual_norm :
     radius*Real.sqrt (((-9/10 : ℝ)^2+(-3/5)^2)) = 39/20 := by
   have hs := Real.sq_sqrt (show (0 : ℝ) ≤ (-9/10)^2+(-3/5)^2 by norm_num)
-  have hn : 0 ≤ radius*Real.sqrt (((-9/10 : ℝ)^2+(-3/5)^2)) :=
-    mul_nonneg radius_nonneg (Real.sqrt_nonneg _)
-  have he : (radius*Real.sqrt (((-9/10 : ℝ)^2+(-3/5)^2)))^2=(39/20 : ℝ)^2 := by
-    rw [mul_pow, radius_sq, hs]
-    norm_num
-  nlinarith
+  refine (sq_eq_sq₀ (mul_nonneg radius_nonneg (Real.sqrt_nonneg _)) (by norm_num)).mp ?_
+  rw [mul_pow,radius_sq,hs]
+  norm_num
 
 lemma sideSide_support_lower {a u A v w : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -172,8 +169,7 @@ lemma sideSide_support_lower {a u A v w : ℝ}
   have hfirst := dot_lower_candidate (p := -9/10) (r := -3/5) h.2.2.2
   have hsecond := dot_lower_candidate (p := Real.sin w-9/10)
     (r := 2/5-Real.cos w) h'.2.2.2
-  rw [show -radius*Real.sqrt (((-9/10 : ℝ)^2+(-3/5)^2)) = -(39/20) by
-    nlinarith [fixed_dual_norm]] at hfirst
+  rw [neg_mul,fixed_dual_norm] at hfirst
   change -radius*Real.sqrt (sideSideRadicand w) ≤ _ at hsecond
   rw [sideSide_support_identity hw]
   linarith

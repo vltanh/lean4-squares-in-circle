@@ -2,28 +2,64 @@ import SquaresInCircles.Common.NormalForm
 import SquaresInCircles.Common.ArcMetric
 import Mathlib.Data.Fin.Tuple.Sort
 
-/-! Small circular-order lemmas used only for the equality cases. -/
+/-!
+# Directions on the circle
+
+If `(n+1)g = 2π`, then `n+1` directions pairwise at least `g` apart form a
+regular polygon. Sorted as reals `p 0 ≤ … ≤ p n`, neighbours are at least `g`
+apart, and so are `p n` and `p 0+2π`; so `p i-i*g` increases but ends no higher
+than it starts, hence is constant. A quarter turn of the frame turns the centre
+of a square by a quarter turn.
+-/
 noncomputable section
-open Set
 namespace SquaresInCircles
 
 lemma angle_ext {φ ψ : Direction} (hc : φ.cos=ψ.cos) (hs : φ.sin=ψ.sin) : φ=ψ := by
-  have hcφ := congrArg Real.Angle.cos (Real.Angle.coe_toReal φ)
-  have hcψ := congrArg Real.Angle.cos (Real.Angle.coe_toReal ψ)
-  have hsφ := congrArg Real.Angle.sin (Real.Angle.coe_toReal φ)
-  have hsψ := congrArg Real.Angle.sin (Real.Angle.coe_toReal ψ)
-  simp only [Real.Angle.cos_coe,Real.Angle.sin_coe] at hcφ hcψ hsφ hsψ
-  have h := Real.Angle.cos_sin_inj (hcφ.trans (hc.trans hcψ.symm))
-    (hsφ.trans (hs.trans hsψ.symm))
-  simpa only [Real.Angle.coe_toReal] using h
+  induction φ using Real.Angle.induction_on
+  induction ψ using Real.Angle.induction_on
+  exact Real.Angle.cos_sin_inj hc hs
 
 lemma antipodal_of_distance {φ ψ : Direction} (h : dist φ ψ=Real.pi) :
     ψ=φ+(Real.pi:Direction) := by
-  have hc : (ψ-φ).cos= -1 := by rw [cos_sub_distance,h,Real.cos_pi]
-  have hs : (ψ-φ).sin=0 := by nlinarith [Real.Angle.cos_sq_add_sin_sq (ψ-φ)]
-  have he : ψ-φ=(Real.pi:Direction) := angle_ext
-    (by simpa using hc) (by simpa using hs)
-  exact sub_eq_iff_eq_add.mp he |>.trans (add_comm _ _)
+  rw [dist_comm,direction_dist,abs_eq Real.pi_pos.le] at h
+  have he := Real.Angle.toReal_eq_pi_iff.1 (h.resolve_right (Real.Angle.neg_pi_lt_toReal _).ne')
+  rw [← he]
+  abel
+
+/-- If `(n+1)g = 2π`, then `n+1` directions pairwise at least `g` apart form a
+regular polygon. -/
+theorem regular_polygon {n : ℕ} {g : ℝ} (c : Fin (n+1) → Direction) (hg : (n+1)*g=2*Real.pi)
+    (hsep : ∀ i j, i ≠ j → g ≤ dist (c i) (c j)) :
+    ∃ (φ : Direction) (σ : Equiv.Perm (Fin (n+1))),
+      ∀ i, c (σ i)=φ+(((i.val : ℝ)*g : ℝ) : Direction) := by
+  let r : Fin (n+1) → ℝ := fun i => (c i).toReal
+  let σ := Tuple.sort r
+  let p : Fin (n+1) → ℝ := fun i => r (σ i)
+  have hp : Monotone p := Tuple.monotone_sort r
+  have hrepr (i : Fin (n+1)) : (p i : Direction)=c (σ i) := Real.Angle.coe_toReal _
+  have hd {i j} (hij : i < j) : g ≤ p j-p i ∧ g ≤ 2*Real.pi-(p j-p i) := by
+    have h := (hsep (σ j) (σ i) (σ.injective.ne hij.ne')).trans_eq (dist_eq_norm _ _)
+    rw [← hrepr,← hrepr,← Real.Angle.coe_sub] at h
+    have h0 : 0 ≤ p j-p i := sub_nonneg.mpr (hp hij.le)
+    have h1 := direction_coe_norm_le (p j-p i)
+    have h2 := direction_norm_wrapped (t := p j-p i) (by
+      rw [abs_of_nonneg h0]
+      linarith [(c (σ i)).neg_pi_lt_toReal,(c (σ j)).toReal_le_pi])
+    rw [abs_of_nonneg h0] at h1 h2
+    exact ⟨h.trans h1,h.trans h2⟩
+  let q : Fin (n+1) → ℝ := fun i => p i-i.val*g
+  have hq : Monotone q := Fin.monotone_iff_le_succ.2 fun i => by
+    simp only [q,Fin.val_succ,Fin.val_castSucc,Nat.cast_succ]
+    linarith [(hd i.castSucc_lt_succ).1]
+  have hlast : q (Fin.last n) ≤ q 0 := by
+    rcases (Fin.zero_le (Fin.last n)).lt_or_eq with h | h
+    · simp only [q,Fin.val_last,Fin.val_zero,Nat.cast_zero]
+      linarith [(hd h).2]
+    · rw [h]
+  refine ⟨c (σ 0),σ,fun i => ?_⟩
+  have hi : q i=q 0 := le_antisymm ((hq (Fin.le_last i)).trans hlast) (hq (Fin.zero_le i))
+  simp only [q,Fin.val_zero,Nat.cast_zero,zero_mul,sub_zero] at hi
+  rw [← hrepr,eq_add_of_sub_eq hi,Real.Angle.coe_add,hrepr]
 
 def quarterShift : Fin 4 → Direction :=
   ![0,((Real.pi/2:ℝ):Direction),(Real.pi:Direction),((-Real.pi/2:ℝ):Direction)]
@@ -34,83 +70,12 @@ lemma represents_quarter {S : UnitSquare} {o : Point} {φ : Direction} {c : Poin
     (k : Fin 4) (h : Represents S o (φ+quarterShift k) c) :
     Represents S o φ (turnPoint k c) := by
   intro x y
-  rw [pointInDirection_transition o φ (φ+quarterShift k)]
-  rw [h]
-  have he : φ+quarterShift k-φ=quarterShift k := by abel
-  rw [he]
+  rw [pointInDirection_transition o φ (φ+quarterShift k),h,add_sub_cancel_left]
   fin_cases k <;>
     simp [quarterShift,turnPoint,openAxisSquare,neg_div,Real.Angle.cos_coe,Real.Angle.sin_coe] <;>
     constructor <;> rintro ⟨h1,h2⟩ <;>
     obtain ⟨h1a,h1b⟩ := abs_lt.mp h1 <;> obtain ⟨h2a,h2b⟩ := abs_lt.mp h2 <;>
     exact ⟨abs_lt.mpr ⟨by linarith,by linarith⟩,abs_lt.mpr ⟨by linarith,by linarith⟩⟩
-
-lemma sorted_three_grid {P x y z : ℝ}
-    (hx : -P < x) (hz : z ≤ P)
-    (hxabs : P/2 ≤ |x|) (hyabs : P/2 ≤ |y|)
-    (hgap₁ : P/2 ≤ y-x) (hgap₂ : P/2 ≤ z-y) (hwrap : z-x ≤ 3*P/2) :
-    x= -P/2 ∧ y=P/2 ∧ z=P := by
-  have hy0 : 0 ≤ y := by
-    by_contra hn
-    rw [abs_of_neg (lt_of_not_ge hn)] at hyabs
-    linarith
-  rw [abs_of_nonneg hy0] at hyabs
-  have hyEq : y=P/2 := by linarith
-  have hzEq : z=P := by linarith
-  have hx0 : x ≤ 0 := by linarith
-  rw [abs_of_nonpos hx0] at hxabs
-  exact ⟨by linarith,hyEq,hzEq⟩
-
-/-- Four directions with mutual distances at least pi/2 are exactly a quarter-grid. -/
-lemma four_directions_grid (θ : Fin 4 → Direction)
-    (hsep : ∀ i j, i ≠ j → Real.pi/2 ≤ dist (θ i) (θ j)) :
-    ∀ i, ∃ k : Fin 4, θ i=θ 0+quarterShift k := by
-  let t : Fin 3 → ℝ := fun i => (θ i.succ-θ 0).toReal
-  have ht (i : Fin 3) : -Real.pi < t i ∧ t i ≤ Real.pi ∧ Real.pi/2 ≤ |t i| := by
-    refine ⟨(θ i.succ-θ 0).neg_pi_lt_toReal,(θ i.succ-θ 0).toReal_le_pi,?_⟩
-    simpa only [t,direction_dist] using hsep i.succ 0 (Fin.succ_ne_zero i)
-  have hpairs (i j : Fin 3) (hij : i ≠ j) :
-      Real.pi/2 ≤ |t i-t j| ∧ |t i-t j| ≤ 3*Real.pi/2 := by
-    have he : θ i.succ-θ j.succ=((t i-t j:ℝ):Direction) := by
-      rw [Real.Angle.coe_sub]
-      simp only [t,Real.Angle.coe_toReal]
-      abel
-    have h := hsep i.succ j.succ (by simpa using hij)
-    have h₁ : dist (θ i.succ) (θ j.succ) ≤ |t i-t j| := by
-      rw [dist_eq_norm,he]; exact direction_coe_norm_le _
-    have h₂ : dist (θ i.succ) (θ j.succ) ≤ 2*Real.pi-|t i-t j| := by
-      rw [dist_eq_norm,he]
-      apply direction_norm_wrapped
-      exact (abs_sub _ _).trans (by
-        have hi := (θ i.succ-θ 0).abs_toReal_le_pi
-        have hj := (θ j.succ-θ 0).abs_toReal_le_pi
-        linarith)
-    exact ⟨h.trans h₁,by linarith⟩
-  obtain ⟨f,hf,h01,h12⟩ : ∃ f : Fin 3 → Fin 3, Function.Injective f ∧
-      t (f 0) ≤ t (f 1) ∧ t (f 1) ≤ t (f 2) :=
-    ⟨Tuple.sort t,(Tuple.sort t).injective,Tuple.monotone_sort t (by decide),
-      Tuple.monotone_sort t (by decide)⟩
-  have h01' := (hpairs (f 0) (f 1) (fun h => (by decide : (0:Fin 3) ≠ 1) (hf h))).1
-  have h12' := (hpairs (f 1) (f 2) (fun h => (by decide : (1:Fin 3) ≠ 2) (hf h))).1
-  have h02' := (hpairs (f 0) (f 2) (fun h => (by decide : (0:Fin 3) ≠ 2) (hf h))).2
-  rw [abs_of_nonpos (sub_nonpos.mpr h01)] at h01'
-  rw [abs_of_nonpos (sub_nonpos.mpr h12)] at h12'
-  rw [abs_of_nonpos (sub_nonpos.mpr (h01.trans h12))] at h02'
-  have hv := sorted_three_grid (ht (f 0)).1 (ht (f 2)).2.1
-    (ht (f 0)).2.2 (ht (f 1)).2.2 (by linarith) (by linarith) (by linarith)
-  have htgrid (i : Fin 3) : t i= -Real.pi/2 ∨ t i=Real.pi/2 ∨ t i=Real.pi := by
-    obtain ⟨j,rfl⟩ := Finite.surjective_of_injective hf i
-    fin_cases j
-    · exact Or.inl hv.1
-    · exact Or.inr (Or.inl hv.2.1)
-    · exact Or.inr (Or.inr hv.2.2)
-  intro i
-  refine Fin.cases ?_ (fun j => ?_) i
-  · exact ⟨0,by simp [quarterShift]⟩
-  · have he : θ j.succ=θ 0+((t j:ℝ):Direction) := direction_offset _ _
-    rcases htgrid j with h | h | h
-    · exact ⟨3,by rw [he,h]; simp [quarterShift]⟩
-    · exact ⟨1,by rw [he,h]; simp [quarterShift]⟩
-    · exact ⟨2,by rw [he,h]; simp [quarterShift]⟩
 
 lemma represents_cardinal {S : UnitSquare} {o : Point} {φ ψ : Direction} {c : Point}
     (h : Represents S o φ c) (k : Fin 4)

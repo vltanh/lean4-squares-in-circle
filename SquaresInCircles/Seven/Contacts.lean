@@ -38,7 +38,7 @@ lemma remainder_zero {a u : ℝ} (h : Admissible a u)
     by nlinarith [sq_nonneg (a-1)]⟩
 
 lemma axial_of_transverse_zero {a u : ℝ} (h : Admissible a u) (hu : u = 0) :
-    Axial a u := ⟨hu,h.2.2.1,h.a_le_sqrt_three⟩
+    Axial a u := ⟨hu,h.2.2.1,h.a_le_sqrt_three_sub_half⟩
 
 lemma side_label : label 1 (1/2) = Real.pi/6 := by
   have hp := pi_lt_22_over_7

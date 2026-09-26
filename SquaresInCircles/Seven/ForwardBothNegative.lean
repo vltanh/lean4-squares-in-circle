@@ -54,21 +54,19 @@ lemma sideTarget_concave_second {t s : ℝ}
     have hc := transition_coarse
     dsimp [d,gap]
     constructor <;> linarith [ht.1,ht.2,hs.1,hs.2,td_bounds.2,pi_lt_22_over_7,pi_lower_157]
-  have hC := cos_nonneg_quarter ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
+  have hC := Real.cos_nonneg_of_mem_Icc ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi hd.1.le (by linarith [hd.2,Real.pi_pos])
   have hCS : Real.cos d-(4/9)*Real.sin d ≤ 0 := by
     have hle : switchAngle ≤ d := by dsimp [switchLabel,d] at *; linarith
-    have hsin := sin_le_sin_half
-      ⟨by linarith [switch_range.1,Real.pi_pos],switch_range.2.le⟩
-      ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩ hle
-    have hcos := Real.strictAntiOn_cos.antitoneOn
-      (show switchAngle ∈ Icc 0 Real.pi by constructor <;> linarith [switch_range.1,switch_range.2,Real.pi_pos])
-      (show d ∈ Icc 0 Real.pi by constructor <;> linarith [hd.1,hd.2,Real.pi_pos]) hle
+    have hsin := Real.sin_le_sin_of_le_of_le_pi_div_two
+      (by linarith [switch_range.1,Real.pi_pos]) hd.2.le hle
+    have hcos := Real.cos_le_cos_of_nonneg_of_le_pi switch_range.1.le
+      (by linarith [hd.2,Real.pi_pos]) hle
     linarith [switch_zero]
   have hSbig : 4/5 < Real.sin d := by
     have hm := mul_nonneg (show 0 ≤ (4/9)*Real.sin d-Real.cos d by linarith)
       (show 0 ≤ (4/9)*Real.sin d+Real.cos d by positivity)
-    nlinarith [Real.sin_sq_add_cos_sq d]
+    exact lt_of_pow_lt_pow_left₀ 2 hS (by linarith [Real.sin_sq_add_cos_sq d])
   have hb := circle_bounds hs
   have hZ0 : 0 < Z s := Z_pos hs
   have hZlow : 1 < Z s := hb.2.2.2.2.2.1
@@ -77,13 +75,12 @@ lemma sideTarget_concave_second {t s : ℝ}
     have hlo : 5/7 < 1/Z s := (lt_div_iff₀ hZ0).mpr (by linarith)
     have hhi : 1/Z s ≤ 1 := (div_le_one hZ0).mpr hZlow.le
     constructor <;> linarith
-  have hr2 : (1/Z s-1)^2 ≤ (2/7:ℝ)^2 := by nlinarith
+  have hr2 : (1/Z s-1)^2 ≤ (2/7:ℝ)^2 := sq_le_sq' hr.1.le (by linarith [hr.2])
   have hK : -radius ≤ Y s*Real.cos d-X s*Real.sin d := by
     have hh := dot_lower_candidate (p := -Real.sin d) (r := Real.cos d)
       (le_of_eq (circle_identities hs).1)
-    have hu : (-Real.sin d)^2+(Real.cos d)^2=1 := by nlinarith [Real.sin_sq_add_cos_sq d]
-    rw [hu,Real.sqrt_one,mul_one] at hh
-    nlinarith
+    rw [neg_sq,Real.sin_sq_add_cos_sq,Real.sqrt_one,mul_one] at hh
+    linarith
   have hm := mul_nonneg (sq_nonneg (1/Z s-1))
     (show 0 ≤ Y s*Real.cos d-X s*Real.sin d+radius by linarith)
   have hR := mul_le_mul_of_nonneg_left hr2 radius_nonneg
@@ -97,7 +94,7 @@ lemma sideTarget_concave_second {t s : ℝ}
   dsimp [sideCircleTargetDD]
   change -Real.sin d-D s*(X s*Real.cos d+Y s*Real.sin d)/(Z s)^3-
     (1/Z s-1)^2*(Y s*Real.cos d-X s*Real.sin d) ≤ 0
-  nlinarith [radius_lt_181]
+  linarith [radius_lt_181]
 
 lemma sideTarget_at_transition (t : ℝ) : sideCircleTarget t s0=circleTarget t s0 := by
   have hx : X s0=a0+1/2 := by
@@ -115,10 +112,7 @@ lemma sideTarget_at_transition (t : ℝ) : sideCircleTarget t s0=circleTarget t 
 
 lemma sideTarget_at_switch {t s : ℝ} (hs : s0 ≤ s ∧ s ≤ td)
     (he : s=switchLabel t) : sideCircleTarget t s=lineTarget t s := by
-  have hlabel := circle_label hs
-  have hline : sideA s=tieA s+(4/9)*(sideU s-(4/5)*s) := by
-    dsimp [side,tieA] at hlabel ⊢
-    linarith
+  have hline := tie_of_side (circle_label hs)
   have hangle : gap-t+s=switchAngle := by rw [he]; dsimp [switchLabel]; ring
   dsimp [sideCircleTarget,lineTarget]
   rw [hangle]
@@ -149,7 +143,7 @@ lemma diagonal_target_pos {a u s : ℝ}
   have he : e < Real.pi/2 := by dsimp [e]; linarith [ht,pi_lt_22_over_7]
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi (x := d)
     (by linarith [hd.1,Real.pi_pos]) (by linarith [hd.2,he,Real.pi_pos])
-  have hC := cos_nonneg_quarter (x := d)
+  have hC := Real.cos_nonneg_of_mem_Icc (x := d)
     ⟨by linarith [hd.1,Real.pi_pos],by linarith [hd.2,he]⟩
   have hCS := cos_le_sin_of_quarter ⟨hd.1,by linarith [hd.2,he]⟩
   have hdia : diagonal s < 31/40 := by
@@ -159,12 +153,9 @@ lemma diagonal_target_pos {a u s : ℝ}
     linarith [rd_bounds.2]
   have hp := mul_nonneg (show 0 ≤ 31/40-diagonal s by linarith)
     (show 0 ≤ Real.sin d-Real.cos d by linarith)
-  have hcos := Real.strictAntiOn_cos.antitoneOn
-    (show d ∈ Icc 0 Real.pi by constructor <;> linarith [hd.1,hd.2,he,Real.pi_pos])
-    (show e ∈ Icc 0 Real.pi by constructor <;> linarith [hd.1,hd.2,he,Real.pi_pos]) hd.2
-  have hsin := sin_le_sin_half
-    ⟨by linarith [hd.1,Real.pi_pos],by linarith [hd.2,he]⟩
-    ⟨by linarith [hd.1,hd.2,Real.pi_pos],he.le⟩ hd.2
+  have hcos := Real.cos_le_cos_of_nonneg_of_le_pi (by linarith [hd.1,Real.pi_pos])
+    (by linarith [he,Real.pi_pos]) hd.2
+  have hsin := Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [hd.1,Real.pi_pos]) he.le hd.2
   have hu : u ≤ 1/2+(6/5)*(t-Real.pi/6) := by
     have hh := side_identity_transverse a u
     rw [← hT] at hh
@@ -174,7 +165,7 @@ lemma diagonal_target_pos {a u s : ℝ}
   dsimp [diagonalK] at hk
   change 0 < 1/2-u-(diagonal s-1/2)*Real.sin d+(diagonal s+1/2)*Real.cos d
   change 0 < (6/5)*(Real.pi/6-t)+(51/40)*Real.cos e-(11/40)*Real.sin e at hk
-  nlinarith
+  linarith
 
 lemma upper_target_pos {a u s : ℝ}
     (h : Admissible a u) (hT : label a u=side a u)
@@ -290,16 +281,7 @@ lemma target_side_pos {a u A v : ℝ}
       have hle := (switch_iff hd).mp (le_of_lt (lt_of_not_ge hn))
       dsimp [d,switchLabel] at *
       linarith
-    have htop := sideTop_state hs
-    have htlabel : side (sideTopA s) (sideTopU s)=s := by
-      by_cases hsD : s ≤ td
-      · simp only [sideTopA,sideTopU,ite_eq_left hsD]
-        exact circle_label ⟨hs.1,hsD⟩
-      · simp only [sideTopA,sideTopU,ite_eq_right hsD]
-        exact (diagonal_state ⟨(lt_of_not_ge hsD).le,hs.2⟩).2.2
-    have htopline : sideTopA s=tieA s+(4/9)*(sideTopU s-(4/5)*s) := by
-      dsimp [side,tieA] at htlabel ⊢
-      linarith
+    have htopline := tie_of_side (sideTop_state hs).2.2
     have heqtop : vertexTarget t s-lineTarget t s =
         (sideTopU s-(4/5)*s)*(Real.cos d-(4/9)*Real.sin d) := by
       dsimp [vertexTarget]
@@ -376,7 +358,7 @@ lemma forward_negative_negative_small {a u A v : ℝ}
       constructor <;> linarith)
     (3*Real.pi/2-gap+t-s)
   have hang : 3*Real.pi/2-gap+t-s-(-s-1/2)=2*Real.pi-(5*Real.pi/6-t-1/2) := by dsimp [gap]; ring
-  rw [hang,cos_two_pi_sub] at hmarker
+  rw [hang,Real.cos_two_pi_sub] at hmarker
   have he : Real.cos (5*Real.pi/6-t-1/2) = -Real.sin (Real.pi/3-t-1/2) := by
     rw [show 5*Real.pi/6-t-1/2=Real.pi/2+(Real.pi/3-t-1/2) by ring,Real.cos_add]
     simp
@@ -390,7 +372,7 @@ lemma forward_negative_negative_small {a u A v : ℝ}
   simp only [TransverseSign.coe,neg_one_mul,sub_neg_eq_add]
   change 0 < 1/2-u+support A (-v) (3*Real.pi/2-gap+t-s)
   simp only [TransverseSign.coe,neg_one_mul] at hmarker
-  nlinarith [h.remainder_nonneg,pi_lt_22_over_7]
+  linarith [h.remainder_nonneg,pi_lt_22_over_7]
 
 /-- Complete remaining (-,-) sector when the source label is side-selected. -/
 theorem fixed_gap_forward_both_negative_side {a u A v : ℝ}
@@ -408,17 +390,13 @@ theorem fixed_gap_forward_both_negative_side {a u A v : ℝ}
     dsimp [d,gap]
     constructor <;> linarith [ht,pi_lt_22_over_7,Real.pi_pos]
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi hd.1.le (by linarith [hd.2,Real.pi_pos])
-  have hC := cos_nonneg_quarter ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
+  have hC := Real.cos_nonneg_of_mem_Icc ⟨by linarith [hd.1,Real.pi_pos],hd.2.le⟩
   have hid : pairSupport a u A v .negative .negative 1 gap=
       1/2-u-(A-1/2)*Real.sin d+(v+1/2)*Real.cos d := by
     rw [pairSupport_one]
     simp only [TransverseSign.coe,neg_one_mul,sub_neg_eq_add]
-    have he : 3*Real.pi/2-gap+label a u+-label A v=3*Real.pi/2-d := by dsimp [d]; ring
-    rw [he]
-    dsimp [support]
-    rw [show 3*Real.pi/2-d=Real.pi+(Real.pi/2-d) by ring]
-    simp [Real.cos_add,Real.sin_add,Real.cos_pi_div_two_sub,Real.sin_pi_div_two_sub,
-      abs_neg,abs_of_nonneg hS,abs_of_nonneg hC]
+    rw [show 3*Real.pi/2-gap+label a u+-label A v=3*Real.pi/2-d by dsimp [d]; ring,
+      support_three_half_sub,abs_of_nonneg hS,abs_of_nonneg hC]
     ring
   rw [hid]
   rcases hactive with hA | hT'

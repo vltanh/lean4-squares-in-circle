@@ -1,10 +1,8 @@
-import SquaresInCircles.Seven.EasySectors
 import SquaresInCircles.Seven.ForwardPositive
 import SquaresInCircles.Seven.ForwardNegativeTarget
 import SquaresInCircles.Seven.ForwardBothNegative
 import SquaresInCircles.Seven.OppositeForward
 import SquaresInCircles.Seven.InwardSideAxial
-import SquaresInCircles.Seven.InwardAxialAxial
 import SquaresInCircles.Seven.InwardSideTarget
 import SquaresInCircles.Seven.InwardOpposite
 

@@ -61,8 +61,8 @@ lemma small_gap_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
     have hu := Real.sin_sq_add_cos_sq (1/3200:ℝ)
     rw [heq] at hu
     nlinarith
-  have hsinProd : Real.sin z*Real.sin (1/3200)=0 := by linarith
-  have hcosProd : Real.cos z*(Real.cos (1/3200)-1)=0 := by nlinarith
+  have hsinProd : Real.sin z*Real.sin (1/3200)=0 := by linear_combination (hp-hm)/2
+  have hcosProd : Real.cos z*(Real.cos (1/3200)-1)=0 := by linear_combination (hp+hm)/2-h0
   have hsz : Real.sin z=0 := (mul_eq_zero.mp hsinProd).resolve_right (ne_of_gt hsin0)
   have hcz : Real.cos z=0 := (mul_eq_zero.mp hcosProd).resolve_right (sub_ne_zero.mpr hcos1)
   have hu := Real.sin_sq_add_cos_sq z

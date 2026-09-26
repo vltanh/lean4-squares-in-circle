@@ -17,24 +17,16 @@ lemma pairSupport_forward_opposite {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) :
     pairSupport a u A v .negative .positive 1 gap =
       sideSideSupport u A v (label a u+label A v-gap) := by
-  let w := label a u+label A v-gap
-  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := forward_turn_range h h'
-  have hc : 0 ≤ Real.cos w := cos_nonneg_quarter
-    ⟨by linarith [hw.1,Real.pi_pos],by linarith [hw.2,Real.pi_pos]⟩
-  rw [pairSupport_one]
-  simp only [TransverseSign.coe,neg_one_mul,one_mul,sub_neg_eq_add]
-  have he : 3*Real.pi/2-gap+label a u+label A v = 3*Real.pi/2+w := by
-    dsimp [w]
+  have hw := forward_turn_range h h'
+  have hc : 0 ≤ Real.cos (label a u+label A v-gap) :=
+    Real.cos_nonneg_of_mem_Icc ⟨by linarith [Real.pi_pos],by linarith [Real.pi_pos]⟩
+  have he : 3*Real.pi/2-gap-TransverseSign.negative.coe*label a u+
+      TransverseSign.positive.coe*label A v = 3*Real.pi/2-(-(label a u+label A v-gap)) := by
+    simp only [TransverseSign.coe]
     ring
-  rw [he]
-  have hc' : Real.cos (3*Real.pi/2+w)=Real.sin w := by
-    rw [show 3*Real.pi/2+w=Real.pi+(Real.pi/2+w) by ring]
-    simp [Real.cos_add,Real.sin_add]
-  have hs' : Real.sin (3*Real.pi/2+w)=-Real.cos w := by
-    rw [show 3*Real.pi/2+w=Real.pi+(Real.pi/2+w) by ring]
-    simp [Real.cos_add,Real.sin_add]
-  change _ = sideSideSupport u A v w
-  simp only [support,hc',hs',abs_neg,abs_of_nonneg hc,sideSideSupport]
+  rw [pairSupport_one,he,support_three_half_sub,Real.sin_neg,Real.cos_neg,abs_neg,
+    abs_of_nonneg hc]
+  simp only [sideSideSupport,TransverseSign.coe]
   ring
 
 lemma forward_turn_nonneg {w : ℝ} (hw : 0 ≤ w ∧ w ≤ Real.pi/6) :
@@ -43,9 +35,9 @@ lemma forward_turn_nonneg {w : ℝ} (hw : 0 ≤ w ∧ w ≤ Real.pi/6) :
   have hs := Real.sin_ge_sub_cube hw.1
   have hc := Real.one_sub_sq_div_two_le_cos (x := w)
   have hsq : w^2 ≤ (8/15 : ℝ)^2 := by nlinarith [hw.1]
-  have hp : 0 ≤ 1/5-w/4-w^2/6 := by nlinarith
+  have hp : 0 ≤ 1/5-w/4-w^2/6 := by linarith
   have hm := mul_nonneg hw.1 hp
-  nlinarith
+  linarith
 
 lemma opposite_support_positive_turn {u A v w : ℝ}
     (hA : 1/2 ≤ A) (hv : 0 ≤ v) (hw : 0 ≤ w ∧ w ≤ Real.pi/6) :
@@ -57,7 +49,7 @@ lemma opposite_support_positive_turn {u A v w : ℝ}
   have hp' := mul_nonneg hv hc
   dsimp [sideSideSupport]
   rw [abs_of_nonneg hs]
-  nlinarith
+  linarith
 
 lemma opposite_support_negative_turn {u A v z : ℝ}
     (h' : Admissible A v) (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
@@ -69,7 +61,7 @@ lemma opposite_support_negative_turn {u A v z : ℝ}
   have hp := mul_nonneg h'.1 hc
   dsimp [sideSideSupport]
   rw [Real.sin_neg,Real.cos_neg,abs_neg,abs_of_nonneg hs]
-  nlinarith
+  linarith
 
 lemma opposite_axial_scalar {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
     0 < 1-4*Real.pi/15+(4/5)*z-(Real.sqrt 3-1)*Real.sin z
@@ -87,7 +79,7 @@ lemma opposite_axial_scalar {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
   have h5 := mul_nonneg (pow_nonneg hz.1 5)
     (show 0 ≤ 3/4-(Real.sqrt 3-1) by linarith)
   dsimp [axialPairPolynomial] at hp
-  nlinarith [pi_lt_22_over_7]
+  linarith [pi_lt_22_over_7]
 
 lemma opposite_axial_axial_pos {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -115,12 +107,12 @@ lemma opposite_axial_axial_pos {a u A v : ℝ}
     have hs : 0 ≤ Real.sin z := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
       (by linarith [hz.2,Real.pi_pos])
     have hm := mul_nonneg (show 0 ≤ Real.sqrt 3-1-(A-1/2) by
-      linarith [h'.a_le_sqrt_three]) hs
+      linarith [h'.a_le_sqrt_three_sub_half]) hs
     have hwz : w = -z := by dsimp [z]; ring
     rw [hwz]
     rw [hwz] at he
     dsimp [gap] at he
-    nlinarith
+    linarith
 
 def mixedMargin : ℝ := 32/15-2*Real.pi/15-Real.sqrt 2626/30
 
@@ -137,18 +129,12 @@ lemma mixed_linear_bound {a u : ℝ} (h : Admissible a u) :
   have he : radius*Real.sqrt (((3/5 : ℝ)^2+(11/15)^2)) = Real.sqrt 2626/30 := by
     have hs := Real.sq_sqrt (show (0 : ℝ) ≤ (3/5)^2+(11/15)^2 by norm_num)
     have hs' := Real.sq_sqrt (show (0 : ℝ) ≤ 2626 by norm_num)
-    have hn : 0 ≤ radius*Real.sqrt (((3/5 : ℝ)^2+(11/15)^2)) := by
-      exact mul_nonneg radius_nonneg (Real.sqrt_nonneg _)
-    have hsq : (radius*Real.sqrt (((3/5 : ℝ)^2+(11/15)^2)))^2 =
-        (Real.sqrt 2626/30)^2 := by
-      rw [mul_pow,radius_sq,hs,div_pow (Real.sqrt 2626),hs']
-      norm_num
-    nlinarith [Real.sqrt_nonneg (2626 : ℝ)]
+    refine (sq_eq_sq₀ (mul_nonneg radius_nonneg (Real.sqrt_nonneg _)) (by positivity)).mp ?_
+    rw [mul_pow,radius_sq,hs,div_pow (Real.sqrt 2626),hs']
+    norm_num
   simp only [neg_sq] at hh
-  have hn : -radius*Real.sqrt (((3/5 : ℝ)^2+(11/15)^2)) = -(Real.sqrt 2626/30) := by
-    nlinarith [he]
-  rw [hn] at hh
-  nlinarith
+  rw [neg_mul,he] at hh
+  linarith
 
 lemma mixed_clearance_bound {a u A v : ℝ}
     (h' : Admissible A v)
@@ -199,7 +185,7 @@ lemma side_axial_far_profile {z : ℝ} (hz : 1/3 ≤ z ∧ z ≤ 7/10) :
       (show (0 : ℝ) ≤ 1/3 by norm_num) (by linarith [pi_lower_157])
     have hp := mul_nonneg (show 0 ≤ 11/15-(Real.sqrt 3-1) by linarith) hsin0
     dsimp [B]
-    nlinarith [pi_lt_22_over_7]
+    linarith [pi_lt_22_over_7]
   exact hb.trans_le (hm (by constructor <;> norm_num) hz hz.1)
 
 lemma opposite_axial_side_pos {a u A v : ℝ}
@@ -231,7 +217,7 @@ lemma opposite_axial_side_pos {a u A v : ℝ}
     have he : w = -z := by dsimp [z]; ring
     rw [he]
     rw [he] at hclear
-    nlinarith [mixedMargin_gt]
+    linarith [mixedMargin_gt]
 
 lemma opposite_side_axial_pos {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -257,7 +243,7 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
     have hl := opposite_support_negative_turn (u := u) h' hz
     have hsin0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
       (by linarith [hz.2,Real.pi_pos])
-    have hA1 := h'.a_le_sqrt_three
+    have hA1 := h'.a_le_sqrt_three_sub_half
     have hp := mul_nonneg (show 0 ≤ Real.sqrt 3-1-(A-1/2) by linarith) hsin0
     by_cases hzsmall : z ≤ 1/3
     · have hsin := Real.sin_le hz.1
@@ -265,7 +251,7 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
       have hq := mul_nonneg hz.1 (show 0 ≤ 1/3-z by linarith)
       have hpc := mul_nonneg
         (show 0 ≤ 11/15-(Real.sqrt 3-1) by linarith [sqrt_three_bounds.2]) hsin0
-      nlinarith [mixedMargin_gt]
+      linarith [mixedMargin_gt]
     · have hsource := side_identity_transverse a u
       rw [← hT] at hsource
       have hu : u ≤ 1/2+(6/5)*(label a u-Real.pi/6) := by
@@ -279,7 +265,7 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
         dsimp [gap] at hw'
         linarith
       have hprof := side_axial_far_profile ⟨(lt_of_not_ge hzsmall).le,hz7.le⟩
-      nlinarith
+      linarith
 
 /-- Complete A/T sector, including the only possible side--side contact. -/
 theorem fixed_gap_forward_opposite_active {a u A v : ℝ}

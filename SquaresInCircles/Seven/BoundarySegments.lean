@@ -1,6 +1,5 @@
 import SquaresInCircles.Seven.LabelBoundary
 import SquaresInCircles.Seven.SectorBounds
-import SquaresInCircles.Seven.AnalyticOrder
 
 /-!
 # Segments of constant label
@@ -180,7 +179,8 @@ lemma side_state_transition_bounds {a u : ℝ} (h : Admissible a u)
   exact ⟨hu,ha,hs⟩
 
 lemma circle_state_at_label {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
-    Admissible (sideA t) (sideU t) ∧ label (sideA t) (sideU t)=side (sideA t) (sideU t) := by
+    Admissible (sideA t) (sideU t) ∧ label (sideA t) (sideU t)=side (sideA t) (sideU t) ∧
+      side (sideA t) (sideU t)=t := by
   have hb := circle_bounds ht
   have he := circle_identities ht
   have ha : Admissible (sideA t) (sideU t) := by
@@ -213,7 +213,7 @@ lemma circle_state_at_label {t : ℝ} (ht : s0 ≤ t ∧ t ≤ td) :
   have hcap : side (sideA t) (sideU t) ≤ Real.pi/4 := by
     rw [circle_label ht]
     exact ht.2.trans td_bounds.2.le
-  exact ⟨ha,by simp only [label,min_eq_right hTA,min_eq_left hcap]⟩
+  exact ⟨ha,by simp only [label,min_eq_right hTA,min_eq_left hcap],circle_label ht⟩
 
 lemma diagonal_state {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
     Admissible (diagonal t) (diagonal t) ∧
@@ -239,14 +239,13 @@ lemma diagonal_state {t : ℝ} (ht : td ≤ t ∧ t ≤ Real.pi/4) :
 
 lemma sideTop_state {t : ℝ} (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
     Admissible (sideTopA t) (sideTopU t) ∧
-      label (sideTopA t) (sideTopU t)=t := by
+      label (sideTopA t) (sideTopU t)=side (sideTopA t) (sideTopU t) ∧
+      side (sideTopA t) (sideTopU t)=t := by
   by_cases hc : t ≤ td
-  · obtain ⟨ha,hsel⟩ := circle_state_at_label ⟨ht.1,hc⟩
-    simp only [sideTopA,sideTopU,ite_eq_left hc]
-    exact ⟨ha,by rw [hsel,circle_label ⟨ht.1,hc⟩]⟩
-  · obtain ⟨ha,hsel,he⟩ := diagonal_state ⟨(lt_of_not_ge hc).le,ht.2⟩
-    simp only [sideTopA,sideTopU,ite_eq_right hc]
-    exact ⟨ha,hsel.trans he⟩
+  · simp only [sideTopA,sideTopU,ite_eq_left hc]
+    exact circle_state_at_label ⟨ht.1,hc⟩
+  · simp only [sideTopA,sideTopU,ite_eq_right hc]
+    exact diagonal_state ⟨(lt_of_not_ge hc).le,ht.2⟩
 
 lemma tie_state {t : ℝ} (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
     Admissible (tieA t) ((4/5)*t) ∧
@@ -263,6 +262,13 @@ lemma tie_state {t : ℝ} (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
   rw [he] at ha hA
   exact ⟨ha,by rw [hA]; dsimp [axial]; ring,by dsimp [side,tieA]; ring⟩
 
+/-- A state with side label `t` lies on the line of slope `4/9` through the
+axial tie `(tieA t, 4t/5)`. -/
+lemma tie_of_side {a u t : ℝ} (h : side a u=t) : a=tieA t+(4/9)*(u-(4/5)*t) := by
+  rw [← h]
+  dsimp [side,tieA]
+  ring
+
 lemma side_segment {a u : ℝ} (h : Admissible a u)
     (hT : label a u=side a u) :
     (4/5)*label a u ≤ u ∧ u ≤ sideTopU (label a u) ∧
@@ -270,24 +276,15 @@ lemma side_segment {a u : ℝ} (h : Admissible a u)
   let t := label a u
   have ht : s0 ≤ t ∧ t ≤ Real.pi/4 :=
     ⟨(side_state_transition_bounds h hT).2.2,h.label_le_quarter⟩
-  have hlin : a=tieA t+(4/9)*(u-(4/5)*t) := by
-    dsimp [t]
-    rw [hT]
-    dsimp [tieA,side]
-    ring
+  have hlin : a=tieA t+(4/9)*(u-(4/5)*t) := tie_of_side hT.symm
   have hlow : (4/5)*t ≤ u := by
     have hh := h.label_le_axial
     dsimp [axial] at hh
     linarith
   have hupp : u ≤ sideTopU t := by
     by_cases hc : t ≤ td
-    · have htop := sideTop_state ht
-      have htopT : side (sideTopA t) (sideTopU t)=t := by
-        simp only [sideTopA,sideTopU,ite_eq_left hc]
-        exact circle_label ⟨ht.1,hc⟩
-      have htoplin : sideTopA t=tieA t+(4/9)*(sideTopU t-(4/5)*t) := by
-        dsimp [side,tieA] at htopT ⊢
-        linarith
+    · obtain ⟨htop,-,htopT⟩ := sideTop_state ht
+      have htoplin := tie_of_side htopT
       have hnorm : phi (sideTopA t) (sideTopU t)=targetSq := by
         simp only [sideTopA,sideTopU,ite_eq_left hc]
         have he := (circle_identities ⟨ht.1,hc⟩).1
@@ -297,9 +294,9 @@ lemma side_segment {a u : ℝ} (h : Admissible a u)
       have hu' : sideTopU t < u := lt_of_not_ge hn
       have ha' : sideTopA t < a := by linarith
       have hmu := mul_pos (sub_pos.mpr hu')
-        (show 0 < u+sideTopU t+1 by linarith [h.1,htop.1.1])
+        (show 0 < u+sideTopU t+1 by linarith [h.1,htop.1])
       have hma := mul_pos (sub_pos.mpr ha')
-        (show 0 < a+sideTopA t+1 by linarith [h.a_nonneg,htop.1.a_nonneg])
+        (show 0 < a+sideTopA t+1 by linarith [h.a_nonneg,htop.a_nonneg])
       have hp := h.2.2.2
       dsimp [phi] at hnorm hp
       linarith

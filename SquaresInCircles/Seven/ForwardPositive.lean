@@ -15,18 +15,6 @@ lemma support_pi_shift (a b z : ℝ) :
   simp [support,Real.cos_add,Real.sin_add,abs_neg]
   ring
 
-lemma support_three_half_sub (a b z : ℝ) :
-    support a b (3*Real.pi/2-z) =
-      -a*Real.sin z-b*Real.cos z+(|Real.sin z|+|Real.cos z|)/2 := by
-  rw [show 3*Real.pi/2-z = Real.pi+(Real.pi/2-z) by ring]
-  rw [support_pi_shift,Real.cos_pi_div_two_sub,Real.sin_pi_div_two_sub]
-
-lemma support_two_pi_sub (a b z : ℝ) :
-    support a b (2*Real.pi-z) =
-      a*Real.cos z-b*Real.sin z+(|Real.cos z|+|Real.sin z|)/2 := by
-  simp [support,Real.cos_sub,Real.sin_sub,Real.cos_two_mul,Real.sin_two_mul,abs_neg]
-  ring
-
 /-- Closed containment suffices for strict positivity in this entire sector. -/
 theorem fixed_gap_forward_positive {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) :
@@ -59,7 +47,7 @@ theorem fixed_gap_forward_positive {a u A v : ℝ}
     have hz : 0 ≤ z ∧ z ≤ Real.pi/2 := by
       dsimp [z]
       constructor <;> linarith [pi_lower_157,Real.pi_pos]
-    have hc : 0 ≤ Real.cos z := cos_nonneg_quarter
+    have hc : 0 ≤ Real.cos z := Real.cos_nonneg_of_mem_Icc
       ⟨by linarith [hz.1,Real.pi_pos],hz.2⟩
     have hsn : 0 ≤ Real.sin z := Real.sin_nonneg_of_nonneg_of_le_pi hz.1
       (by linarith [hz.2,Real.pi_pos])
@@ -71,17 +59,17 @@ theorem fixed_gap_forward_positive {a u A v : ℝ}
       have hsum := h'.sum_lt
       have hnon := add_nonneg hc hsn
       have hprod := mul_nonneg (show 0 ≤ 31/20-A-v by linarith) hnon
-      have hunit := sin_add_cos_le_three_halves z
-      nlinarith [h.1]
+      have hunit := sin_add_cos_lt_three_halves z
+      linarith [h.1]
     · have hquarter' : z ≤ Real.pi/4 := (lt_of_not_ge hquarter).le
       have hd := dot_upper_unit h'.2.2.2
         (C := Real.cos z) (S := Real.sin z)
-        (by nlinarith [Real.sin_sq_add_cos_sq z])
+        (by linarith [Real.sin_sq_add_cos_sq z])
       have hw : 0 ≤ Real.pi/6-t ∧ Real.pi/6-t ≤ Real.pi/4 := by
         constructor <;> linarith [pi_lower_157,Real.pi_pos]
       have hm := trig_sum_monotone hw ⟨hz.1,hquarter'⟩
         (show Real.pi/6-t ≤ z by dsimp [z]; linarith)
       have hf := forward_positive_profile ht'
-      nlinarith
+      linarith
 
 end SquaresInCircles.Seven

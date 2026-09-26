@@ -5,9 +5,8 @@ import SquaresInCircles.Common.NormalForm
 # The sliding normal form
 
 `SlidingNormalForm S o` says that `S` has the normal form of
-`slidingCenters c` for some column `c`; `CongruentToSliding` says the same
-with an explicit isometry of the plane. Every sliding normal form is an
-optimal packing.
+`slidingCenters c` for some column `c`. Every sliding normal form is an optimal
+packing.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -15,22 +14,6 @@ namespace SquaresInCircles.Seven
 /-- `S` has the normal form of some sliding packing. -/
 def SlidingNormalForm (S : Fin 7 → UnitSquare) (o : Point) : Prop :=
   ∃ c : Column, HasNormalForm S o (slidingCenters c)
-
-/-- `SlidingNormalForm` with an explicit isometry of the plane in place of the
-frame. -/
-def CongruentToSliding (S : Fin 7 → UnitSquare) (o : Point) : Prop :=
-  ∃ (c : Column) (e : Point ≃ Point) (σ : Equiv.Perm (Fin 7)),
-    e (0,0) = o ∧
-    (∀ p q, normSq (sub (e p) (e q)) = normSq (sub p q)) ∧
-    (∀ i p,
-      (openSquare (S (σ i)) (e p) ↔ openAxisSquare (slidingCenters c i) p.1 p.2) ∧
-      (closedSquare (S (σ i)) (e p) ↔ closedAxisSquare (slidingCenters c i) p.1 p.2))
-
-lemma SlidingNormalForm.rigid {S : Fin 7 → UnitSquare} {o : Point}
-    (h : SlidingNormalForm S o) : CongruentToSliding S o := by
-  obtain ⟨c,hc⟩ := h
-  obtain ⟨e,σ,he,hd,hm⟩ := hc.rigid_witness
-  exact ⟨c,e,σ,he,hd,hm⟩
 
 lemma slidingModel_open (c : Column) (i : Fin 7) (p : Point) :
     openSquare (slidingModel c i) p ↔ openAxisSquare (slidingCenters c i) p.1 p.2 := by

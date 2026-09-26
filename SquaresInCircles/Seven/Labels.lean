@@ -60,7 +60,7 @@ lemma tangent : 3*a + 2*u ≤ 4 := by
   dsimp [remainder] at hw
   linarith
 
-lemma a_le_sqrt_three : a ≤ Real.sqrt 3 - 1/2 := by
+lemma a_le_sqrt_three_sub_half : a ≤ Real.sqrt 3 - 1/2 := by
   have hp := h.2.2.2
   have hs := Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)
   have hn := Real.sqrt_nonneg (3 : ℝ)
@@ -68,7 +68,8 @@ lemma a_le_sqrt_three : a ≤ Real.sqrt 3 - 1/2 := by
   nlinarith [h.1, h.2.2.1, sq_nonneg u]
 
 lemma a_lt_five_fourths : a < 5/4 := by
-  nlinarith [h.a_le_sqrt_three, Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num), Real.sqrt_nonneg 3]
+  nlinarith [h.a_le_sqrt_three_sub_half, Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num),
+    Real.sqrt_nonneg 3]
 
 lemma sum_lt : a+u < 31/20 := by
   have hp := h.2.2.2
@@ -140,17 +141,6 @@ lemma selected (_h : Admissible a u) : label a u = axial u ∨ label a u = side 
     · exact Or.inr (Or.inr (by
         simp [label, min_eq_right (le_of_not_ge hA), min_eq_right (le_of_not_ge hc)]))
 end Admissible
-
-lemma StrictlyAdmissible.remainder_pos {a u : ℝ} (h : StrictlyAdmissible a u) :
-    0 < remainder a u := by
-  rw [remainder_identity]
-  linarith [h.2.2.2, sq_nonneg (a-1), sq_nonneg (u-1/2)]
-
-lemma StrictlyAdmissible.tangent {a u : ℝ} (h : StrictlyAdmissible a u) :
-    3*a + 2*u < 4 := by
-  have hh := h.remainder_pos
-  dsimp [remainder] at hh
-  linarith
 
 lemma side_selected_label_gt {a u : ℝ} (h : Admissible a u)
     (hsel : label a u = side a u) : (9 : ℝ)/25 < label a u := by

@@ -1,6 +1,5 @@
 import SquaresInCircles.Seven.MarkerSeparation
 import SquaresInCircles.Seven.CircleBudget
-import SquaresInCircles.Common.Angles
 
 /-!
 # The ring of six squares

@@ -53,8 +53,9 @@ example : (2:ℝ)/3 < Real.sqrt 2/2 := by
   nlinarith [Real.sqrt_nonneg 2]
 example : ((5:ℝ)/6+1/2)^2+(1/2)^2 > 2 := by norm_num
 
--- Seven squares: the outer corners, the side state and its label, and the
--- margin of the marker arc at the near edge.
+-- Seven squares: the outer corners, the side state and its label, the margin
+-- of the marker arc at the near edge, and the discriminant certificate of the
+-- inward sector at its endpoint.
 example : (3/2:ℝ)^2+1 = 13/4 := by norm_num
 example : (1/2:ℝ)^2+3 = 13/4 := by norm_num
 example : Seven.Admissible 1 (1/2) := by norm_num [Seven.Admissible,phi,Seven.targetSq]

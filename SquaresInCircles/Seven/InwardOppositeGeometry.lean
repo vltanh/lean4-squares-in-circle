@@ -1,5 +1,6 @@
 import SquaresInCircles.Seven.BoundarySegments
 import SquaresInCircles.Seven.PairModel
+import SquaresInCircles.Seven.AnalyticOrder
 
 /-!
 # The inward axis with opposite signs: formula and displacements
@@ -19,28 +20,8 @@ lemma inward_opposite_formula {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v) :
     pairSupport a u A v .positive .negative 2 gap =
       inwardOpposite a A v (label a u+label A v-Real.pi/6) := by
-  let e := label a u+label A v-Real.pi/6
-  have hr : -Real.pi/6 ≤ e ∧ e ≤ Real.pi/3 := by
-    have ht0 := h.label_nonneg
-    have hs0 := h'.label_nonneg
-    have ht1 := h.label_le_quarter
-    have hs1 := h'.label_le_quarter
-    dsimp [e]
-    constructor <;> linarith
-  have hc : 0 ≤ Real.cos e := Real.cos_nonneg_of_mem_Icc
-    ⟨by linarith [hr.1,Real.pi_pos],by linarith [hr.2,Real.pi_pos]⟩
-  have he : 2*Real.pi-gap-label a u+-label A v=3*Real.pi/2-e := by
-    dsimp [e,gap]; ring
-  rw [pairSupport_two]
-  simp only [TransverseSign.coe,one_mul,neg_one_mul]
-  rw [he]
-  have hcos : Real.cos (3*Real.pi/2-e) = -Real.sin e := by
-    rw [show 3*Real.pi/2-e=Real.pi+(Real.pi/2-e) by ring]
-    simp [Real.cos_add,Real.cos_pi_div_two_sub]
-  have hsin : Real.sin (3*Real.pi/2-e) = -Real.cos e := by
-    rw [show 3*Real.pi/2-e=Real.pi+(Real.pi/2-e) by ring]
-    simp [Real.sin_add,Real.sin_pi_div_two_sub]
-  simp only [support,hcos,hsin,abs_neg,abs_of_nonneg hc,inwardOpposite]
+  rw [pairSupport_inward .negative h h']
+  simp only [TransverseSign.coe,neg_one_mul,sub_neg_eq_add,inwardOpposite]
   ring
 
 lemma inward_opposite_side_identity {a u A v e : ℝ}
@@ -157,25 +138,12 @@ lemma sideA_displacement {t s : ℝ}
   dsimp [f] at h
   linarith
 
-lemma target_at_upper_side (t : ℝ) (ht : s0 ≤ t ∧ t ≤ Real.pi/4) :
-    label (sideTopA t) (sideTopU t)=side (sideTopA t) (sideTopU t) := by
-  have hlabel := (sideTop_state ht).2
-  rw [hlabel]
-  symm
-  by_cases hs : t ≤ td
-  · simp only [sideTopA,sideTopU,ite_eq_left hs]
-    exact circle_label ⟨ht.1,hs⟩
-  · simp only [sideTopA,sideTopU,ite_eq_right hs]
-    exact (diagonal_state ⟨(lt_of_not_ge hs).le,ht.2⟩).2.2
-
 lemma side_radial_upper {a u : ℝ} (h : Admissible a u)
     (hT : label a u=side a u) : a ≤ sideTopA (label a u) := by
   have hs := side_segment h hT
-  have ht : s0 ≤ label a u ∧ label a u ≤ Real.pi/4 :=
-    ⟨(side_state_transition_bounds h hT).2.2,h.label_le_quarter⟩
-  have htop := side_segment (sideTop_state ht).1 (target_at_upper_side _ ht)
-  rw [(sideTop_state ht).2] at htop
-  linarith [hs.2.1,hs.2.2,htop.2.2]
+  have htop := tie_of_side (sideTop_state
+    ⟨(side_state_transition_bounds h hT).2.2,h.label_le_quarter⟩).2.2
+  linarith [hs.2.1,hs.2.2]
 
 end Boundary
 end SquaresInCircles.Seven

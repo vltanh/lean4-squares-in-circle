@@ -43,9 +43,7 @@ lemma first_octant_polar {x y : ℝ} (hx : 0<x) (hy : 0<y) (hxy : y≤x) :
     nlinarith
   have hbq : b≤Real.pi/4 := by
     by_contra hn
-    have hsin := Real.strictMonoOn_sin
-      (show Real.pi/2-b∈Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [Real.pi_pos])
-      (show b∈Icc (-(Real.pi/2)) (Real.pi/2) by constructor <;> linarith [Real.pi_pos])
+    have hsin := Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith) hbhalf.le
       (show Real.pi/2-b<b by linarith)
     rw [Real.sin_pi_div_two_sub] at hsin
     have hm := mul_lt_mul_of_pos_left hsin hd
@@ -72,7 +70,7 @@ lemma stationary_nearest_corner {A v z X Y H : ℝ} (t : TransverseSign)
     ∃ d b : ℝ, 0<d ∧ d<1/2 ∧ 0<b ∧ b≤Real.pi/4 ∧
       A=1/2+d*Real.cos b ∧ v=1/2+d*Real.sin b ∧ H=-d ∧
       Real.cos z= -Real.cos b ∧ Real.sin z= -t.coe*Real.sin b := by
-  have hu : Real.cos z^2+Real.sin z^2=1 := by nlinarith [Real.sin_sq_add_cos_sq z]
+  have hu := Real.cos_sq_add_sin_sq z
   have hXC : X=H*Real.cos z := by
     calc
       X=X*(Real.cos z^2+Real.sin z^2) := by rw [hu]; ring

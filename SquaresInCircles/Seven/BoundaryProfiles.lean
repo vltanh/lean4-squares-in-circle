@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.BoundaryPointChecks
+import SquaresInCircles.Seven.AnalyticOrder
 
 /-!
 # Profiles along the boundary of the label regions

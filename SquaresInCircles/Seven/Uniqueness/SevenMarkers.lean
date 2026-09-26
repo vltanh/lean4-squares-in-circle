@@ -1,5 +1,4 @@
 import SquaresInCircles.Seven.MarkerSeparation
-import SquaresInCircles.Common.AngularBudget
 
 /-!
 # Seven markers

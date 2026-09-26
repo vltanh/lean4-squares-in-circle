@@ -74,15 +74,6 @@ lemma side_remainder_quadratic {a u : ℝ} (h : Admissible a u)
   change (9/5)*D^2 ≤ W
   linarith [sq_nonneg W,sq_nonneg D]
 
-lemma cos_nonneg_quarter {x : ℝ} (hx : -Real.pi/2 ≤ x ∧ x ≤ Real.pi/2) :
-    0 ≤ Real.cos x := Real.cos_nonneg_of_mem_Icc ⟨by linarith [hx.1],hx.2⟩
-
-lemma sin_le_sin_half {x y : ℝ}
-    (hx : -Real.pi/2 ≤ x ∧ x ≤ Real.pi/2)
-    (hy : -Real.pi/2 ≤ y ∧ y ≤ Real.pi/2) (hxy : x ≤ y) :
-    Real.sin x ≤ Real.sin y :=
-  Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [hx.1]) hy.2 hxy
-
 lemma cos_le_sin_of_quarter {x : ℝ}
     (hx : Real.pi/4 ≤ x ∧ x ≤ Real.pi/2) : Real.cos x ≤ Real.sin x := by
   have hh := Real.sin_le_sin_of_le_of_le_pi_div_two (x := Real.pi/2-x)
@@ -95,7 +86,7 @@ lemma sin_le_cos_of_small {x : ℝ}
     (by linarith [hx.1,Real.pi_pos]) (by linarith [hx.1]) (by linarith [hx.2])
   simpa only [Real.sin_pi_div_two_sub] using hh
 
-lemma sin_add_cos_le_three_halves (x : ℝ) : Real.sin x+Real.cos x < 3/2 := by
+lemma sin_add_cos_lt_three_halves (x : ℝ) : Real.sin x+Real.cos x < 3/2 := by
   have hu := Real.sin_sq_add_cos_sq x
   nlinarith [sq_nonneg (Real.sin x-Real.cos x)]
 

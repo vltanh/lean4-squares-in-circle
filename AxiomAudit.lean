@@ -31,6 +31,7 @@ used in this development.
 #print axioms SquaresInCircles.OpenArc.third_distance_bounds
 #print axioms SquaresInCircles.centers_distance_sq_ge_one
 #print axioms SquaresInCircles.unit_contact
+#print axioms SquaresInCircles.regular_polygon
 
 -- The two alternatives for three squares.
 #print axioms SquaresInCircles.three_exterior_reduction
@@ -38,30 +39,29 @@ used in this development.
 #print axioms SquaresInCircles.three_compensation
 #print axioms SquaresInCircles.near_axis_square_overlap
 
--- Seven squares: the marker arc, the gap of pi/3, the pair theorem for actual
--- squares, six markers, and the sliding packings.
+-- Seven squares: the marker arc, the gap of pi/3 (nonnegative, zero only at
+-- contacts), all smaller gaps, the pair theorem, the regular hexagon of
+-- markers, and the sliding packings.
 #print axioms SquaresInCircles.Seven.marker_arc
+#print axioms SquaresInCircles.Seven.fixed_gap_nonneg
+#print axioms SquaresInCircles.Seven.Equality.fixed_gap_zero
 #print axioms SquaresInCircles.Seven.fixed_gap_pos
+#print axioms SquaresInCircles.Seven.Equality.all_gap_pos_below
 #print axioms SquaresInCircles.Seven.SAT.separating_axes
+#print axioms SquaresInCircles.Seven.Equality.marker_separation_closed
+#print axioms SquaresInCircles.Seven.Equality.ordered_chart_contact
 #print axioms SquaresInCircles.Seven.marker_separation
+#print axioms SquaresInCircles.Seven.Equality.six_directions_hexagon
 #print axioms SquaresInCircles.Seven.six_markers_impossible
 #print axioms SquaresInCircles.Seven.six_exterior_squared_lower
 #print axioms SquaresInCircles.Seven.sliding_packing
 
--- Seven squares at the optimal radius: zeros at the gap of pi/3, closed
--- containment, the hexagon, the ring, the square in the middle, and the
--- classification.
-#print axioms SquaresInCircles.Seven.Equality.fixed_gap_zero
-#print axioms SquaresInCircles.Seven.fixed_gap_nonneg
-#print axioms SquaresInCircles.Seven.Equality.all_gap_pos_below
-#print axioms SquaresInCircles.Seven.Equality.marker_separation_closed
-#print axioms SquaresInCircles.Seven.Equality.ordered_chart_contact
-#print axioms SquaresInCircles.Seven.Equality.six_directions_hexagon
+-- Seven squares at the optimal radius: a square contains the centre, the ring,
+-- the square in the middle, and the classification.
 #print axioms SquaresInCircles.Seven.Equality.exists_containing
 #print axioms SquaresInCircles.Seven.Equality.six_exterior_ring
 #print axioms SquaresInCircles.Seven.Equality.central_square_represents
 #print axioms SquaresInCircles.Seven.uniqueness
-#print axioms SquaresInCircles.Seven.rigid_uniqueness
 #print axioms SquaresInCircles.Seven.packing_iff_sliding
 #print axioms SquaresInCircles.Seven.classification_by_slots
 

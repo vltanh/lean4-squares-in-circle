@@ -52,7 +52,19 @@ lemma support_three_half_pi (a b : ℝ) : support a b (3*Real.pi/2) = -b+1/2 := 
   rw [show 3*Real.pi/2 = Real.pi+Real.pi/2 by ring]
   norm_num [support,Real.cos_add,Real.sin_add]
 
-lemma cos_two_pi_sub (z : ℝ) : Real.cos (2*Real.pi-z) = Real.cos z := Real.cos_two_pi_sub z
+lemma support_three_half_sub (a b z : ℝ) :
+    support a b (3*Real.pi/2-z) =
+      -a*Real.sin z-b*Real.cos z+(|Real.sin z|+|Real.cos z|)/2 := by
+  rw [show 3*Real.pi/2-z = (Real.pi/2-z)+Real.pi by ring]
+  simp only [support,Real.cos_add_pi,Real.sin_add_pi,Real.cos_pi_div_two_sub,
+    Real.sin_pi_div_two_sub,abs_neg]
+  ring
+
+lemma support_two_pi_sub (a b z : ℝ) :
+    support a b (2*Real.pi-z) =
+      a*Real.cos z-b*Real.sin z+(|Real.cos z|+|Real.sin z|)/2 := by
+  simp only [support,Real.cos_two_pi_sub,Real.sin_two_pi_sub,abs_neg]
+  ring
 
 lemma cos_five_half_pi_sub (z : ℝ) : Real.cos (5*Real.pi/2-z) = Real.sin z := by
   rw [show 5*Real.pi/2-z = (Real.pi/2-z)+2*Real.pi by ring,Real.cos_add_two_pi,
@@ -97,5 +109,27 @@ lemma pairSupport_one (a u A v gamma : ℝ) (s t : TransverseSign) :
   · ring
   · congr 1
     ring
+
+/-- The inward support sum with a positive source sign, in the turn
+`label a u - t label A v - π/6`. -/
+lemma pairSupport_inward {a u A v : ℝ} (t : TransverseSign)
+    (h : Admissible a u) (h' : Admissible A v) :
+    pairSupport a u A v .positive t 2 gap =
+      1/2-a-A*Real.sin (label a u-t.coe*label A v-Real.pi/6)+
+      |Real.sin (label a u-t.coe*label A v-Real.pi/6)|/2+
+      (1/2-t.coe*v)*Real.cos (label a u-t.coe*label A v-Real.pi/6) := by
+  have hc : 0 ≤ Real.cos (label a u-t.coe*label A v-Real.pi/6) := by
+    have h0 := h.label_nonneg
+    have h1 := h.label_le_quarter
+    have h2 := h'.label_nonneg
+    have h3 := h'.label_le_quarter
+    apply Real.cos_nonneg_of_mem_Icc
+    cases t <;> simp only [TransverseSign.coe] <;> constructor <;> linarith [Real.pi_pos]
+  have he : 2*Real.pi-gap-TransverseSign.positive.coe*label a u+t.coe*label A v =
+      3*Real.pi/2-(label a u-t.coe*label A v-Real.pi/6) := by
+    simp only [gap,TransverseSign.coe]
+    ring
+  rw [pairSupport_two,he,support_three_half_sub,abs_of_nonneg hc]
+  ring
 
 end SquaresInCircles.Seven

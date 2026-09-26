@@ -1,4 +1,3 @@
-import SquaresInCircles.Common.Separation
 import SquaresInCircles.Common.Contacts
 
 /-!
@@ -63,7 +62,7 @@ lemma octagon_first_quadrant {c s : ℝ} (hc : 0 < c) (hs : 0 ≤ s)
         have hny : 0 < n.2 := by linarith
         have hh' := mul_pos hc hny
         dsimp [b] at *
-        nlinarith
+        linarith
       have hlt := weighted_strict hx hb hab hpD hyD
       have he₁ : n.1*(c*d.1+s*d.2)+b*d.2 = c*dot n d := by
         dsimp [b,dot]; ring
@@ -190,7 +189,7 @@ lemma positive_cosine_strict {c s : ℝ} (hc : 0 < c) (hu : c^2+s^2=1)
     have hi := axis_reflect hd
     have hi' : axisInside c (-s) (reflect d) := by
       simpa only [AxisInside,axisInside,abs_of_pos hc,abs_of_nonneg hs'] using hi
-    have hh := octagon_strict hc hs' (by nlinarith) hi' (reflect_ne hn)
+    have hh := octagon_strict hc hs' (by linear_combination hu) hi' (reflect_ne hn)
     rw [reflect_dot,support_reflect] at hh
     exact hh
 
@@ -223,11 +222,11 @@ theorem all_normals_strict {c s : ℝ} (hu : c^2+s^2=1)
   rcases lt_trichotomy c 0 with hc | hc | hc
   · have hi := axis_neg_frame hd
     have hh := positive_cosine_strict (show 0 < -c by linarith)
-      (show (-c)^2+(-s)^2=1 by nlinarith) hi hn
+      (show (-c)^2+(-s)^2=1 by linear_combination hu) hi hn
     rw [support_neg_frame] at hh
     exact hh
   · subst c
-    exact zero_cosine_strict (by nlinarith) hd hn
+    exact zero_cosine_strict (by linear_combination hu) hd hn
   · exact positive_cosine_strict hc hu hd hn
 
 def threshold (S T : UnitSquare) : ℝ := (1+|relativeC S T|+|relativeS S T|)/2

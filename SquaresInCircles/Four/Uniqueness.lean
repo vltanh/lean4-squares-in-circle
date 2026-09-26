@@ -97,7 +97,6 @@ lemma vertex_represents {S : UnitSquare} {o : Point} (C : SquareChart S o)
 /-- The only radius-sqrt(2) packing is the block, including the disk center. -/
 theorem Four.uniqueness (S : Fin 4 → UnitSquare) (o : Point)
     (hp : Packing S o Four.radius) : HasNormalForm S o Four.centers := by
-  classical
   have hφ (i : Fin 4) : phi (alpha (S i) o) (beta (S i) o) ≤ 2 := by
     have h := hp.phi_le i
     rwa [Four.radius_sq] at h
@@ -111,18 +110,16 @@ theorem Four.uniqueness (S : Fin 4 → UnitSquare) (o : Point)
     have hd := (A i).centers_separated (A j) (hp.disjoint.pairwise hij)
     rw [hA i,hA j,hmid i,hmid j] at hd
     linarith
-  have hgrid := four_directions_grid (fun i => vertexMid (C i)) hsep
-  let φ := vertexMid (C 0)-((Real.pi/4:ℝ):Direction)
-  apply normal_form_of_slots (φ := φ) hp.disjoint
-  intro i
-  obtain ⟨k,hk⟩ := hgrid i
-  have hrep := vertex_represents (C i) (hcoords i).1 (hcoords i).2
-  have he : vertexMid (C i)-((Real.pi/4:ℝ):Direction)=φ+quarterShift k := by
-    rw [hk]; dsimp [φ]; abel
-  rw [he] at hrep
-  refine ⟨k,?_⟩
+  obtain ⟨φ,σ,hgrid⟩ := regular_polygon _ (by push_cast; ring) hsep
+  refine ⟨φ-((Real.pi/4:ℝ):Direction),σ,fun k => ?_⟩
+  have hk : ((k.val*(Real.pi/2) : ℝ) : Direction)=quarterShift k := by
+    fin_cases k <;> simp [quarterShift] <;> rw [Real.Angle.angle_eq_iff_two_pi_dvd_sub]
+    exacts [⟨0,by ring⟩,⟨1,by push_cast; ring⟩]
+  have hrep := vertex_represents (C (σ k)) (hcoords _).1 (hcoords _).2
+  rw [hgrid,hk,add_sub_right_comm] at hrep
   have h := represents_quarter k hrep
   have hc : turnPoint k (1/2,1/2)=Four.centers k := by fin_cases k <;> norm_num [turnPoint,Four.centers]
-  simpa only [hc] using h
+  rw [hc] at h
+  exact fun x y => ⟨h x y,h.closed x y⟩
 
 end SquaresInCircles

@@ -44,8 +44,7 @@ lemma opposite_upper_circular {z t : ℝ}
   have hs' : 0 ≤ otherV z t ∧ otherV z t ≤ Real.pi/5 := by
     dsimp [otherV]
     constructor <;> linarith [hs.1,hs.2,transition_coarse.2.2.2.2.2,pi_lower_157]
-  obtain ⟨ha,halabel⟩ := sideTop_state htt
-  have hT := target_at_upper_side t htt
+  obtain ⟨ha,hT,hside⟩ := sideTop_state htt
   obtain ⟨hb,hB⟩ := axialTop_state hs'
   have hv : otherV z t ≤ 3/10 := by
     dsimp [otherV]
@@ -59,7 +58,7 @@ lemma opposite_upper_circular {z t : ℝ}
   have hz' : z ≤ 5/8 := hzz.trans diagonal_angle_bounds.2.1.le
   apply inward_circular_pos ha hb hT hB
     (show z=label (sideTopA t) (sideTopU t)+label (axialTop (otherV z t)) (otherV z t)-Real.pi/6 by
-      rw [halabel,hB]
+      rw [hT,hside,hB]
       dsimp [axial,otherV,otherLabel]
       ring) ⟨hz,hz'⟩ hv
 
@@ -86,7 +85,7 @@ lemma opposite_upper_cap {z t : ℝ}
   have hc := mul_le_mul_of_nonneg_left hC (show 0≤Real.pi/5+1/2 by positivity)
   dsimp [oppositeUpper,inwardOpposite]
   rw [hv,abs_of_nonneg hS0]
-  nlinarith [Real.sin_le_one z,pi_lower_157]
+  linarith [Real.sin_le_one z,pi_lower_157]
 
 lemma diagonal_junction_pos {z : ℝ}
     (hz : 0 < z ∧ z ≤ Real.pi/3)
@@ -159,7 +158,7 @@ lemma diagonal_junction_pos {z : ℝ}
           dsimp [tieA]
           linarith [hsx.2,pi_lt_22_over_7]
         have hm' := mul_nonneg hm.le (show 0≤Real.cos x by linarith)
-        nlinarith
+        linarith
   have he : diagonalJunction diagonalAngle=diagonalValue := by
     have hs' : otherLabel diagonalAngle td=s0 := by dsimp [otherLabel,diagonalAngle]; ring
     have ha : tieA s0=a0 := by dsimp [tieA,s0]; linarith [transition_line]
@@ -204,7 +203,7 @@ lemma diagonal_source_reduction {z t l : ℝ}
     exact ⟨by linarith,by linarith,by linarith⟩
   have hA := axialTop_displacement hvl.1 hvl.2.1 hvl.2.2
   have hS := Real.sin_nonneg_of_nonneg_of_le_pi hz.1 (by linarith [hz.2,Real.pi_pos])
-  have hC := cos_nonneg_quarter (x := z) ⟨by linarith [hz.1,Real.pi_pos],by linarith [hz.2,Real.pi_pos]⟩
+  have hC := Real.cos_nonneg_of_mem_Icc (x := z) ⟨by linarith [hz.1,Real.pi_pos],by linarith [hz.2,Real.pi_pos]⟩
   have hp := mul_le_mul_of_nonneg_right hA hS
   have hd : 0≤t-l := sub_nonneg.mpr ht.2
   have hvd : otherV z l-otherV z t=(4/5)*(t-l) := by dsimp [otherV,otherLabel]; ring
@@ -240,7 +239,7 @@ lemma circular_source_line_reduction {z t r : ℝ}
   rw [htline,hrline]
   simp only [sideTopA,ite_eq_left (ht.2.trans hr),ite_eq_left hr]
   dsimp [tieA,otherV,otherLabel]
-  nlinarith
+  linarith
 
 /-- Every positive-turn pair of upper endpoints is excluded, by a finite case
 split. -/

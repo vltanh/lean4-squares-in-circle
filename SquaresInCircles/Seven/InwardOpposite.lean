@@ -38,7 +38,7 @@ lemma inward_opposite_side_positive_turn {a u A v : ℝ}
   dsimp [oppositeUpper] at hp
   rw [hvEq] at hp
   dsimp [inwardOpposite] at *
-  nlinarith
+  linarith
 
 /-- The inward axis with opposite signs, side source and axial target. A
 nonpositive turn keeps the remainder of the side source, so zero support
@@ -58,51 +58,6 @@ theorem inward_opposite_side_axial_property {a u A v : ℝ}
   rw [hc.1,hc.2,Equality.side_label,hA] at he0
   dsimp [axial] at he0
   exact Or.inr (Or.inl ⟨rfl,hc,Equality.axial_of_transverse_zero h' (by linarith)⟩)
-
-lemma inward_opposite_axial_nonpositive_turn {a u A v : ℝ}
-    (h : Admissible a u) (h' : Admissible A v)
-    (hA : label a u=axial u) (hB : label A v=axial v)
-    (he : label a u+label A v-Real.pi/6≤0) :
-    0<pairSupport a u A v .positive .negative 2 gap := by
-  let z := -(label a u+label A v-Real.pi/6)
-  have hz : 0≤z ∧ z≤Real.pi/2 := by
-    have ht := h.label_nonneg
-    have hs := h'.label_nonneg
-    dsimp [z]
-    constructor <;> linarith [Real.pi_pos]
-  have hv : v=2*Real.pi/15-(4/5)*z-u := by
-    dsimp [z]
-    rw [hA,hB]
-    dsimp [axial]; ring
-  have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1 (by linarith [hz.2,Real.pi_pos])
-  have hc0 := cos_nonneg_quarter ⟨by linarith [hz.1,Real.pi_pos],hz.2⟩
-  have hc1 := sub_nonneg.mpr (Real.cos_le_one z)
-  have hAprod := mul_nonneg (show 0≤A-1/2 by linarith [h'.2.2.1]) hs0
-  let b0 : ℝ := 1/2+2*Real.pi/15
-  have hid : inwardOpposite a A v (-z) = 1+2*Real.pi/15-a-u+
-      (Real.sin z-(4/5)*z*Real.cos z-(b0-u)*(1-Real.cos z))+
-      (A-1/2)*Real.sin z := by
-    dsimp [inwardOpposite]
-    rw [Real.sin_neg,Real.cos_neg,abs_neg,abs_of_nonneg hs0,hv]
-    dsimp [b0]; ring
-  rw [inward_opposite_formula h h']
-  have hez : label a u+label A v-Real.pi/6=-z := by dsimp [z]; ring
-  rw [hez,hid]
-  by_cases hu : 1/20≤u
-  · have hb : b0-u≤7/8 := by dsimp [b0]; linarith [pi_lt_22_over_7]
-    have hp := axial_profile_parameter_nonneg hb hz
-    have hsum := axial_sum_lt h hA
-    linarith [pi_lower_157]
-  · have hu' : u<1/20 := lt_of_not_ge hu
-    have hsum : a+u<77/60 := by linarith [h.a_le_sqrt_three,sqrt_three_bounds.2]
-    have hb : 0≤b0-7/8 ∧ b0-7/8<1/20 := by
-      dsimp [b0]
-      constructor <;> linarith [pi_lower_157,pi_lt_22_over_7]
-    have hp := axial_profile_nonneg hz
-    have hc := mul_le_mul_of_nonneg_left (show 1-Real.cos z≤1 by linarith) hb.1
-    have hup := mul_nonneg h.1 hc1
-    dsimp [axialProfile] at hp
-    nlinarith [pi_lower_157]
 
 lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -167,24 +122,19 @@ lemma inward_opposite_axial_positive_turn {a u A v : ℝ}
     have hmon := axialTop_antitone hvp.1 hvp.2 hvDom.2
     have htarget : A≤axialTop vp := hbup.trans hmon
     have htargetMul := mul_nonneg (sub_nonneg.mpr htarget) hs0
-    have hcos : 1/2<Real.cos z := by
-      have hz2 : z<2/3 := by
-        dsimp [z]
-        change t+label A v-Real.pi/6<2/3
-        linarith [htu,h'.label_le_quarter,transition_coarse.2.2.2.2.2,pi_lt_22_over_7]
-      have hh := Real.one_sub_sq_div_two_le_cos (x := z)
-      nlinarith [show 0<z from hz]
-    have hd : v-vp=u0-u := by rw [hvEq]; dsimp [vp]; ring
-    have hmul := mul_nonneg (sub_nonneg.mpr huu) (show 0≤Real.cos z-1/2 by linarith)
+    have hmul := mul_nonneg (sub_nonneg.mpr huu)
+      (sub_nonneg.mpr (cos_ge_half ⟨hz.le,hzu⟩))
+    rw [show v=vp+(u0-u) by rw [hvEq]; dsimp [vp]; ring]
     dsimp [inwardOpposite] at hp ⊢
-    nlinarith
+    linarith
 
 lemma inward_opposite_axial_axial_pos {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hA : label a u=axial u) (hB : label A v=axial v) :
     0<pairSupport a u A v .positive .negative 2 gap := by
   by_cases he : label a u+label A v-Real.pi/6≤0
-  · exact inward_opposite_axial_nonpositive_turn h h' hA hB he
+  · exact inward_axial_nonpositive_turn .negative h h' hA hB
+      (by simp only [TransverseSign.coe]; linarith)
   · exact inward_opposite_axial_positive_turn h h' hA hB (lt_of_not_ge he)
 
 lemma inward_opposite_side_target_reduction {a u A v : ℝ}
@@ -222,7 +172,7 @@ lemma inward_opposite_side_target_reduction {a u A v : ℝ}
   change inwardOpposite a (tieA s) ((4/5)*s) z ≤ inwardOpposite a A v z
   rw [he]
   dsimp [inwardOpposite]
-  nlinarith
+  linarith
 
 /-- The inward axis with signs `(+,-)`, all active labels. A side target
 reduces to the axial tie of its label, which is no contact. -/
