@@ -236,7 +236,8 @@ SquaresInCircles/
 ├── One/  Two/             Construction, Optimality, Uniqueness
 ├── Three/ Four/ Five/     Construction, Tangents, Exterior, Containing,
 │                          Optimality, Uniqueness
-└── Seven/                 Construction, Optimality, and the pair theorem
+└── Seven/                 Construction, Optimality, Uniqueness, the pair
+                           theorem, and Uniqueness/ for the equality case
 ```
 
 No case imports another.

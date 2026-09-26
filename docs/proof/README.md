@@ -122,18 +122,21 @@ $R^2 < \frac{13}4$.
    six squares avoid it.
 2. **Markers.** Each exterior square gets a marker, a direction from the disk
    centre computed from the position of the centre relative to the square.
-3. **The pair theorem.** Two disjoint exterior squares have markers more than
-   $\frac\pi3$ apart. The proof puts the pair in a normal position, writes
-   the overlaps of their shadows on the four edge directions in closed form,
-   and shows that they are positive for every gap up to $\frac\pi3$.
-4. **Conclusion.** Six directions cannot be pairwise more than $\frac\pi3$
-   apart ([Lemma 7](common.md#lemma-7-angular-budget)).
+3. **The pair theorem.** Two disjoint exterior squares have markers at least
+   $\frac\pi3$ apart, and exactly $\frac\pi3$ apart only if they touch as
+   in the optimal packing, which needs $R^2 = \frac{13}4$. The proof puts the
+   pair in a normal position, writes the overlaps of their shadows on the four
+   edge directions in closed form, and shows that they are positive for every
+   gap below $\frac\pi3$ and vanish at $\frac\pi3$ only at those contacts.
+4. **Conclusion.** Six directions pairwise at least $\frac\pi3$ apart form a
+   regular hexagon ([Lemma 23](common.md#lemma-23-regular-polygons)), so they
+   cannot be pairwise more than $\frac\pi3$ apart.
 
 At the optimal radius the six markers are exactly $\frac\pi3$ apart, and the
-middle column of the packing can slide without changing them. For uniqueness
-the same argument runs with equality allowed: the markers form a regular
-hexagon, neighbouring exterior squares touch as in the optimal packing, and
-that rebuilds the packing up to the sliding column.
+middle column of the packing can slide without changing them. Uniqueness uses
+the same pair theorem: some square contains the centre, the markers of the
+other six form a regular hexagon, neighbouring exterior squares touch as in
+the optimal packing, and that rebuilds the packing up to the sliding column.
 
 ## Shared lemmas by case
 
@@ -148,22 +151,23 @@ construction uses Lemma 20 and nothing else.
 | 1. the disk centre seen from a square | 1 | 1 | 1 | 1 | 1 | 1 |
 | 2. contact polygons | | | 2 | 2 | 2 | |
 | 3. two disjoint squares | | 3, 4 | 3 | 5 | 3, 5 | 5 |
-| 4. angular budget | | | 7, 8, 9 | 7 | 7 | 7 |
+| 4. angular budget | | | 7, 8, 9 | 7 | 7 | |
 | 5. charts | | | 10, 11 | 10 | 10 | 10, 11 |
 | 6. exterior arcs | | | 12, 13 | 12, 13 | 12, 14 | |
 | 7. radial sweep | | | | 15 to 18 | 15 to 18 | |
 | 8. elementary estimates | | | 19 | | 19 | 19 |
+| 10. normal forms | | | | | | 23 |
 
 **Uniqueness.** Each uniqueness proof reruns part of the optimality argument
 at the optimal radius; the table lists only the lemmas it adds.
 
 | | 1 | 2 | 3 | 4 | 5 | 7 |
 | --- | :-: | :-: | :-: | :-: | :-: | :-: |
-| reuses | Proposition 1.2 | Lemma 2.2 | Proposition 3.11 | Proposition 4.7 | Proposition 5.8 | Theorem 7.14 |
+| reuses | Proposition 1.2 | Lemma 2.2 | Proposition 3.11 | Proposition 4.7 | Proposition 5.8 | Theorem 7.16 |
 | 3. two disjoint squares | | 5, 6 | | 5 | 4, 6 | 5 |
-| 4. angular budget | | | | 8 | | |
+| 4. angular budget | | | | 8 | | 7 |
 | 5. charts | | | | 11 | | |
-| 10. normal forms | 21, 22 | 21, 22 | 21, 22 | 21, 22, 23 | 21, 22 | 21, 22 |
+| 10. normal forms | 21, 22 | 21, 22 | 21, 22 | 21, 23 | 21, 22 | 21, 22 |
 
 ## The legacy proof of three squares
 

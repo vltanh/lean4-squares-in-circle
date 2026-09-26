@@ -292,12 +292,11 @@ $a_S = b_S = \frac12$.
    $\Gamma_{1/2}$, centred at their directions $\mu_S$. These are pairwise at
    least $\frac\pi2$ apart
    ([Lemma 8](common.md#lemma-8-disjoint-arcs-have-separated-centres)), so
-   they are $\mu_0 + k\frac\pi2$ for some $\mu_0$
-   ([Lemma 23](common.md#lemma-23-four-directions)). In the frame
-   $\mu_0 - \frac\pi4$ each square sits at $(\frac12, \frac12)$ turned by its
-   $k$ quarter turns (Lemmas 4.8 and 21), which is one of
-   $c_1, \dots, c_4$. [Lemma 22](common.md#lemma-22-from-slots-to-a-normal-form)
-   gives the normal form. $\square$
+   in some order they are $\mu_0 + k\frac\pi2$ for $k = 0, 1, 2, 3$
+   ([Lemma 23](common.md#lemma-23-regular-polygons)). In the frame
+   $\mu_0 - \frac\pi4$ the $k$-th of them sits at $(\frac12, \frac12)$ turned
+   by $k$ quarter turns (Lemmas 4.8 and 21), which is $c_{k+1}$. So that order
+   is the relabelling of the normal form. $\square$
 
 *Lean: [`four_contact_eq`](../../SquaresInCircles/Four/Uniqueness.lean#L10),
 [`four_some_vertex`](../../SquaresInCircles/Four/Uniqueness.lean#L17),

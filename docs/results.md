@@ -51,7 +51,7 @@ the column, nonnegative with sum `2√3 - 3`. Two stronger statements are proved
 on the way. `Seven.six_exterior_squared_lower` gives `13/4 ≤ R^2` already for
 six squares none of which contains the disk centre in its interior.
 `Seven.marker_separation` is the pair theorem of
-[seven squares](proof/seven.md#theorem-715-marker-separation), about just two
+[seven squares](proof/seven.md#theorem-716-marker-separation), about just two
 disjoint squares.
 
 `Five.polygon_uniqueness` needs only interior-disjointness and the closed 12-gon

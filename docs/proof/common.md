@@ -851,7 +851,8 @@ Every point of the box is within $\sqrt{B^2 + C^2}$ of the origin. $\square$
 Each uniqueness proof ends the same way: find one frame at $o$ in which every
 square sits at a model centre
 ([Definition 4](preliminaries.md#definition-4-frames-at-the-disk-centre)), then
-apply Lemma 22.
+apply Lemma 22, or, for four squares, read the relabelling off Lemma 23. That
+lemma also gives the last step of the lower bound for seven squares.
 
 ### Lemma 21 (sitting at a centre)
 
@@ -874,7 +875,7 @@ same angle. $\square$
 
 *Lean: [`self_represents`](../../SquaresInCircles/Common/Contacts.lean#L84),
 [`same_axes_represents`](../../SquaresInCircles/Common/Contacts.lean#L63),
-[`represents_quarter`](../../SquaresInCircles/Common/Angles.lean#L33).*
+[`represents_quarter`](../../SquaresInCircles/Common/Angles.lean#L69).*
 
 ### Lemma 22 (from slots to a normal form)
 
@@ -893,25 +894,19 @@ closed square is the closure of the open one. $\square$
 Lean reaches a boundary point along the segment from the centre instead of
 taking a closure.*
 
-### Lemma 23 (four directions)
+### Lemma 23 (regular polygons)
 
-Four directions at pairwise distance at least $\frac\pi2$ are
-$\theta_0 + k\frac\pi2$ for $k = 0, 1, 2, 3$, in some order.
+If $mg = 2\pi$, then $m$ directions pairwise at least $g$ apart are, in some
+order, $\theta_0 + ig$ for $i = 0, \dots, m - 1$.
 
 ![Four radii of a circle about o in the directions theta0, theta0 plus pi/2, theta0 plus pi and theta0 plus 3pi/2](figures/four-directions.svg)
 
 *Four directions pairwise at least $\frac\pi2$ apart: the only way is a quarter
 grid.*
 
-*Proof.* Write the other three as $\theta_0 + t_i$ with $t_i \in (-\pi, \pi]$,
-sorted as $x \le y \le z$. Each has absolute value at least $\frac\pi2$,
-consecutive ones differ by at least $\frac\pi2$, and $z - x \le \frac{3\pi}2$
-because $\theta_0 + x$ and $\theta_0 + z$ are also $\frac\pi2$ apart going
-the other way round.
+*Proof.* Represent the directions by angles $p_0 \le \dots \le p_{m-1}$ in
+$(-\pi, \pi]$. Neighbours are at least $g$ apart, so $p_i - ig$ increases
+with $i$. Going round from $p_{m-1}$ to $p_0 + 2\pi$ is also at least $g$, so
+$p_{m-1} - (m - 1)g \le p_0$. Hence $p_i - ig$ is constant. $\square$
 
-- If $y < 0$, then $y \le -\frac\pi2$ and $x \le -\pi$, which is impossible.
-- So $y \ge \frac\pi2$ and $z \ge \pi$, hence $z = \pi$ and $y = \frac\pi2$.
-- Then $x \le 0$ forces $x \le -\frac\pi2$, and $z - x \le \frac{3\pi}2$
-  forces $x = -\frac\pi2$. $\square$
-
-*Lean: [`four_directions_grid`](../../SquaresInCircles/Common/Angles.lean#L64).*
+*Lean: [`regular_polygon`](../../SquaresInCircles/Common/Angles.lean#L31).*

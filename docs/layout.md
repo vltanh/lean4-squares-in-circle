@@ -41,7 +41,7 @@ another: each imports only `Common/` and its own folder.
 | `RectangleArcs.lean` | Occupied arcs of an exterior square: the interval between its edges, and the clipped cap on small circles |
 | `Constructions.lean` | Axis-parallel squares centred at given points: disjointness and containment |
 | `NormalForm.lean` | Normal forms from square-by-square representations, the rigid-motion witness |
-| `Angles.lean` | Quarter turns of a frame; four directions a quarter turn apart (uniqueness only) |
+| `Angles.lean` | Quarter turns of a frame; `m` directions pairwise at least `2π/m` apart form a regular polygon |
 | `Contacts.lean` | Disjoint squares have centres at least 1 apart; equality means side-neighbours |
 
 ## The cases
@@ -61,8 +61,8 @@ axis-parallel squares at those centres.
 
 ## Seven
 
-The lower bound of seven squares is spread over 43 files beside
-`Construction.lean` and `Optimality.lean`, and its equality case over 12 files
+The lower bound of seven squares is spread over 44 files beside
+`Construction.lean` and `Optimality.lean`, and its equality case over 7 files
 in `Seven/Uniqueness/` beside `Uniqueness.lean`. By the steps of
 [the proof](proof/seven.md), in import order:
 
@@ -70,12 +70,11 @@ in `Seven/Uniqueness/` beside `Uniqueness.lean`. By the steps of
 | --- | --- | --- |
 | construction | `Construction.lean` | the radius, the sliding column, the optimal packings |
 | 2. states and markers | `Labels.lean`, `Support.lean`, `PairModel.lean` | states, labels and markers; the support function; the support sums of a canonical pair |
-| 3. the marker arc | `TaylorBounds.lean`, `ArcAnalysis.lean`, `MarkerArc.lean` | Taylor bounds for `sin` and `cos`; the arc of half-width `801/1600` |
-| 4. tools for the sectors | `SectorBounds.lean`, `CapReduction.lean`, `ScalarPolynomials.lean`, `PolynomialCertificates.lean`, `AnalyticOrder.lean`, `LabelBoundary.lean`, `BoundarySegments.lean`, `BoundaryPointChecks.lean`, `BoundaryProfiles.lean`, `TargetProfiles.lean`, `TargetBoundaryMonotonicity.lean`, `AxialProfile.lean` | bounds on labelled states; capped labels; Bernstein certificates; calculus lemmas; the boundary of the label regions and profiles along it |
-| 4. the gap of `π/3` | `EasySectors.lean`, `ForwardPositive.lean`, `ForwardNegativeTarget.lean`, `ForwardBothNegative.lean`, `SideSide.lean`, `OppositeForward.lean`, `InwardTurnBounds.lean`, `InwardSideAxial.lean`, `InwardAxialAxial.lean`, `InwardSideTarget.lean`, `InwardOppositeGeometry.lean`, `InwardCircularCertificate.lean`, `InwardBoundaryMinima.lean`, `InwardOpposite.lean`, `FixedGap.lean` | the outward and backward axes, the forward axis and the inward axis, sector by sector, and their assembly |
+| 3. the marker arc | `TaylorBounds.lean`, `PolynomialCertificates.lean`, `AnalyticOrder.lean`, `ArcAnalysis.lean`, `MarkerArc.lean` | Taylor bounds for `sin` and `cos`; Bernstein certificates; calculus lemmas; the arc of half-width `801/1600` |
+| 4. tools for the sectors | `SectorBounds.lean`, `Contacts.lean`, `CapReduction.lean`, `ScalarPolynomials.lean`, `LabelBoundary.lean`, `BoundarySegments.lean`, `BoundaryPointChecks.lean`, `BoundaryProfiles.lean`, `TargetProfiles.lean`, `TargetBoundaryMonotonicity.lean`, `AxialProfile.lean` | bounds on labelled states; contacts; capped labels; polynomial certificates; the boundary of the label regions and profiles along it |
+| 4. the gap of `π/3` | `EasySectors.lean`, `ForwardPositive.lean`, `ForwardNegativeTarget.lean`, `ForwardBothNegative.lean`, `SideSide.lean`, `OppositeForward.lean`, `InwardTurnBounds.lean`, `InwardSideAxial.lean`, `InwardAxialAxial.lean`, `InwardSideTarget.lean`, `InwardOppositeGeometry.lean`, `InwardCircularCertificate.lean`, `InwardBoundaryMinima.lean`, `InwardOpposite.lean`, `FixedGap.lean` | the outward and backward axes, the forward axis and the inward axis, sector by sector, with their zeros, and their assembly |
 | 4. all gaps | `AngularMinima.lean`, `ParallelLabels.lean`, `SmallAndParallelGaps.lean`, `NearestCornerMinimum.lean`, `AllGaps.lean` | leftmost minima; small gaps; parallel squares; smooth minima |
-| 4. actual squares | `SeparatingAxes.lean`, `CanonicalPair.lean`, `MarkerSeparation.lean` | the separating-axis theorem; the pair theorem |
-| 1, 5. conclusion | `ExteriorSelection.lean`, `CircleBudget.lean`, `Optimality.lean` | six exterior squares; six markers; the lower bound |
-| uniqueness: contacts | `Uniqueness/NormalForm.lean`, `Uniqueness/Slots.lean`, `Uniqueness/ScalarEquality.lean`, `Uniqueness/FixedGapEquality.lean` | the sliding normal form; the column as a simplex of gaps; the zeros at the gap `π/3` |
-| uniqueness: closed containment | `Uniqueness/ClosedParallel.lean`, `Uniqueness/ClosedGaps.lean`, `Uniqueness/PairGeometry.lean` | positive support sums below `π/3`; closed marker separation and contacts of actual squares |
-| uniqueness: rebuilding | `Uniqueness/Hexagon.lean`, `Uniqueness/ContactCycle.lean`, `Uniqueness/CenterSection.lean`, `Uniqueness/CentralSquare.lean`, `Uniqueness/Reconstruction.lean`, `Uniqueness.lean` | the regular hexagon; the ring of six squares; the square in the middle; the sliding normal form |
+| 4. actual squares | `SeparatingAxes.lean`, `CanonicalPair.lean`, `MarkerSeparation.lean` | the separating-axis theorem; canonical pairs; the pair theorem |
+| 1, 5. conclusion | `ExteriorSelection.lean`, `CircleBudget.lean`, `Optimality.lean` | six exterior squares; six markers form a regular hexagon; the lower bound |
+| uniqueness: normal form | `Uniqueness/NormalForm.lean`, `Uniqueness/Slots.lean` | the sliding normal form; the column as a simplex of gaps |
+| uniqueness: rebuilding | `Uniqueness/SevenMarkers.lean`, `Uniqueness/ContactCycle.lean`, `Uniqueness/CenterSection.lean`, `Uniqueness/CentralSquare.lean`, `Uniqueness/Reconstruction.lean`, `Uniqueness.lean` | a square contains the disk centre; the ring of six squares; the square in the middle; the sliding normal form |
