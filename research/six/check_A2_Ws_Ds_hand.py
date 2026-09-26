@@ -74,7 +74,7 @@ def bound(n,w,s,e,source):
  for L,v,g in ((LN,vN,gN),(LW,vW,gW),(LS,vS,gS),(LD,vD,gD)):
   z=sub(sc(2*L,v),g);out=out-sq(z)/(4*L)
  return out
-N=I(F(1,5),F(2,5));W=I(0,F(1,5));S=I(F(1,6),F(2,5));E=I(-F(1,6),0)
+N=I(F(1,5),F(2,5));W=I(0,F(1,5));S=I(F(1,6),F(2,5));E=I(-F(1,4),0)
 for source in ('Wp','Np','Ns'):
  vals=[]
  for var in ('n','w','s','e'):
@@ -93,7 +93,7 @@ from itertools import product
 bestall=None
 for source in DATA:
  best=None
- for n,w,s,e in product((F(1,5),F(2,5)),(F(0),F(1,5)),(F(1,6),F(2,5)),(-F(1,6),F(0))):
+ for n,w,s,e in product((F(1,5),F(2,5)),(F(0),F(1,5)),(F(1,6),F(2,5)),(-F(1,4),F(0))):
   z=bound(J(n),J(w),J(s),J(e),source).v-Q0
   assert z.lo>0,(source,n,w,s,e,z.lo,z.hi)
   row=(z.lo,(n,w,s,e))
