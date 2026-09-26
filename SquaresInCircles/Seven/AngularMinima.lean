@@ -1,13 +1,14 @@
-import SquaresInCircles.Seven.FixedGap
+import SquaresInCircles.Seven.PairModel
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 /-!
 # Leftmost minima of a support sum
 
-A nonpositive value between positive endpoints gives a leftmost minimum, so a
-stretch where a support sum is constant cannot hide a new case. At a smooth
-leftmost minimum of a sinusoid, Fermat's theorem and one comparison to the
-left make it stationary with a negative value.
+A nonpositive value after a positive left endpoint and before a nonnegative
+right endpoint gives an interior leftmost minimum, so a stretch where a support
+sum is constant cannot hide a new case. At a smooth leftmost minimum of a
+sinusoid, Fermat's theorem and one comparison to the left make it stationary
+with a negative value.
 -/
 noncomputable section
 open Set Filter
@@ -45,40 +46,29 @@ lemma cos_zero_between {x : ℝ} (hx : -Real.pi/2<x ∧ x<Real.pi)
     (x := x-Real.pi/2) ⟨by linarith [hx.1],by linarith [hx.2,Real.pi_pos]⟩ hs
   linarith
 
-lemma trig_direction_injective {x y : ℝ}
-    (hxy : -2*Real.pi<x-y ∧ x-y<2*Real.pi)
-    (hc : Real.cos x=Real.cos y) (hs : Real.sin x=Real.sin y) : x=y := by
-  have hh : Real.cos (x-y)=1 := by
-    rw [Real.cos_sub,hc,hs]
-    nlinarith [Real.sin_sq_add_cos_sq y]
-  have he := cos_one_between hxy hh
-  linarith
-
 lemma cardinal_range (k : Fin 4) : 0≤cardinalAngle k ∧ cardinalAngle k≤3*Real.pi/2 := by
   fin_cases k <;> norm_num [cardinalAngle] <;> (try constructor) <;> linarith [Real.pi_pos]
 
-lemma cardinal_sine_cosine (k : Fin 4) :
-    Real.sin (cardinalAngle k)=0 ∨ Real.cos (cardinalAngle k)=0 := by
-  fin_cases k <;> norm_num [cardinalAngle,Real.sin_add,Real.cos_add,
-    show (3:ℝ)*Real.pi/2=Real.pi+Real.pi/2 by ring]
-
-/-- A nonpositive value between positive endpoints has an interior leftmost
-minimizer. Every earlier point has strictly larger value. -/
+/-- A nonpositive value after a positive left endpoint and before a nonnegative
+right endpoint has an interior leftmost minimizer. Every earlier point has
+strictly larger value. -/
 lemma leftmost_nonpositive_minimum {f : ℝ → ℝ} {l u y : ℝ}
-    (hf : Continuous f) (hy : y∈Icc l u) (hbad : f y≤0)
-    (hl : 0<f l) (hu : 0<f u) :
+    (hf : Continuous f) (hy : y∈Ico l u) (hbad : f y≤0)
+    (hl : 0<f l) (hu : 0≤f u) :
     ∃ x, x∈Ioo l u ∧ f x≤0 ∧
       (∀z∈Icc l u,f x≤f z) ∧
       (∀z∈Icc l u,z<x → f x<f z) := by
+  have hy' : y∈Icc l u := Ico_subset_Icc_self hy
   obtain ⟨m,hm,hmin⟩ := isCompact_Icc.exists_isMinOn
-    ⟨y,hy⟩ hf.continuousOn
+    ⟨y,hy'⟩ hf.continuousOn
   let K : Set ℝ := Icc l u ∩ {x | f x=f m}
   have hK : IsCompact K := isCompact_Icc.inter_right
     (isClosed_eq hf continuous_const)
   have hn : K.Nonempty := ⟨m,hm,rfl⟩
   obtain ⟨x,hx,hleft⟩ := hK.exists_isMinOn hn continuous_id.continuousOn
   have hxval : f x=f m := hx.2
-  have hxnon : f x≤0 := hxval.le.trans ((hmin hy).trans hbad)
+  have hym : f m≤f y := hmin hy'
+  have hxnon : f x≤0 := hxval.le.trans (hym.trans hbad)
   have hxl : l<x := by
     have hle := hx.1.1
     by_contra hn
@@ -86,11 +76,11 @@ lemma leftmost_nonpositive_minimum {f : ℝ → ℝ} {l u y : ℝ}
     rw [he] at hxnon
     linarith
   have hxu : x<u := by
-    have hle := hx.1.2
-    by_contra hn
-    have he : x=u := le_antisymm hle (le_of_not_gt hn)
-    rw [he] at hxnon
-    linarith
+    refine lt_of_le_of_ne hx.1.2 fun he => ?_
+    rw [he] at hxval
+    have hyK : y∈K := ⟨hy',le_antisymm (by linarith) hym⟩
+    have hxy : x≤y := hleft hyK
+    linarith [hy.2]
   refine ⟨x,⟨hxl,hxu⟩,hxnon,?_,?_⟩
   · intro z hz
     rw [hxval]

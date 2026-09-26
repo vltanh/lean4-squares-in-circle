@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.InwardTurnBounds
+import SquaresInCircles.Seven.CapReduction
 
 /-!
 # The inward axis, positive signs, side and axial labels
@@ -98,44 +99,21 @@ theorem inward_side_axial_lower {a u A v : ℝ}
     dsimp [inwardExpression]
     nlinarith [hz.1]
 
-lemma inward_side_axial_nonneg {a u A v : ℝ}
+/-- The inward axis with positive signs, side source and axial target. Zero
+support forces the side state and zero transverse coordinate of the axial
+square; no particular value of `A` is concluded. -/
+theorem inward_side_axial_property {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (hT : label a u = side a u) (hA : label A v = axial v) :
-    0 ≤ pairSupport a u A v .positive .positive 2 gap := by
-  have hh := inward_side_axial_lower h h' hT hA
-  linarith [h.remainder_nonneg,abs_nonneg (label a u-label A v-Real.pi/6)]
-
-/-- Strict containment of the side square is enough; the axial square may
-touch the circle. -/
-theorem inward_side_axial_pos {a u A v : ℝ}
-    (h : StrictlyAdmissible a u) (h' : Admissible A v)
-    (hT : label a u = side a u) (hA : label A v = axial v) :
-    0 < pairSupport a u A v .positive .positive 2 gap := by
-  have hh := inward_side_axial_lower h.admissible h' hT hA
-  linarith [h.remainder_pos,abs_nonneg (label a u-label A v-Real.pi/6)]
-
-/-- Zero support forces the side contact and zero transverse coordinate of
-the axial square; no particular value of A is concluded. -/
-theorem inward_side_axial_eq_zero {a u A v : ℝ}
-    (h : Admissible a u) (h' : Admissible A v)
-    (hT : label a u = side a u) (hA : label A v = axial v)
-    (hzero : pairSupport a u A v .positive .positive 2 gap = 0) :
-    a = 1 ∧ u = 1/2 ∧ v = 0 := by
+    PairProperty a u A v .positive .positive 2 := by
   have hl := inward_side_axial_lower h h' hT hA
-  rw [hzero] at hl
-  have hw : remainder a u = 0 := by
-    linarith [h.remainder_nonneg,abs_nonneg (label a u-label A v-Real.pi/6)]
-  have heabs : |label a u-label A v-Real.pi/6| = 0 := by
-    linarith [h.remainder_nonneg,abs_nonneg (label a u-label A v-Real.pi/6)]
-  have he := abs_eq_zero.mp heabs
-  have hid := remainder_identity a u
-  have hslack := h.slack_nonneg
-  have ha : a = 1 := by nlinarith [sq_nonneg (u-1/2)]
-  have hu : u = 1/2 := by nlinarith [sq_nonneg (a-1)]
-  have hv : v = 0 := by
-    rw [hT,hA,ha,hu] at he
-    dsimp [side,axial] at he
-    linarith
-  exact ⟨ha,hu,hv⟩
+  have hW := h.remainder_nonneg
+  have he := abs_nonneg (label a u-label A v-Real.pi/6)
+  refine ⟨by linarith,fun hz => ?_⟩
+  have hc := Equality.remainder_zero h (by linarith)
+  have he0 : label a u-label A v-Real.pi/6 = 0 := abs_eq_zero.mp (by linarith)
+  rw [hc.1,hc.2,Equality.side_label,hA] at he0
+  dsimp [axial] at he0
+  exact Or.inr (Or.inl ⟨rfl,hc,Equality.axial_of_transverse_zero h' (by linarith)⟩)
 
 end SquaresInCircles.Seven

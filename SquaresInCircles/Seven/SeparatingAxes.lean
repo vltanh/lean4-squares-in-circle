@@ -1,4 +1,5 @@
 import SquaresInCircles.Common.Separation
+import SquaresInCircles.Common.Contacts
 
 /-!
 # The separating-axis theorem
@@ -9,18 +10,6 @@ along one of their four edge axes.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven.SAT
-
-private lemma two_weighted_strict {a b x y X Y : ℝ}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : 0 < a+b)
-    (hx : x < X) (hy : y < Y) : a*x+b*y < a*X+b*Y := by
-  by_cases h : 0 < a
-  · have h1 := mul_lt_mul_of_pos_left hx h
-    have h2 := mul_le_mul_of_nonneg_left hy.le hb
-    linarith
-  · have ha0 : a=0 := by linarith
-    have hb0 : 0 < b := by linarith
-    have h1 := mul_lt_mul_of_pos_left hy hb0
-    simpa only [ha0,zero_mul,zero_add] using h1
 
 def axisInside (c s : ℝ) (d : Point) : Prop :=
   let H := (1+c+s)/2
@@ -40,7 +29,7 @@ lemma octagon_first_quadrant {c s : ℝ} (hc : 0 < c) (hs : 0 ≤ s)
   by_cases hs0 : s=0
   · have hc1 : c=1 := by nlinarith
     subst s; subst c
-    have hh := two_weighted_strict hx hy hn hxD hyD
+    have hh := weighted_strict hx hy hn hxD hyD
     simp only [dot,octagonSupport,abs_of_nonneg hx,abs_of_nonneg hy,one_mul,zero_mul,
       add_zero,zero_add,neg_zero] at hh ⊢
     linarith
@@ -55,10 +44,10 @@ lemma octagon_first_quadrant {c s : ℝ} (hc : 0 < c) (hs : 0 ≤ s)
         have hh' := mul_pos hsp hnx
         dsimp [a] at *
         nlinarith
-      have hlt := two_weighted_strict ha hy hab hxD hpD
+      have hlt := weighted_strict ha hy hab hxD hpD
       have he₁ : a*d.1+n.2*(c*d.1+s*d.2) = s*dot n d := by
         dsimp [a,dot]; ring
-      have he₂ : a*((1+c+s)/2)+n.2*((1+c+s)/2) = s*octagonSupport c s n := by
+      have he₂ : (1+c+s)/2*(a+n.2) = s*octagonSupport c s n := by
         simp only [octagonSupport,abs_of_nonneg hx,abs_of_nonneg hy,
           abs_of_nonneg hp,abs_of_nonpos hw]
         dsimp [a]
@@ -75,10 +64,10 @@ lemma octagon_first_quadrant {c s : ℝ} (hc : 0 < c) (hs : 0 ≤ s)
         have hh' := mul_pos hc hny
         dsimp [b] at *
         nlinarith
-      have hlt := two_weighted_strict hx hb hab hpD hyD
+      have hlt := weighted_strict hx hb hab hpD hyD
       have he₁ : n.1*(c*d.1+s*d.2)+b*d.2 = c*dot n d := by
         dsimp [b,dot]; ring
-      have he₂ : n.1*((1+c+s)/2)+b*((1+c+s)/2) = c*octagonSupport c s n := by
+      have he₂ : (1+c+s)/2*(n.1+b) = c*octagonSupport c s n := by
         simp only [octagonSupport,abs_of_nonneg hx,abs_of_nonneg hy,
           abs_of_nonneg hp,abs_of_nonneg hw0]
         dsimp [b]
@@ -217,7 +206,7 @@ lemma zero_cosine_strict {s : ℝ} (hu : s^2=1)
     have hnx : n.1=0 := abs_eq_zero.mp (by linarith [abs_nonneg n.1,abs_nonneg n.2])
     have hny : n.2=0 := abs_eq_zero.mp (by linarith [abs_nonneg n.1,abs_nonneg n.2])
     exact Prod.ext hnx hny
-  have hh := two_weighted_strict (abs_nonneg n.1) (abs_nonneg n.2) hsum hdx hdy
+  have hh := weighted_strict (abs_nonneg n.1) (abs_nonneg n.2) hsum hdx hdy
   have hx : n.1*d.1 ≤ |n.1| * |d.1| := by simpa only [abs_mul] using le_abs_self (n.1*d.1)
   have hy : n.2*d.2 ≤ |n.2| * |d.2| := by simpa only [abs_mul] using le_abs_self (n.2*d.2)
   have he : octagonSupport 0 s n = |n.1|+|n.2| := by
@@ -241,31 +230,7 @@ theorem all_normals_strict {c s : ℝ} (hu : c^2+s^2=1)
     exact zero_cosine_strict (by nlinarith) hd hn
   · exact positive_cosine_strict hc hu hd hn
 
-def relativeCos (S T : UnitSquare) : ℝ := S.cosine*T.cosine+S.sine*T.sine
-
-def relativeSin (S T : UnitSquare) : ℝ := S.cosine*T.sine-S.sine*T.cosine
-
-def threshold (S T : UnitSquare) : ℝ := (1+|relativeCos S T|+|relativeSin S T|)/2
-
-lemma relative_unit (S T : UnitSquare) : (relativeCos S T)^2+(relativeSin S T)^2=1 := by
-  calc
-    _ = (S.cosine^2+S.sine^2)*(T.cosine^2+T.sine^2) := by
-      dsimp [relativeCos,relativeSin]; ring
-    _ = 1 := by rw [S.unit,T.unit]; ring
-
-lemma relative_frameX (S T : UnitSquare) (p : Point) :
-    relativeCos S T*frameX S p+relativeSin S T*frameY S p = frameX T p := by
-  calc
-    _ = (S.cosine^2+S.sine^2)*frameX T p := by
-      dsimp [relativeCos,relativeSin,frameX,frameY]; ring
-    _ = _ := by rw [S.unit]; ring
-
-lemma relative_frameY (S T : UnitSquare) (p : Point) :
-    -relativeSin S T*frameX S p+relativeCos S T*frameY S p = frameY T p := by
-  calc
-    _ = (S.cosine^2+S.sine^2)*frameY T p := by
-      dsimp [relativeCos,relativeSin,frameX,frameY]; ring
-    _ = _ := by rw [S.unit]; ring
+def threshold (S T : UnitSquare) : ℝ := (1+|relativeC S T|+|relativeS S T|)/2
 
 /-- Ordinary non-overlap implies one of the four unsigned separating axes. -/
 theorem separating_axes (S T : UnitSquare)
@@ -289,17 +254,17 @@ theorem separating_axes (S T : UnitSquare)
       nlinarith [sq_nonneg e.normal.1,sq_nonneg e.normal.2]
   by_contra hnot
   push Not at hnot
-  have hi : AxisInside (relativeCos S T) (relativeSin S T) d := by
+  have hi : AxisInside (relativeC S T) (relativeS S T) d := by
     dsimp [AxisInside,d]
-    rw [relative_frameX,relative_frameY]
+    rw [← (relative_normal S T _).1,← (relative_normal S T _).2]
     exact hnot
   have hlt := all_normals_strict (relative_unit S T) hi hn
   have hdot : dot n d = dot e.normal (sub T.center S.center) := by
     exact frame_dot S _ _
-  have hsup : octagonSupport (relativeCos S T) (relativeSin S T) n =
+  have hsup : octagonSupport (relativeC S T) (relativeS S T) n =
       width S e.normal+width T e.normal := by
     dsimp [octagonSupport,n]
-    rw [relative_frameX,relative_frameY]
+    rw [← (relative_normal S T _).1,← (relative_normal S T _).2]
     dsimp [width]
     ring
   rw [hdot,hsup] at hlt

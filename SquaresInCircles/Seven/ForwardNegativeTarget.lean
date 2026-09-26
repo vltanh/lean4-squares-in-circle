@@ -7,13 +7,16 @@ import SquaresInCircles.Seven.CapReduction
 
 A positive source with any active label, and a negative source with an axial
 label. The side-target minimum at medium angles comes from the tangent of the
-disk at the transition state.
+disk at the transition state. The sum vanishes only at an axial source and a
+side target.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
 open Boundary
 
-private def rawTarget (A v e r : ℝ) : ℝ :=
+/-- The lower bound of the forward sector with target sign `-1`, in the turn `e`
+and the signed source label `r`. -/
+def rawTarget (A v e r : ℝ) : ℝ :=
   1/2+(4/5)*r-(A-1/2)*Real.cos e-v*Real.sin e+|Real.sin e|/2
 
 lemma forward_negative_target_lower {a u A v : ℝ} (sgn : TransverseSign)
@@ -222,38 +225,8 @@ lemma negative_target_axial_pos {A v e r : ℝ}
     · have hp := axial_target_large_support h ⟨(lt_of_not_ge hs).le,hz.2⟩
       nlinarith
 
-lemma negative_target_side_nonneg {A v e r : ℝ}
-    (h : Admissible A v) (hT : label A v=side A v)
-    (he : -1 < e ∧ e ≤ Real.pi/3)
-    (hr : e=r+label A v-Real.pi/6) : 0 ≤ rawTarget A v e r := by
-  have hid : rawTarget A v e r=sideTarget A v e := by
-    rw [hT,side_identity_radial] at hr
-    dsimp [rawTarget,sideTarget]
-    nlinarith
-  rw [hid]
-  by_cases he0 : 0 ≤ e
-  · have hp := sideTarget_positive_angle h ⟨he0,he.2⟩
-    linarith [h.remainder_nonneg]
-  · have hp := sideTarget_negative_pos h hT
-      (z := -e) ⟨by linarith,by linarith [he.1]⟩
-    simpa using hp.le
-
-lemma negative_target_side_pos {A v e r : ℝ}
-    (h : StrictlyAdmissible A v) (hT : label A v=side A v)
-    (he : -1 < e ∧ e ≤ Real.pi/3)
-    (hr : e=r+label A v-Real.pi/6) : 0 < rawTarget A v e r := by
-  have hid : rawTarget A v e r=sideTarget A v e := by
-    rw [hT,side_identity_radial] at hr
-    dsimp [rawTarget,sideTarget]
-    nlinarith
-  rw [hid]
-  by_cases he0 : 0 ≤ e
-  · have hp := sideTarget_positive_angle h.admissible ⟨he0,he.2⟩
-    linarith [h.remainder_pos]
-  · have hp := sideTarget_negative_pos h.admissible hT
-      (z := -e) ⟨by linarith,by linarith [he.1]⟩
-    simpa using hp
-
+/-- The forward axis with target sign `-1`: zero only at an axial source and a
+side target. -/
 theorem fixed_gap_forward_negative_target {a u A v : ℝ} (sgn : TransverseSign)
     (h : Admissible a u) (h' : Admissible A v)
     (hsource : sgn=.positive ∨ label a u=axial u)
@@ -262,24 +235,35 @@ theorem fixed_gap_forward_negative_target {a u A v : ℝ} (sgn : TransverseSign)
   let e := r+label A v-Real.pi/6
   have hlow := forward_negative_target_lower sgn h h' hsource
   change rawTarget A v e r ≤ _ at hlow
+  have h0 := h.label_nonneg
+  have h1 := h.label_le_quarter
   have he : -Real.pi/2 ≤ e ∧ e ≤ Real.pi/3 := by
-    have h0 := h.label_nonneg
-    have h1 := h.label_le_quarter
     have h2 := h'.label_nonneg
     have h3 := h'.label_le_quarter
     cases sgn <;> dsimp [e,r,TransverseSign.coe] <;> constructor <;> linarith [Real.pi_pos]
   rcases htarget with hA | hT
-  · have hp := negative_target_axial_pos h' hA he rfl
-    exact ⟨hp.le.trans hlow,fun _ _ => hp.trans_le hlow⟩
-  · have he' : -1 < e ∧ e ≤ Real.pi/3 := by
-      have hs := side_selected_label_gt h' hT
-      have h0 := h.label_nonneg
-      have h1 := h.label_le_quarter
-      constructor
-      · cases sgn <;> dsimp [e,r,TransverseSign.coe] <;> linarith [pi_lt_22_over_7]
-      · exact he.2
-    refine ⟨(negative_target_side_nonneg h' hT he' rfl).trans hlow,?_⟩
-    intro ha hb
-    exact (negative_target_side_pos hb hT he' rfl).trans_le hlow
+  · exact .of_pos ((negative_target_axial_pos h' hA he rfl).trans_le hlow)
+  have hid : rawTarget A v e r=sideTarget A v e := by
+    have hr : e=r+label A v-Real.pi/6 := rfl
+    rw [hT,side_identity_radial] at hr
+    dsimp [rawTarget,sideTarget]
+    nlinarith
+  rw [hid] at hlow
+  by_cases he0 : 0 ≤ e
+  · have hp := sideTarget_positive_angle h' ⟨he0,he.2⟩
+    have hW := h'.remainder_nonneg
+    refine ⟨by linarith,fun hz => ?_⟩
+    have hc := Equality.remainder_zero h' (by linarith)
+    have ht : label a u=0 := by
+      have he' : e=0 := by linarith
+      dsimp [e,r] at he'
+      rw [hc.1,hc.2,Equality.side_label] at he'
+      cases sgn <;> dsimp [TransverseSign.coe] at he' <;> linarith
+    exact Or.inr (Or.inr ⟨rfl,Equality.axial_of_transverse_zero h (h.label_zero_iff.mp ht),hc⟩)
+  · have hs := side_selected_label_gt h' hT
+    have hp := sideTarget_negative_pos h' hT (z := -e) ⟨by linarith,by
+      cases sgn <;> dsimp [e,r,TransverseSign.coe] <;> linarith [pi_lt_22_over_7]⟩
+    rw [neg_neg] at hp
+    exact .of_pos (hp.trans_le hlow)
 
 end SquaresInCircles.Seven

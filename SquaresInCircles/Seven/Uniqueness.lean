@@ -1,4 +1,5 @@
 import SquaresInCircles.Seven.Uniqueness.Reconstruction
+import SquaresInCircles.Seven.Optimality
 
 /-!
 # Seven squares: uniqueness up to the sliding column

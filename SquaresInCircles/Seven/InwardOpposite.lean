@@ -1,15 +1,16 @@
 import SquaresInCircles.Seven.InwardBoundaryMinima
+import SquaresInCircles.Seven.AxialProfile
 import SquaresInCircles.Seven.CapReduction
 
 /-!
 # The inward axis with opposite signs
 
 Axial sources move monotonically to the axial/side transition, and a side
-target moves along its label segment to the axial tie. The zero turn keeps the
-remainder of the original state.
+target moves along its label segment to the axial tie. A nonpositive turn keeps
+the remainder of the side source, so the only zero is a side source with an
+axial target.
 -/
 noncomputable section
-open Set
 namespace SquaresInCircles.Seven
 open Boundary
 
@@ -38,6 +39,25 @@ lemma inward_opposite_side_positive_turn {a u A v : ℝ}
   rw [hvEq] at hp
   dsimp [inwardOpposite] at *
   nlinarith
+
+/-- The inward axis with opposite signs, side source and axial target. A
+nonpositive turn keeps the remainder of the side source, so zero support
+forces the side state and `v = 0`. -/
+theorem inward_opposite_side_axial_property {a u A v : ℝ}
+    (h : Admissible a u) (h' : Admissible A v)
+    (hT : label a u=side a u) (hA : label A v=axial v) :
+    PairProperty a u A v .positive .negative 2 := by
+  by_cases hz : 0<label a u+label A v-Real.pi/6
+  · exact .of_pos (inward_opposite_side_positive_turn h h' hT hA hz)
+  have hl := inward_opposite_negative_turn h h' hT hA (le_of_not_gt hz)
+  have hW := h.remainder_nonneg
+  have he := abs_nonneg (label a u+label A v-Real.pi/6)
+  refine ⟨by linarith,fun hzero => ?_⟩
+  have hc := Equality.remainder_zero h (by linarith)
+  have he0 : label a u+label A v-Real.pi/6=0 := abs_eq_zero.mp (by linarith)
+  rw [hc.1,hc.2,Equality.side_label,hA] at he0
+  dsimp [axial] at he0
+  exact Or.inr (Or.inl ⟨rfl,hc,Equality.axial_of_transverse_zero h' (by linarith)⟩)
 
 lemma inward_opposite_axial_nonpositive_turn {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
@@ -186,12 +206,7 @@ lemma inward_opposite_side_target_reduction {a u A v : ℝ}
     constructor <;> linarith [h'.label_le_quarter,pi_lt_22_over_7]
   have hcoef : 0<Real.cos z-(4/9)*Real.sin z := by
     by_cases hz0 : 0≤z
-    · have hC : 1/2≤Real.cos z := by
-        have hh := Real.strictAntiOn_cos.antitoneOn
-          (show z∈Icc 0 Real.pi by constructor <;> linarith [hz0,hz.2,Real.pi_pos])
-          (show Real.pi/3∈Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos]) hz.2
-        simpa only [Real.cos_pi_div_three] using hh
-      linarith [Real.sin_le_one z]
+    · linarith [cos_ge_half ⟨hz0,hz.2⟩,Real.sin_le_one z]
     · have hS : Real.sin z≤0 := by
         have hh := Real.sin_nonneg_of_nonneg_of_le_pi
           (show 0≤-z by linarith) (by linarith [hz.1,pi_lower_157])
@@ -209,7 +224,8 @@ lemma inward_opposite_side_target_reduction {a u A v : ℝ}
   dsimp [inwardOpposite]
   nlinarith
 
-/-- The inward axis with signs `(+,-)`, all active labels. -/
+/-- The inward axis with signs `(+,-)`, all active labels. A side target
+reduces to the axial tie of its label, which is no contact. -/
 theorem fixed_gap_inward_opposite_active {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (ha : ActiveLabel a u) (hb : ActiveLabel A v) :
@@ -217,32 +233,23 @@ theorem fixed_gap_inward_opposite_active {a u A v : ℝ}
   have axialTarget (B w : ℝ) (hB : Admissible B w)
       (hBA : label B w=axial w) : PairProperty a u B w .positive .negative 2 := by
     rcases ha with hA | hT
-    · have hp := inward_opposite_axial_axial_pos h hB hA hBA
-      exact ⟨hp.le,fun _ _ => hp⟩
+    · exact .of_pos (inward_opposite_axial_axial_pos h hB hA hBA)
     · exact inward_opposite_side_axial_property h hB hT hBA
   rcases hb with hA | hT
   · exact axialTarget A v h' hA
-  · let s := label A v
-    have hs : s0 ≤ s ∧ s≤Real.pi/4 :=
-      ⟨(side_state_transition_bounds h' hT).2.2,h'.label_le_quarter⟩
-    obtain ⟨hB,hlabel,hside⟩ := tie_state hs
-    have hBA : label (tieA s) ((4/5)*s)=axial ((4/5)*s) := by rw [hlabel]; dsimp [axial]; ring
-    have hp := axialTarget (tieA s) ((4/5)*s) hB hBA
-    have hcomp := inward_opposite_side_target_reduction h h' hT
-    refine ⟨hp.1.trans hcomp,?_⟩
-    intro hstrict hstrict'
-    rcases ha with hsourceA | hsourceT
-    · exact (inward_opposite_axial_axial_pos h hB hsourceA hBA).trans_le hcomp
-    · let z := label a u+s-Real.pi/6
-      by_cases hz : 0<z
-      · have hh := inward_opposite_side_positive_turn h hB hsourceT hBA
-          (by rw [hlabel]; exact hz)
-        exact hh.trans_le hcomp
-      · have hh := inward_opposite_negative_turn h hB hsourceT hBA
-          (by rw [hlabel]; exact le_of_not_gt hz)
-        have hw := hstrict.remainder_pos
-        have hpos : 0<pairSupport a u (tieA s) ((4/5)*s) .positive .negative 2 gap := by
-          linarith [abs_nonneg (label a u+label (tieA s) ((4/5)*s)-Real.pi/6)]
-        exact hpos.trans_le hcomp
+  have hs : s0 ≤ label A v ∧ label A v≤Real.pi/4 :=
+    ⟨(side_state_transition_bounds h' hT).2.2,h'.label_le_quarter⟩
+  obtain ⟨hB,hlabel,-⟩ := tie_state hs
+  have hBA : label (tieA (label A v)) ((4/5)*label A v)=axial ((4/5)*label A v) := by
+    rw [hlabel]; dsimp [axial]; ring
+  have hp := axialTarget _ _ hB hBA
+  have hcomp := inward_opposite_side_target_reduction h h' hT
+  refine ⟨hp.1.trans hcomp,fun hz => ?_⟩
+  rcases hp.2 (le_antisymm (hcomp.trans hz.le) hp.1) with ⟨hsign,-⟩ | ⟨-,-,hv,-⟩ | ⟨-,-,hc⟩
+  · cases hsign
+  · linarith [side_selected_label_gt h' hT]
+  · rw [hc.1,hc.2,Equality.side_label] at hBA
+    dsimp [axial] at hBA
+    linarith [pi_lt_22_over_7]
 
 end SquaresInCircles.Seven

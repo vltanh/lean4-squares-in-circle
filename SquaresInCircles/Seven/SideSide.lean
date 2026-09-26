@@ -1,4 +1,4 @@
-import SquaresInCircles.Seven.Support
+import SquaresInCircles.Seven.Contacts
 import SquaresInCircles.Seven.TaylorBounds
 
 /-!
@@ -6,10 +6,10 @@ import SquaresInCircles.Seven.TaylorBounds
 
 The support sum of two side-selected squares with opposite signs on the
 forward axis, bounded below by a Cauchy–Schwarz certificate over the whole
-admissible region.
+admissible region. The certificate is tight only at zero turn, so the sum
+vanishes only at two side states.
 -/
 noncomputable section
-open Set
 namespace SquaresInCircles.Seven
 
 private lemma abs_min_identity (x : ℝ) : |x| = x-2*min x 0 := by
@@ -23,12 +23,20 @@ def sideSideL (w : ℝ) : ℝ :=
 def sideSideRadicand (w : ℝ) : ℝ :=
   (Real.sin w-9/10)^2+(2/5-Real.cos w)^2
 
-private lemma cos_ge_half {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
+lemma cos_ge_half {z : ℝ} (hz : 0 ≤ z ∧ z ≤ Real.pi/3) :
     (1/2 : ℝ) ≤ Real.cos z := by
-  have h := Real.strictAntiOn_cos.antitoneOn
-    (show z ∈ Icc (0 : ℝ) Real.pi by constructor <;> linarith [hz.1,hz.2,Real.pi_pos])
-    (show Real.pi/3 ∈ Icc (0 : ℝ) Real.pi by constructor <;> linarith [Real.pi_pos]) hz.2
-  simpa only [Real.cos_pi_div_three] using h
+  simpa only [Real.cos_pi_div_three] using
+    Real.cos_le_cos_of_nonneg_of_le_pi hz.1 (by linarith [Real.pi_pos]) hz.2
+
+/-- The turn of two labels on the forward axis with signs `(-, +)`. -/
+lemma forward_turn_range {a u A v : ℝ} (h : Admissible a u) (h' : Admissible A v) :
+    -Real.pi/3 ≤ label a u+label A v-gap ∧ label a u+label A v-gap ≤ Real.pi/6 := by
+  have h0 := h.label_nonneg
+  have h1 := h'.label_nonneg
+  have h2 := h.label_le_quarter
+  have h3 := h'.label_le_quarter
+  dsimp [gap]
+  constructor <;> linarith
 
 lemma sideSideL_pos {w : ℝ} (hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6) :
     0 < sideSideL w := by
@@ -120,18 +128,19 @@ lemma sideSide_margin_nonneg {w : ℝ}
     norm_num [sideSideL, sideSideRadicand, targetSq]
   · exact (sideSide_margin_pos hw h).le
 
+private lemma norm_sq (w : ℝ) :
+    (radius*Real.sqrt (sideSideRadicand w))^2=targetSq*sideSideRadicand w := by
+  have hrad : 0 ≤ sideSideRadicand w := by unfold sideSideRadicand; positivity
+  rw [mul_pow, radius_sq, Real.sq_sqrt hrad]
+  rfl
+
 lemma sideSideL_ge_norm {w : ℝ} (hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6) :
     radius*Real.sqrt (sideSideRadicand w) ≤ sideSideL w := by
-  have hrad : 0 ≤ sideSideRadicand w := by unfold sideSideRadicand; positivity
-  have hs := Real.sq_sqrt hrad
   have hL := sideSideL_pos hw
   have hm := sideSide_margin_nonneg hw
   have hnorm : 0 ≤ radius*Real.sqrt (sideSideRadicand w) :=
     mul_nonneg radius_nonneg (Real.sqrt_nonneg _)
-  have he : (radius*Real.sqrt (sideSideRadicand w))^2=targetSq*sideSideRadicand w := by
-    rw [mul_pow, radius_sq, hs]
-    rfl
-  nlinarith
+  nlinarith [norm_sq w]
 
 def sideSideSupport (u A v w : ℝ) : ℝ :=
   1/2-u+A*Real.sin w-v*Real.cos w+(|Real.sin w|+Real.cos w)/2
@@ -156,49 +165,52 @@ private lemma fixed_dual_norm :
     norm_num
   nlinarith
 
-lemma sideSide_support_nonneg {a u A v w : ℝ}
+lemma sideSide_support_lower {a u A v w : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
-    (hw : w = side a u+side A v-gap)
-    (hrange : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6) :
-    0 ≤ sideSideSupport u A v w := by
+    (hw : w = side a u+side A v-gap) :
+    sideSideL w-radius*Real.sqrt (sideSideRadicand w) ≤ sideSideSupport u A v w := by
   have hfirst := dot_lower_candidate (p := -9/10) (r := -3/5) h.2.2.2
   have hsecond := dot_lower_candidate (p := Real.sin w-9/10)
     (r := 2/5-Real.cos w) h'.2.2.2
-  have hnorm := sideSideL_ge_norm hrange
   rw [show -radius*Real.sqrt (((-9/10 : ℝ)^2+(-3/5)^2)) = -(39/20) by
     nlinarith [fixed_dual_norm]] at hfirst
   change -radius*Real.sqrt (sideSideRadicand w) ≤ _ at hsecond
   rw [sideSide_support_identity hw]
   linarith
 
-/-- Strict containment of the first side state makes this sector strictly positive. -/
-theorem sideSide_support_pos {a u A v : ℝ}
-    (h : StrictlyAdmissible a u) (h' : Admissible A v)
-    (hsel : label a u = side a u) (hsel' : label A v = side A v) :
-    0 < sideSideSupport u A v (label a u+label A v-gap) := by
+lemma sideSide_support_nonneg {a u A v : ℝ}
+    (h : Admissible a u) (h' : Admissible A v)
+    (hT : label a u = side a u) (hT' : label A v = side A v) :
+    0 ≤ sideSideSupport u A v (label a u+label A v-gap) := by
+  have hl := sideSide_support_lower (w := label a u+label A v-gap) h h' (by rw [hT,hT'])
+  linarith [sideSideL_ge_norm (forward_turn_range h h')]
+
+/-- The side–side sum vanishes only at two side states. -/
+lemma Equality.side_side_zero {a u A v : ℝ}
+    (h : Admissible a u) (h' : Admissible A v)
+    (hT : label a u = side a u) (hT' : label A v = side A v)
+    (hz : sideSideSupport u A v (label a u+label A v-gap) = 0) :
+    Side a u ∧ Side A v := by
   let w := label a u+label A v-gap
-  have hw : w = side a u+side A v-gap := by simp only [w,hsel,hsel']
-  have hrange : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
-    have h0 := h.admissible.label_nonneg
-    have h1 := h'.label_nonneg
-    have h2 := h.admissible.label_le_quarter
-    have h3 := h'.label_le_quarter
-    dsimp [w,gap]
-    constructor <;> linarith
-  have hfirst : -(39/20 : ℝ) < (-9/10)*(a+1/2)+(-3/5)*(u+1/2) := by
-    have hid : ((-9/10)*(a+1/2)+(-3/5)*(u+1/2))^2+
-        ((-9/10)*(u+1/2)-(-3/5)*(a+1/2))^2 = (117/100)*phi a u := by
-      dsimp [phi]
-      ring
-    have hp := h.2.2.2
-    dsimp [targetSq] at hp
-    nlinarith [sq_nonneg ((-9/10)*(u+1/2)-(-3/5)*(a+1/2))]
-  have hsecond := dot_lower_candidate (p := Real.sin w-9/10)
-    (r := 2/5-Real.cos w) h'.2.2.2
-  change -radius*Real.sqrt (sideSideRadicand w) ≤ _ at hsecond
-  have hnorm := sideSideL_ge_norm hrange
-  change 0 < sideSideSupport u A v w
-  rw [sideSide_support_identity hw]
-  linarith
+  have hw : w = side a u+side A v-gap := by simp only [w,hT,hT']
+  have hw0 : w = 0 := by
+    by_contra hne
+    have hr := forward_turn_range h h'
+    have hm := sideSide_margin_pos hr hne
+    have hL := sideSideL_pos hr
+    have hl := sideSide_support_lower h h' hw
+    have hnorm : 0 ≤ radius*Real.sqrt (sideSideRadicand w) :=
+      mul_nonneg radius_nonneg (Real.sqrt_nonneg _)
+    change sideSideSupport u A v w = 0 at hz
+    nlinarith [norm_sq w]
+  change sideSideSupport u A v w = 0 at hz
+  rw [hw0] at hz hw
+  have huv : u+v = 1 := by norm_num [sideSideSupport] at hz; linarith
+  have hrem : remainder a u+remainder A v = 0 := by
+    unfold side gap at hw
+    unfold remainder
+    linarith
+  exact ⟨remainder_zero h (by linarith [h.remainder_nonneg,h'.remainder_nonneg]),
+    remainder_zero h' (by linarith [h.remainder_nonneg,h'.remainder_nonneg])⟩
 
 end SquaresInCircles.Seven

@@ -1,4 +1,3 @@
-import SquaresInCircles.Seven.EasySectors
 import SquaresInCircles.Seven.SectorBounds
 
 /-!
@@ -7,7 +6,6 @@ import SquaresInCircles.Seven.SectorBounds
 Positive for all labels, by the marker bounds.
 -/
 noncomputable section
-open Set
 namespace SquaresInCircles.Seven
 
 lemma support_pi_shift (a b z : ℝ) :

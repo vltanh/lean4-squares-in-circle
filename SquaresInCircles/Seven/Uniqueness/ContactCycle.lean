@@ -1,4 +1,5 @@
-import SquaresInCircles.Seven.Uniqueness.Hexagon
+import SquaresInCircles.Seven.MarkerSeparation
+import SquaresInCircles.Seven.CircleBudget
 import SquaresInCircles.Common.Angles
 
 /-!

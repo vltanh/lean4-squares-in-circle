@@ -1,15 +1,16 @@
 import SquaresInCircles.Seven.AngularMinima
 import SquaresInCircles.Seven.ParallelLabels
+import SquaresInCircles.Seven.EasySectors
 
 /-!
 # Small gaps and cardinal minima
 
 For gaps up to 1 the two marker arcs share three points of the unit circle,
 which forces every support sum to be positive. At a cardinal target direction
-the squares are parallel or quarter-turned, and the parallel labels apply.
+below the gap `π/3` the squares are parallel or quarter-turned, and the
+parallel labels apply.
 -/
 noncomputable section
-open Set
 namespace SquaresInCircles.Seven
 
 lemma small_gap_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
@@ -68,10 +69,6 @@ lemma small_gap_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
   rw [hsz,hcz] at hu
   norm_num at hu
 
-lemma sign_strictlyAdmissible {a u : ℝ} (h : StrictlyAdmissible a u) (s : TransverseSign) :
-    StrictlyAdmissible a |s.coe*u| := by
-  cases s <;> simpa [TransverseSign.coe,abs_of_nonneg h.1] using h
-
 lemma support_add_pi (a b z : ℝ) : support a b (z+Real.pi)=support (-a) (-b) z := by
   simp [support,Real.cos_add,Real.sin_add,abs_neg]
 
@@ -85,20 +82,19 @@ lemma cardinal_support_sum (a b A B : ℝ) (k : Fin 4) :
   fin_cases k <;> norm_num [cardinalAngle,support,
     show (3:ℝ)*Real.pi/2=Real.pi+Real.pi/2 by ring,Real.sin_add,Real.cos_add] <;> ring
 
-lemma parallel_zero_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
-    (h : StrictlyAdmissible a u) (h' : StrictlyAdmissible A v)
-    (hg : 0<g ∧ g≤gap)
-    (he : g+s.coe*label a u-t.coe*label A v=0) :
-    0<pairSupport a u A v s t k g := by
-  have hangle : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v=
+lemma Equality.parallel_zero_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
+    (h : Admissible a u) (h' : Admissible A v) (hg : 0 < g ∧ g < gap)
+    (he : g+s.coe*label a u-t.coe*label A v = 0) :
+    0 < pairSupport a u A v s t k g := by
+  have hang : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v =
       cardinalAngle k+Real.pi := by linarith
-  rw [pairSupport,hangle,support_add_pi,cardinal_support_sum]
-  have h0 := h.admissible.label_nonneg
-  have h1 := h'.admissible.label_nonneg
-  have ha := h.admissible.a_lt_five_fourths
-  have hA := h'.admissible.a_lt_five_fourths
-  have hu := h.admissible.u_lt
-  have hv := h'.admissible.u_lt
+  rw [pairSupport,hang,support_add_pi,cardinal_support_sum]
+  have h0 := h.label_nonneg
+  have h1 := h'.label_nonneg
+  have ha := h.a_lt_five_fourths
+  have hA := h'.a_lt_five_fourths
+  have hu := h.u_lt
+  have hv := h'.u_lt
   fin_cases k
   · norm_num
     linarith [h.2.2.1]
@@ -106,11 +102,8 @@ lemma parallel_zero_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fi
     cases s <;> cases t <;> norm_num [TransverseSign.coe] at hn he ⊢
     · linarith [h.1]
     · linarith [h.1,h'.1]
-    · have hs : 1≤u+v := by linarith
-      have hl := opposite_transverse_labels_gt h h' hs
-      dsimp [gap] at hl
-      dsimp [gap] at hg
-      linarith
+    · have hl := opposite_labels_ge h h' (show 1 ≤ u+v by linarith)
+      linarith [hg.2]
     · linarith [h'.1]
   · norm_num
     linarith [h'.2.2.1]
@@ -120,23 +113,22 @@ lemma parallel_zero_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fi
     · linarith [h.1,h'.1]
     · linarith [h.1]
 
-lemma parallel_quarter_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
-    (h : StrictlyAdmissible a u) (h' : StrictlyAdmissible A v)
-    (hg : 0<g ∧ g≤gap)
-    (he : g+s.coe*label a u-t.coe*label A v=Real.pi/2) :
-    0<pairSupport a u A v s t k g := by
-  have hangle : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v=
+lemma Equality.parallel_quarter_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
+    (h : Admissible a u) (h' : Admissible A v) (hg : 0 < g ∧ g < gap)
+    (he : g+s.coe*label a u-t.coe*label A v = Real.pi/2) :
+    0 < pairSupport a u A v s t k g := by
+  have hang : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v =
       cardinalAngle k+Real.pi/2 := by linarith
-  rw [pairSupport,hangle,support_add_half_pi,cardinal_support_sum]
-  have hu : |s.coe*u|<31/40 := by
-    cases s <;> simpa [TransverseSign.coe,abs_of_nonneg h.1] using h.admissible.u_lt
-  have hv : |t.coe*v|<31/40 := by
-    cases t <;> simpa [TransverseSign.coe,abs_of_nonneg h'.1] using h'.admissible.u_lt
+  rw [pairSupport,hang,support_add_half_pi,cardinal_support_sum]
+  have hu : |s.coe*u| < 31/40 := by
+    cases s <;> simpa [TransverseSign.coe,abs_of_nonneg h.1] using h.u_lt
+  have hv : |t.coe*v| < 31/40 := by
+    cases t <;> simpa [TransverseSign.coe,abs_of_nonneg h'.1] using h'.u_lt
   have hu' := abs_lt.mp hu
   have hv' := abs_lt.mp hv
-  have hlabel (hh : 1≤a+t.coe*v ∨ 1≤A-s.coe*u) : False := by
-    have hp := quarter_difference_gt (sign_strictlyAdmissible h s) (sign_strictlyAdmissible h' t) hh
-    rw [sign_label h.admissible s,sign_label h'.admissible t] at hp
+  have hlabel (hh : 1 ≤ a+t.coe*v ∨ 1 ≤ A-s.coe*u) : False := by
+    have hp := quarter_difference_le (sign_admissible h s) (sign_admissible h' t) hh
+    rw [sign_label h s,sign_label h' t] at hp
     dsimp [gap] at hg
     linarith
   fin_cases k
@@ -168,27 +160,26 @@ lemma cardinal_target_relative {d : ℝ} (k : Fin 4)
     simpa [Real.sin_add,Real.cos_add,Real.sin_two_pi,Real.cos_two_pi,
       Real.cos_pi_div_two_sub,Real.sin_pi_div_two_sub,or_comm] using h
 
-lemma cardinal_target_support_pos {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
-    (h : StrictlyAdmissible a u) (h' : StrictlyAdmissible A v)
-    (hg : 1≤g ∧ g≤gap)
-    (hcard : Real.sin (cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v)=0 ∨
-      Real.cos (cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v)=0) :
-    0<pairSupport a u A v s t k g := by
+lemma Equality.cardinal_target_pos_below {a u A v g : ℝ} (s t : TransverseSign) (k : Fin 4)
+    (h : Admissible a u) (h' : Admissible A v) (hg : 1 ≤ g ∧ g < gap)
+    (hcard : Real.sin (cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v) = 0 ∨
+      Real.cos (cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v) = 0) :
+    0 < pairSupport a u A v s t k g := by
   let d := g+s.coe*label a u-t.coe*label A v
-  have hr : -Real.pi/2<d ∧ d<Real.pi := by
-    have ht0 := h.admissible.label_nonneg
-    have ht1 := h.admissible.label_le_quarter
-    have hs0 := h'.admissible.label_nonneg
-    have hs1 := h'.admissible.label_le_quarter
+  have hr : -Real.pi/2 < d ∧ d < Real.pi := by
+    have ht0 := h.label_nonneg
+    have ht1 := h.label_le_quarter
+    have hs0 := h'.label_nonneg
+    have hs1 := h'.label_le_quarter
     cases s <;> cases t <;> dsimp [d,gap,TransverseSign.coe] at * <;>
       constructor <;> linarith [Real.pi_pos]
-  have he : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v=
+  have he : cardinalAngle k+Real.pi-g-s.coe*label a u+t.coe*label A v =
       cardinalAngle k+Real.pi-d := by dsimp [d]; ring
   rw [he] at hcard
   rcases cardinal_target_relative k hcard with hsin | hcos
-  · have hd : d=0 := sin_zero_between ⟨by linarith [hr.1,Real.pi_pos],hr.2⟩ hsin
-    exact parallel_zero_support_pos s t k h h' ⟨by linarith [hg.1],hg.2⟩ hd
-  · have hd : d=Real.pi/2 := cos_zero_between hr hcos
-    exact parallel_quarter_support_pos s t k h h' ⟨by linarith [hg.1],hg.2⟩ hd
+  · have hd := sin_zero_between ⟨by linarith [hr.1,Real.pi_pos],hr.2⟩ hsin
+    exact parallel_zero_pos_below s t k h h' ⟨by linarith [hg.1],hg.2⟩ hd
+  · have hd := cos_zero_between hr hcos
+    exact parallel_quarter_pos_below s t k h h' ⟨by linarith [hg.1],hg.2⟩ hd
 
 end SquaresInCircles.Seven

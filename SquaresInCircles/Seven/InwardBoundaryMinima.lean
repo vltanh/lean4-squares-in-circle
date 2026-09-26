@@ -1,6 +1,6 @@
 import SquaresInCircles.Seven.InwardCircularCertificate
-import SquaresInCircles.Seven.TargetBoundaryMonotonicity
-import SquaresInCircles.Seven.CapReduction
+import SquaresInCircles.Seven.BoundaryPointChecks
+import SquaresInCircles.Seven.SideSide
 
 /-!
 # Boundary minima of the inward axis with opposite signs
@@ -79,11 +79,7 @@ lemma opposite_upper_cap {z t : ℝ}
     have hh : diagonal t≤diagonal td := by dsimp [diagonal]; linarith [ht.1]
     rw [hd] at hh
     linarith [rd_bounds.2]
-  have hC : 1/2 ≤ Real.cos z := by
-    have hh := Real.strictAntiOn_cos.antitoneOn
-      (show z∈Icc 0 Real.pi by constructor <;> linarith [hz.1,hz.2,Real.pi_pos])
-      (show Real.pi/3∈Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos]) hz.2
-    simpa only [Real.cos_pi_div_three] using hh
+  have hC := cos_ge_half ⟨hz.1.le,hz.2⟩
   have hS0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1.le (by linarith [hz.2,Real.pi_pos])
   have hb := (axialTop_state ⟨by positivity,le_rfl⟩).1
   have hm := mul_nonneg (show 0≤3/4-axialTop (Real.pi/5) by linarith) hS0
@@ -144,11 +140,8 @@ lemma diagonal_junction_pos {z : ℝ}
         dsimp [s,otherLabel,diagonalAngle] at *
         constructor <;> linarith [hs.1,hs.2,hx.1,hx.2]
       have ht := transition_coarse
-      have hC : 1/2 ≤ Real.cos x := by
-        have hh := Real.strictAntiOn_cos.antitoneOn
-          (show x∈Icc 0 Real.pi by constructor <;> linarith [hx.1,diagonal_angle_bounds.1,hx.2,hz.2,Real.pi_pos])
-          (show Real.pi/3∈Icc 0 Real.pi by constructor <;> linarith [Real.pi_pos]) (by linarith [hx.2,hz.2])
-        simpa only [Real.cos_pi_div_three] using hh
+      have hC := cos_ge_half (z := x)
+        ⟨by linarith [hx.1,diagonal_angle_bounds.1],by linarith [hx.2,hz.2]⟩
       have hS0 := Real.sin_nonneg_of_nonneg_of_le_pi (x := x)
         (by linarith [hx.1,diagonal_angle_bounds.1]) (by linarith [hx.2,hz.2,Real.pi_pos])
       have hSC : Real.sin x≤(9/4)*Real.cos x := by linarith [Real.sin_le_one x]
@@ -304,43 +297,5 @@ theorem opposite_upper_pos {z t : ℝ}
       exact hbase.trans_le hcomp
 
 end Boundary
-
-/-- The inward axis with opposite signs, side source and axial target.
-Strictness comes from the remainder of the source state. -/
-theorem inward_opposite_side_axial_property {a u A v : ℝ}
-    (h : Admissible a u) (h' : Admissible A v)
-    (hT : label a u=side a u) (hA : label A v=axial v) :
-    PairProperty a u A v .positive .negative 2 := by
-  let z := label a u+label A v-Real.pi/6
-  by_cases hz0 : z≤0
-  · have hl := inward_opposite_negative_turn h h' hT hA hz0
-    refine ⟨by linarith [h.remainder_nonneg,abs_nonneg z],?_⟩
-    intro ha hb
-    linarith [ha.remainder_pos,abs_nonneg z]
-  · have hz : 0<z ∧ z≤Real.pi/3 := by
-      constructor
-      · exact lt_of_not_ge hz0
-      · dsimp [z]; linarith [h.label_le_quarter,h'.label_le_quarter]
-    have ht : Boundary.s0≤label a u ∧ label a u≤Real.pi/4 :=
-      ⟨(Boundary.side_state_transition_bounds h hT).2.2,h.label_le_quarter⟩
-    have hsEq : Boundary.otherLabel z (label a u)=label A v := by dsimp [Boundary.otherLabel,z]; ring
-    have hvEq : Boundary.otherV z (label a u)=v := by
-      rw [Boundary.otherV,hsEq,hA]
-      dsimp [axial]; ring
-    have hp := Boundary.opposite_upper_pos hz ht
-      ⟨by rw [hsEq]; exact h'.label_nonneg,by rw [hsEq]; exact h'.label_le_quarter⟩
-    have ha := Boundary.side_radial_upper h hT
-    have hb := Boundary.axial_upper h' hA
-    have hs0 := Real.sin_nonneg_of_nonneg_of_le_pi hz.1.le (by linarith [hz.2,Real.pi_pos])
-    have hm := mul_nonneg (sub_nonneg.mpr hb) hs0
-    have hcompare : Boundary.oppositeUpper z (label a u) ≤ inwardOpposite a A v z := by
-      dsimp [Boundary.oppositeUpper]
-      rw [hvEq]
-      dsimp [inwardOpposite]
-      nlinarith
-    have hpos : 0<pairSupport a u A v .positive .negative 2 gap := by
-      rw [inward_opposite_formula h h']
-      exact hp.trans_le hcompare
-    exact ⟨hpos.le,fun _ _ => hpos⟩
 
 end SquaresInCircles.Seven

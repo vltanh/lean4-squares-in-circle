@@ -1,6 +1,6 @@
-import SquaresInCircles.Seven.ForwardPositive
 import SquaresInCircles.Seven.CapReduction
 import SquaresInCircles.Seven.SideSide
+import SquaresInCircles.Seven.SectorBounds
 import SquaresInCircles.Seven.PolynomialCertificates
 
 /-!
@@ -18,13 +18,7 @@ lemma pairSupport_forward_opposite {a u A v : ℝ}
     pairSupport a u A v .negative .positive 1 gap =
       sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
-  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
-    have h0 := h.label_nonneg
-    have h1 := h'.label_nonneg
-    have h2 := h.label_le_quarter
-    have h3 := h'.label_le_quarter
-    dsimp [w,gap]
-    constructor <;> linarith
+  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := forward_turn_range h h'
   have hc : 0 ≤ Real.cos w := cos_nonneg_quarter
     ⟨by linarith [hw.1,Real.pi_pos],by linarith [hw.2,Real.pi_pos]⟩
   rw [pairSupport_one]
@@ -100,13 +94,7 @@ lemma opposite_axial_axial_pos {a u A v : ℝ}
     (hA : label a u=axial u) (hB : label A v=axial v) :
     0 < sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
-  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
-    have h0 := h.label_nonneg
-    have h1 := h'.label_nonneg
-    have h2 := h.label_le_quarter
-    have h3 := h'.label_le_quarter
-    dsimp [w,gap]
-    constructor <;> linarith
+  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := forward_turn_range h h'
   have he : u+v=(4/5)*(gap+w) := by
     dsimp [w]
     rw [hA,hB]
@@ -219,13 +207,7 @@ lemma opposite_axial_side_pos {a u A v : ℝ}
     (hA : label a u=axial u) (hT : label A v=side A v) :
     0 < sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
-  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
-    have h0 := h.label_nonneg
-    have h1 := h'.label_nonneg
-    have h2 := h.label_le_quarter
-    have h3 := h'.label_le_quarter
-    dsimp [w,gap]
-    constructor <;> linarith
+  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := forward_turn_range h h'
   have hclear := mixed_clearance_bound h' hA hT
   change mixedMargin-(4/5)*w ≤ 1-u-v at hclear
   change 0 < sideSideSupport u A v w
@@ -256,13 +238,7 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
     (hT : label a u=side a u) (hA : label A v=axial v) :
     0 < sideSideSupport u A v (label a u+label A v-gap) := by
   let w := label a u+label A v-gap
-  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := by
-    have h0 := h.label_nonneg
-    have h1 := h'.label_nonneg
-    have h2 := h.label_le_quarter
-    have h3 := h'.label_le_quarter
-    dsimp [w,gap]
-    constructor <;> linarith
+  have hw : -Real.pi/3 ≤ w ∧ w ≤ Real.pi/6 := forward_turn_range h h'
   have hclear := mixed_clearance_bound_swap h hT hA
   change mixedMargin-(4/5)*w ≤ 1-u-v at hclear
   change 0 < sideSideSupport u A v w
@@ -305,30 +281,18 @@ lemma opposite_side_axial_pos {a u A v : ℝ}
       have hprof := side_axial_far_profile ⟨(lt_of_not_ge hzsmall).le,hz7.le⟩
       nlinarith
 
-/-- Complete A/T sector, including the only possible side--side equality. -/
+/-- Complete A/T sector, including the only possible side--side contact. -/
 theorem fixed_gap_forward_opposite_active {a u A v : ℝ}
     (h : Admissible a u) (h' : Admissible A v)
     (ha : ActiveLabel a u) (hb : ActiveLabel A v) :
     PairProperty a u A v .negative .positive 1 := by
-  unfold PairProperty
-  rw [pairSupport_forward_opposite h h']
+  have he := pairSupport_forward_opposite h h'
   rcases ha with hA | hT <;> rcases hb with hA' | hT'
-  · have hp := opposite_axial_axial_pos h h' hA hA'
-    exact ⟨hp.le,fun _ _ => hp⟩
-  · have hp := opposite_axial_side_pos h h' hA hT'
-    exact ⟨hp.le,fun _ _ => hp⟩
-  · have hp := opposite_side_axial_pos h h' hT hA'
-    exact ⟨hp.le,fun _ _ => hp⟩
-  · have hr : -Real.pi/3 ≤ label a u+label A v-gap ∧
-        label a u+label A v-gap ≤ Real.pi/6 := by
-      have h0 := h.label_nonneg
-      have h1 := h'.label_nonneg
-      have h2 := h.label_le_quarter
-      have h3 := h'.label_le_quarter
-      dsimp [gap]
-      constructor <;> linarith
-    refine ⟨sideSide_support_nonneg h h' (by rw [hT,hT']) hr,?_⟩
-    intro hs hs'
-    exact sideSide_support_pos hs h' hT hT'
+  · exact .of_pos (he ▸ opposite_axial_axial_pos h h' hA hA')
+  · exact .of_pos (he ▸ opposite_axial_side_pos h h' hA hT')
+  · exact .of_pos (he ▸ opposite_side_axial_pos h h' hT hA')
+  · refine ⟨he ▸ sideSide_support_nonneg h h' hT hT',fun hz => ?_⟩
+    have hc := Equality.side_side_zero h h' hT hT' (he ▸ hz)
+    exact Or.inl ⟨rfl,rfl,hc.1,hc.2⟩
 
 end SquaresInCircles.Seven

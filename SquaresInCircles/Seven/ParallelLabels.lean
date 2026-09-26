@@ -4,8 +4,8 @@ import SquaresInCircles.Seven.Labels
 # Labels of parallel squares
 
 For parallel squares on opposite sides of the axis, and for quarter-turned
-squares separated by a whole side, the labels are too far apart for a gap of
-at most `π/3`.
+squares separated by a whole side, the labels are too far apart for a gap
+below `π/3`.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -15,14 +15,6 @@ lemma side_side_sum_identity (a x A y : ℝ) :
       (remainder a x + remainder A y)/4 := by
   unfold side gap remainder
   ring
-
-lemma side_side_sum_gt {a x A y : ℝ}
-    (h : StrictlyAdmissible a x) (h' : Admissible A y) (hs : 1 ≤ x+y) :
-    gap < side a x + side A y := by
-  rw [side_side_sum_identity]
-  have hw := h.remainder_pos
-  have hw' := h'.remainder_nonneg
-  linarith
 
 lemma axial_side_sum_gt {x A y : ℝ} (h' : Admissible A y) (hs : 1 ≤ x+y) :
     gap < axial x + side A y := by
@@ -52,27 +44,21 @@ lemma cap_side_sum_gt {a x A y : ℝ}
   dsimp [gap]
   linarith [pi_lower_157]
 
-/-- Two labels on opposite sides of parallel squares add up to more than
+/-- Two labels on opposite sides of parallel squares add up to at least
 `π/3`. -/
-theorem opposite_transverse_labels_gt {a x A y : ℝ}
-    (h : StrictlyAdmissible a x) (h' : StrictlyAdmissible A y) (hs : 1 ≤ x+y) :
-    gap < label a x + label A y := by
-  have hw := h.admissible
-  have hw' := h'.admissible
-  rcases hw.selected with hx | hx | hx <;>
-    rcases hw'.selected with hy | hy | hy
-  · rw [hx,hy]; exact axial_axial_sum_gt hs
-  · rw [hx,hy]; exact axial_side_sum_gt hw' hs
-  · rw [hx,hy,add_comm]; exact cap_axial_sum_gt hw' hs
-  · rw [hx,hy,add_comm]
-    exact axial_side_sum_gt hw (by linarith)
-  · rw [hx,hy]; exact side_side_sum_gt h hw' hs
-  · rw [hx,hy,add_comm]
-    exact cap_side_sum_gt hw' hw (by linarith)
-  · rw [hx,hy]
-    exact cap_axial_sum_gt hw (by linarith)
-  · rw [hx,hy]
-    exact cap_side_sum_gt hw hw' hs
+theorem Equality.opposite_labels_ge {a x A y : ℝ}
+    (h : Admissible a x) (h' : Admissible A y) (hs : 1 ≤ x+y) :
+    gap ≤ label a x+label A y := by
+  rcases h.selected with hx | hx | hx <;> rcases h'.selected with hy | hy | hy
+  · rw [hx,hy]; exact (axial_axial_sum_gt hs).le
+  · rw [hx,hy]; exact (axial_side_sum_gt h' hs).le
+  · rw [hx,hy,add_comm]; exact (cap_axial_sum_gt h' hs).le
+  · rw [hx,hy,add_comm]; exact (axial_side_sum_gt h (by linarith)).le
+  · rw [hx,hy,side_side_sum_identity]
+    linarith [h.remainder_nonneg,h'.remainder_nonneg]
+  · rw [hx,hy,add_comm]; exact (cap_side_sum_gt h' h (by linarith)).le
+  · rw [hx,hy]; exact (cap_axial_sum_gt h (by linarith)).le
+  · rw [hx,hy]; exact (cap_side_sum_gt h h' hs).le
   · rw [hx,hy]
     dsimp [gap]
     linarith [Real.pi_pos]
@@ -86,66 +72,56 @@ lemma signedLabel_nonpos {a b : ℝ} (h : Admissible a |b|) (hb : b < 0) :
   simp only [signedLabel, ite_eq_left hb]
   linarith [h.label_nonneg]
 
-/-- One horizontal-separator alternative for a quarter-turned pair.
-Only the first containment needs to be strict in this orientation. -/
-theorem quarter_difference_of_horizontal {a b A B : ℝ}
-    (h : StrictlyAdmissible a |b|) (h' : Admissible A |B|)
-    (hsep : 1 ≤ a+B) : signedLabel a b - signedLabel A B < Real.pi/6 := by
-  have hw := h.admissible
+/-- One horizontal-separator alternative for a quarter-turned pair. -/
+theorem Equality.quarter_difference_horizontal_le {a b A B : ℝ}
+    (h : Admissible a |b|) (h' : Admissible A |B|)
+    (hsep : 1 ≤ a+B) : signedLabel a b-signedLabel A B ≤ Real.pi/6 := by
   by_cases hB : 0 ≤ B
   · by_cases hb : 0 ≤ b
-    · have hx : Admissible a b := by simpa only [abs_of_nonneg hb] using hw
+    · have hx : Admissible a b := by simpa only [abs_of_nonneg hb] using h
       have hy : Admissible A B := by simpa only [abs_of_nonneg hB] using h'
-      have ht : 3*a+2*b < 4 := by
-        simpa only [abs_of_nonneg hb] using h.tangent
-      simp only [signedLabel, ite_eq_right (not_lt_of_ge hb), ite_eq_right (not_lt_of_ge hB),
-        abs_of_nonneg hb, abs_of_nonneg hB]
+      have ht := hx.tangent
+      simp only [signedLabel,ite_eq_right (not_lt_of_ge hb),ite_eq_right (not_lt_of_ge hB),
+        abs_of_nonneg hb,abs_of_nonneg hB]
       rcases hy.selected with hA | hT | hcap
       · rw [hA]
         have hl := hx.label_le_side
-        dsimp [side, axial] at hl ⊢
+        dsimp [side,axial] at hl ⊢
         linarith
       · rw [hT]
-        have hl := hx.label_le_quarter
-        have hr := side_selected_gt_twelfth hy hT
-        linarith
+        linarith [hx.label_le_quarter,side_selected_gt_twelfth hy hT]
       · rw [hcap]
-        linarith [hx.label_le_quarter, Real.pi_pos]
-    · have hb' : b < 0 := lt_of_not_ge hb
-      have hx := signedLabel_nonpos hw hb'
-      have hy := signedLabel_nonneg h' hB
-      linarith [Real.pi_pos]
+        linarith [hx.label_le_quarter,Real.pi_pos]
+    · linarith [signedLabel_nonpos h (lt_of_not_ge hb),signedLabel_nonneg h' hB,Real.pi_pos]
   · have hB' : B < 0 := lt_of_not_ge hB
     by_cases hb : 0 ≤ b
-    · have hx : Admissible a b := by simpa only [abs_of_nonneg hb] using hw
+    · have hx : Admissible a b := by simpa only [abs_of_nonneg hb] using h
       have hy : Admissible A (-B) := by simpa only [abs_of_neg hB'] using h'
-      have ht : 3*a+2*b < 4 := by
-        simpa only [abs_of_nonneg hb] using h.tangent
       have hl := hx.label_le_side
       have hr := hy.label_le_axial
-      simp only [signedLabel, ite_eq_right (not_lt_of_ge hb), ite_eq_left hB',
-        abs_of_nonneg hb, abs_of_neg hB']
-      dsimp [side, axial] at hl hr
+      have ht := hx.tangent
+      simp only [signedLabel,ite_eq_right (not_lt_of_ge hb),ite_eq_left hB',
+        abs_of_nonneg hb,abs_of_neg hB']
+      dsimp [side,axial] at hl hr
       linarith
-    · have hb' : b < 0 := lt_of_not_ge hb
-      have hx := signedLabel_nonpos hw hb'
+    · have hx := signedLabel_nonpos h (lt_of_not_ge hb)
       have hr := h'.label_le_axial
-      have ha := hw.a_lt_five_fourths
-      simp only [signedLabel, ite_eq_left hB', abs_of_neg hB'] at *
+      have ha := h.a_lt_five_fourths
+      simp only [signedLabel,ite_eq_left hB',abs_of_neg hB'] at *
       dsimp [axial] at hr
       linarith [pi_lower_157]
 
 /-- Either separating coordinate suffices for the quarter-turn label inequality. -/
-theorem quarter_difference_gt {a b A B : ℝ}
-    (h : StrictlyAdmissible a |b|) (h' : StrictlyAdmissible A |B|)
+theorem Equality.quarter_difference_le {a b A B : ℝ}
+    (h : Admissible a |b|) (h' : Admissible A |B|)
     (hsep : 1 ≤ a+B ∨ 1 ≤ A-b) :
-    signedLabel a b - signedLabel A B < Real.pi/6 := by
+    signedLabel a b-signedLabel A B ≤ Real.pi/6 := by
   rcases hsep with hh | hh
-  · exact quarter_difference_of_horizontal h h'.admissible hh
-  · have hrev : StrictlyAdmissible A |(-B)| := by simpa using h'
-    have hrev' : Admissible a |(-b)| := by simpa using h.admissible
-    have hswap := quarter_difference_of_horizontal hrev hrev' (by linarith : 1 ≤ A+-b)
-    rw [signedLabel_neg h'.admissible, signedLabel_neg h.admissible] at hswap
+  · exact quarter_difference_horizontal_le h h' hh
+  · have hh' := quarter_difference_horizontal_le
+      (a := A) (b := -B) (A := a) (B := -b)
+      (by simpa using h') (by simpa using h) (by linarith)
+    rw [signedLabel_neg h',signedLabel_neg h] at hh'
     linarith
 
 end SquaresInCircles.Seven

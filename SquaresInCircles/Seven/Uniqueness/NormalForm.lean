@@ -1,4 +1,4 @@
-import SquaresInCircles.Seven.Optimality
+import SquaresInCircles.Seven.Construction
 import SquaresInCircles.Common.NormalForm
 
 /-!
@@ -10,7 +10,6 @@ with an explicit isometry of the plane. Every sliding normal form is an
 optimal packing.
 -/
 noncomputable section
-open Set
 namespace SquaresInCircles.Seven
 
 /-- `S` has the normal form of some sliding packing. -/

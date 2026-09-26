@@ -38,11 +38,10 @@ used in this development.
 #print axioms SquaresInCircles.three_compensation
 #print axioms SquaresInCircles.near_axis_square_overlap
 
--- Seven squares: the marker arc, the gap of pi/3 and all smaller gaps, the pair
--- theorem for actual squares, six markers, and the sliding packings.
+-- Seven squares: the marker arc, the gap of pi/3, the pair theorem for actual
+-- squares, six markers, and the sliding packings.
 #print axioms SquaresInCircles.Seven.marker_arc
 #print axioms SquaresInCircles.Seven.fixed_gap_pos
-#print axioms SquaresInCircles.Seven.all_gap_support_pos
 #print axioms SquaresInCircles.Seven.SAT.separating_axes
 #print axioms SquaresInCircles.Seven.marker_separation
 #print axioms SquaresInCircles.Seven.six_markers_impossible
@@ -53,7 +52,7 @@ used in this development.
 -- containment, the hexagon, the ring, the square in the middle, and the
 -- classification.
 #print axioms SquaresInCircles.Seven.Equality.fixed_gap_zero
-#print axioms SquaresInCircles.Seven.Equality.all_gap_nonneg
+#print axioms SquaresInCircles.Seven.fixed_gap_nonneg
 #print axioms SquaresInCircles.Seven.Equality.all_gap_pos_below
 #print axioms SquaresInCircles.Seven.Equality.marker_separation_closed
 #print axioms SquaresInCircles.Seven.Equality.ordered_chart_contact

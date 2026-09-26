@@ -1,15 +1,18 @@
 import SquaresInCircles.Seven.CanonicalPair
+import SquaresInCircles.Seven.AllGaps
 import SquaresInCircles.Common.Coordinates
 
 /-!
 # The pair theorem for actual squares
 
 Two disjoint squares that avoid the disk centre, each in the disk of squared
-radius below `13/4`, have markers more than `π/3` apart. A chart with a
-reversed orientation is read as a turned frame with a signed transverse
-coordinate, so each square sits at its state in the frame of its phase and the
-pair is a canonical pair. The sign of the marker difference decides which
-square plays the first role.
+radius `13/4`, have markers at least `π/3` apart, and at exactly `π/3` their
+states form a contact. A chart with a reversed orientation is read as a turned
+frame with a signed transverse coordinate, so each square sits at its state in
+the frame of its phase and the pair is a canonical pair; a separating axis
+gives a nonpositive support sum. The sign of the marker difference decides
+which square plays the first role. Inside the disk of squared radius below
+`13/4` no contact is possible, so the markers are more than `π/3` apart.
 -/
 noncomputable section
 namespace SquaresInCircles.Seven
@@ -29,36 +32,85 @@ lemma chartMarker_formula {S : UnitSquare} {o : Point} (C : SquareChart S o) :
   cases h : C.reversed <;>
     simp [chartMarker,chartAngle,chartSign,h,TransverseSign.coe]
 
-/-- If the marker of `D` is `g ∈ [0, π/3]` ahead of the marker of `C`, and both
-states are strictly admissible, the open squares meet. -/
-theorem close_ordered_charts_overlap {S T : UnitSquare} {o : Point}
-    (C : SquareChart S o) (D : SquareChart T o)
-    (hC : StrictlyAdmissible C.a C.b) (hD : StrictlyAdmissible D.a D.b)
-    {g : ℝ} (hg : 0≤g ∧ g≤gap)
-    (hangle : (g:Direction)=chartMarker D-chartMarker C) :
-    ∃p,openSquare S p ∧ openSquare T p := by
-  let s := chartSign C
-  let t := chartSign D
-  let d := relativePhase C.a C.b D.a D.b g s t
-  have hphase : D.phase-C.phase=(d:Direction) := by
-    have h := hangle
-    rw [chartMarker_formula,chartMarker_formula] at h
-    have he : (g:Direction)+((s.coe*label C.a C.b:ℝ):Direction)-
-        ((t.coe*label D.a D.b:ℝ):Direction)=D.phase-C.phase := by
-      change (g:Direction)+(((chartSign C).coe*label C.a C.b:ℝ):Direction)-
-        (((chartSign D).coe*label D.a D.b:ℝ):Direction)=_
-      rw [h]
+namespace Equality
+
+lemma charts_disjoint_canonical {S T : UnitSquare} {o : Point}
+    (C : SquareChart S o) (D : SquareChart T o) {g : ℝ}
+    (hang : (g : Direction) = chartMarker D-chartMarker C)
+    (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) :
+    CanonicalDisjoint C.a C.b D.a D.b g (chartSign C) (chartSign D) := by
+  let d := relativePhase C.a C.b D.a D.b g (chartSign C) (chartSign D)
+  have hphase : D.phase-C.phase = (d : Direction) := by
+    rw [chartMarker_formula,chartMarker_formula] at hang
+    have he : (g : Direction)+(((chartSign C).coe*label C.a C.b : ℝ) : Direction)-
+        (((chartSign D).coe*label D.a D.b : ℝ) : Direction) = D.phase-C.phase := by
+      rw [hang]
       abel
     simpa only [d,relativePhase,Real.Angle.coe_add,Real.Angle.coe_sub] using he.symm
-  obtain ⟨x,y,hxy,hxy'⟩ := canonical_pair_overlap s t hC hD hg
-  refine ⟨pointInDirection o C.phase x y,?_,?_⟩
+  intro x y hp
+  apply hd (pointInDirection o C.phase x y)
+  constructor
   · apply (C.cartesian x y).mpr
     rw [←chartSign_coordinate C]
-    exact hxy
+    exact hp.1
   · rw [pointInDirection_transition o C.phase D.phase x y]
     apply (D.cartesian _ _).mpr
     rw [hphase,Real.Angle.cos_coe,Real.Angle.sin_coe,←chartSign_coordinate D]
-    exact hxy'
+    exact hp.2
+
+lemma ordered_gap_not_below {S T : UnitSquare} {o : Point}
+    (C : SquareChart S o) (D : SquareChart T o)
+    (hC : Admissible C.a C.b) (hD : Admissible D.a D.b)
+    {g : ℝ} (hg : 0 ≤ g ∧ g < gap)
+    (hang : (g : Direction) = chartMarker D-chartMarker C)
+    (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) : False := by
+  have hcan := charts_disjoint_canonical C D hang hd
+  rcases canonical_has_separator (chartSign C) (chartSign D) hcan with ⟨k,hk⟩ | ⟨k,hk⟩
+  · exact (not_le_of_gt (all_gap_pos_below (chartSign C) (chartSign D) k hC hD hg)) hk
+  · exact (not_le_of_gt (all_gap_pos_below (chartSign D).flip (chartSign C).flip k hD hC hg)) hk
+
+/-- The pair theorem at the optimal radius: disjoint exterior squares with
+admissible states have markers at least `π/3` apart. -/
+theorem marker_separation_closed {S T : UnitSquare} {o : Point}
+    (C : SquareChart S o) (D : SquareChart T o)
+    (hC : Admissible C.a C.b) (hD : Admissible D.a D.b)
+    (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) :
+    gap ≤ dist (chartMarker C) (chartMarker D) := by
+  by_contra hn
+  have hdist : dist (chartMarker C) (chartMarker D) < gap := lt_of_not_ge hn
+  let g := (chartMarker D-chartMarker C).toReal
+  have hg : |g| < gap := by
+    have he : dist (chartMarker C) (chartMarker D) = |g| := by
+      rw [dist_comm,direction_dist]
+    rwa [he] at hdist
+  have hang : (g : Direction) = chartMarker D-chartMarker C := Real.Angle.coe_toReal _
+  by_cases hpos : 0 ≤ g
+  · exact ordered_gap_not_below C D hC hD
+      ⟨hpos,by simpa [abs_of_nonneg hpos] using hg⟩ hang hd
+  · have hrev : ((-g : ℝ) : Direction) = chartMarker C-chartMarker D := by
+      rw [Real.Angle.coe_neg,hang]
+      abel
+    exact ordered_gap_not_below D C hD hC
+      ⟨by linarith,by simpa [abs_of_neg (lt_of_not_ge hpos)] using hg⟩ hrev
+      (fun p hp => hd p ⟨hp.2,hp.1⟩)
+
+/-- Disjoint exterior squares with admissible states, the marker of `D`
+exactly `π/3` ahead of that of `C`, are a contact. -/
+theorem ordered_chart_contact {S T : UnitSquare} {o : Point}
+    (C : SquareChart S o) (D : SquareChart T o)
+    (hC : Admissible C.a C.b) (hD : Admissible D.a D.b)
+    (hang : (gap : Direction) = chartMarker D-chartMarker C)
+    (hd : ∀ p, ¬ (openSquare S p ∧ openSquare T p)) :
+    OrderedContact C.a C.b D.a D.b (chartSign C) (chartSign D) := by
+  have hcan := charts_disjoint_canonical C D hang hd
+  rcases canonical_has_separator (chartSign C) (chartSign D) hcan with ⟨k,hk⟩ | ⟨k,hk⟩
+  · have hz := le_antisymm hk (fixed_gap_nonneg (chartSign C) (chartSign D) k hC hD)
+    exact fixed_gap_zero (chartSign C) (chartSign D) k hC hD hz
+  · have hz := le_antisymm hk (fixed_gap_nonneg (chartSign D).flip (chartSign C).flip k hD hC)
+    exact reflected_reverse_contact
+      (fixed_gap_zero (chartSign D).flip (chartSign C).flip k hD hC hz)
+
+end Equality
 
 /-- The pair theorem: disjoint exterior squares in a disk of squared radius
 below `13/4` have markers more than `π/3` apart. The frames and positions of
@@ -73,25 +125,21 @@ theorem marker_separation {S T : UnitSquare} {o : Point}
     gap < dist (chartMarker C) (chartMarker D) := by
   have hC := chart_strictlyAdmissible C hsortC hextC hphiC
   have hD := chart_strictlyAdmissible D hsortD hextD hphiD
-  by_contra hn
-  have hdist : dist (chartMarker C) (chartMarker D)≤gap := le_of_not_gt hn
+  refine (Equality.marker_separation_closed C D hC.admissible hD.admissible hdisj).lt_of_ne
+    fun heq => ?_
   let d : ℝ := (chartMarker D-chartMarker C).toReal
-  have hdabs : |d|≤gap := by
-    have he : dist (chartMarker C) (chartMarker D)=|d| := by
-      rw [dist_comm,direction_dist]
-    simpa only [he] using hdist
-  have hdangle : (d:Direction)=chartMarker D-chartMarker C :=
-    Real.Angle.coe_toReal _
+  have hdangle : (d:Direction)=chartMarker D-chartMarker C := Real.Angle.coe_toReal _
+  have hdabs : |d|=gap := by rw [heq,dist_comm,direction_dist]
   by_cases hd : 0≤d
-  · have hdu : d≤gap := by rw [abs_of_nonneg hd] at hdabs; exact hdabs
-    obtain ⟨p,hp,hp'⟩ := close_ordered_charts_overlap C D hC hD ⟨hd,hdu⟩ hdangle
-    exact hdisj p ⟨hp,hp'⟩
-  · have hd' : 0≤-d := by linarith
-    have hdu : -d≤gap := by rw [abs_of_neg (lt_of_not_ge hd)] at hdabs; exact hdabs
-    have hang : ((-d:ℝ):Direction)=chartMarker C-chartMarker D := by
-      rw [Real.Angle.coe_neg,hdangle]
+  · rw [abs_of_nonneg hd] at hdabs
+    rw [hdabs] at hdangle
+    exact Equality.contact_not_strict
+      (Equality.ordered_chart_contact C D hC.admissible hD.admissible hdangle hdisj) hC hD
+  · rw [abs_of_neg (lt_of_not_ge hd)] at hdabs
+    have hang : (gap:Direction)=chartMarker C-chartMarker D := by
+      rw [← hdabs,Real.Angle.coe_neg,hdangle]
       abel
-    obtain ⟨p,hp,hp'⟩ := close_ordered_charts_overlap D C hD hC ⟨hd',hdu⟩ hang
-    exact hdisj p ⟨hp',hp⟩
+    exact Equality.contact_not_strict (Equality.ordered_chart_contact D C hD.admissible
+      hC.admissible hang (fun p hp => hdisj p ⟨hp.2,hp.1⟩)) hD hC
 
 end SquaresInCircles.Seven

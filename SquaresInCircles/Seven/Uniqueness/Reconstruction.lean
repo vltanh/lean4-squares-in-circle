@@ -1,6 +1,8 @@
 import SquaresInCircles.Seven.Uniqueness.ContactCycle
+import SquaresInCircles.Seven.Uniqueness.SevenMarkers
 import SquaresInCircles.Seven.Uniqueness.CentralSquare
 import SquaresInCircles.Seven.Uniqueness.Slots
+import SquaresInCircles.Seven.ExteriorSelection
 
 /-!
 # Reconstruction

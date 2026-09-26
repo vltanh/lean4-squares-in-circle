@@ -1,4 +1,5 @@
-import SquaresInCircles.Seven.SmallAndParallelGaps
+import SquaresInCircles.Seven.AngularMinima
+import SquaresInCircles.Seven.SectorBounds
 
 /-!
 # Smooth minima

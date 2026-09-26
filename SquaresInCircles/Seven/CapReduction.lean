@@ -1,12 +1,13 @@
-import SquaresInCircles.Seven.SectorBounds
+import SquaresInCircles.Seven.Contacts
 
 /-!
 # Capped labels
 
 Where the label is `π/4` the support sums are affine in the state, and the
-capped region is a triangle whose vertices are strictly admissible ties. So a
-support sum at a capped state is a convex combination of its values at active
-states, and nonnegativity and strict positivity both pass over.
+capped region is a triangle whose vertices are admissible ties. So a support
+sum at a capped state is a convex combination of its values at the vertices,
+and at least one of them. Nonnegativity passes over, and a zero would pass to
+a vertex as a contact with a capped label, which does not exist.
 -/
 noncomputable section
 open scoped BigOperators
@@ -39,13 +40,13 @@ lemma cap_constraints {a u : ℝ} (h : Admissible a u)
   dsimp [axial,side] at hA hT
   constructor <;> linarith
 
-lemma capVertex_strict (i : Fin 3) :
-    StrictlyAdmissible (capVertex i).1 (capVertex i).2 := by
+lemma capVertex_admissible (i : Fin 3) :
+    Admissible (capVertex i).1 (capVertex i).2 := by
   have hp0 := pi_lower_157
   have hp1 := pi_lt_22_over_7
   have hr (a u : ℝ) (ha0 : 1/2 ≤ a) (hu0 : 0 ≤ u)
       (hau : u ≤ a) (ha1 : a < 193/250) (hu1 : u < 193/250) :
-      StrictlyAdmissible a u := by
+      Admissible a u := by
     refine ⟨hu0,hau,ha0,?_⟩
     have hA := mul_nonneg (show 0 ≤ 193/250-a by linarith)
       (show 0 ≤ 193/250+a+1 by linarith)
@@ -109,16 +110,6 @@ lemma capWeights_center (a u : ℝ) :
     simp [capWeights,capVertex,Fin.sum_univ_succ] <;>
     field_simp [hD] <;> dsimp [capDen] <;> ring
 
-lemma capWeights_some_pos {a u : ℝ} (h : Admissible a u)
-    (hcap : label a u = Real.pi/4) : ∃ i,0 < capWeights a u i := by
-  by_contra hn
-  push Not at hn
-  have he (i : Fin 3) : capWeights a u i = 0 :=
-    le_antisymm (hn i) (capWeights_nonneg h hcap i)
-  have hs := capWeights_sum a u
-  simp only [he,Finset.sum_const_zero] at hs
-  norm_num at hs
-
 lemma support_barycentric (w x y : Fin 3 → ℝ) (hw : ∑ i,w i=1) (c z : ℝ) :
     support (∑ i,w i*x i) (c*∑ i,w i*y i) z =
       ∑ i,w i*support (x i) (c*y i) z := by
@@ -158,49 +149,52 @@ lemma cap_pair_second {A v : ℝ} (hcap : label A v = Real.pi/4)
   simp only [pairSupport,hcap,capVertex_label,Fin.sum_univ_three] at hm hc ⊢
   nlinarith [hm,hc]
 
-private lemma cap_weighted_pos {a u : ℝ} (h : Admissible a u)
-    (hcap : label a u = Real.pi/4) (f : Fin 3 → ℝ) (hf : ∀ i,0 < f i) :
-    0 < ∑ i,capWeights a u i*f i := by
-  obtain ⟨i,hi⟩ := capWeights_some_pos h hcap
-  have hterm := mul_pos hi (hf i)
-  apply hterm.trans_le
-  exact Finset.single_le_sum
-    (fun j _ => mul_nonneg (capWeights_nonneg h hcap j) (hf j).le)
-    (Finset.mem_univ i)
+/-- A convex combination of three values is at least one of them. -/
+lemma exists_le_weighted_sum {w f : Fin 3 → ℝ} (hw : ∀ i,0 ≤ w i) (hs : ∑ i,w i = 1) :
+    ∃ i,f i ≤ ∑ j,w j*f j := by
+  obtain ⟨i,-,hi⟩ := Finset.exists_min_image Finset.univ f Finset.univ_nonempty
+  refine ⟨i,?_⟩
+  calc f i = ∑ j,w j*f i := by rw [← Finset.sum_mul,hs,one_mul]
+    _ ≤ ∑ j,w j*f j := Finset.sum_le_sum fun j _ =>
+      mul_le_mul_of_nonneg_left (hi j (Finset.mem_univ j)) (hw j)
 
-/-- The exact support assertion propagated through a capped state. -/
+/-- The support assertion at the gap `π/3`: nonnegative, and zero only at a
+contact. -/
 def PairProperty (a u A v : ℝ) (s t : TransverseSign) (k : Fin 4) : Prop :=
   0 ≤ pairSupport a u A v s t k gap ∧
-    (StrictlyAdmissible a u → StrictlyAdmissible A v →
-      0 < pairSupport a u A v s t k gap)
+    (pairSupport a u A v s t k gap = 0 → Equality.OrderedContact a u A v s t)
+
+lemma PairProperty.of_pos {a u A v : ℝ} {s t : TransverseSign} {k : Fin 4}
+    (hp : 0 < pairSupport a u A v s t k gap) : PairProperty a u A v s t k :=
+  ⟨hp.le,fun hz => absurd hz hp.ne'⟩
 
 lemma pairProperty_cap_first {a u A v : ℝ}
-    (h : Admissible a u) (hcap : label a u = Real.pi/4)
+    (h : Admissible a u) (h' : Admissible A v) (hcap : label a u = Real.pi/4)
     (s t : TransverseSign) (k : Fin 4)
     (hv : ∀ i,PairProperty (capVertex i).1 (capVertex i).2 A v s t k) :
     PairProperty a u A v s t k := by
-  constructor
-  · rw [cap_pair_first hcap]
-    exact Finset.sum_nonneg (fun i _ =>
-      mul_nonneg (capWeights_nonneg h hcap i) (hv i).1)
-  · intro ha hb
-    rw [cap_pair_first hcap]
-    exact cap_weighted_pos h hcap _
-      (fun i => (hv i).2 (capVertex_strict i) hb)
+  obtain ⟨i,hi⟩ := exists_le_weighted_sum
+    (f := fun i => pairSupport (capVertex i).1 (capVertex i).2 A v s t k gap)
+    (capWeights_nonneg h hcap) (capWeights_sum a u)
+  rw [← cap_pair_first hcap] at hi
+  refine ⟨(hv i).1.trans hi,fun hz => ?_⟩
+  have hc := (hv i).2 (le_antisymm (hi.trans hz.le) (hv i).1)
+  exact absurd (capVertex_label i)
+    (Equality.contact_label_not_cap (capVertex_admissible i) h' hc).1
 
 lemma pairProperty_cap_second {a u A v : ℝ}
-    (h : Admissible A v) (hcap : label A v = Real.pi/4)
+    (h : Admissible a u) (h' : Admissible A v) (hcap : label A v = Real.pi/4)
     (s t : TransverseSign) (k : Fin 4)
     (hv : ∀ i,PairProperty a u (capVertex i).1 (capVertex i).2 s t k) :
     PairProperty a u A v s t k := by
-  constructor
-  · rw [cap_pair_second hcap]
-    exact Finset.sum_nonneg (fun i _ =>
-      mul_nonneg (capWeights_nonneg h hcap i) (hv i).1)
-  · intro ha hb
-    rw [cap_pair_second hcap]
-    exact cap_weighted_pos h hcap _
-      (fun i => (hv i).2 ha (capVertex_strict i))
+  obtain ⟨i,hi⟩ := exists_le_weighted_sum
+    (f := fun i => pairSupport a u (capVertex i).1 (capVertex i).2 s t k gap)
+    (capWeights_nonneg h' hcap) (capWeights_sum A v)
+  rw [← cap_pair_second hcap] at hi
+  refine ⟨(hv i).1.trans hi,fun hz => ?_⟩
+  have hc := (hv i).2 (le_antisymm (hi.trans hz.le) (hv i).1)
+  exact absurd (capVertex_label i)
+    (Equality.contact_label_not_cap h (capVertex_admissible i) hc).2
 
 /-- It is enough to prove the support property for active labels. -/
 theorem fixed_gap_of_active_cases
@@ -215,15 +209,15 @@ theorem fixed_gap_of_active_cases
     rcases hb.selected with hA | hT | hcap
     · exact H a u A v s t k ha hb hact (Or.inl hA)
     · exact H a u A v s t k ha hb hact (Or.inr hT)
-    · exact pairProperty_cap_second hb hcap s t k (fun i =>
+    · exact pairProperty_cap_second ha hb hcap s t k (fun i =>
         H a u (capVertex i).1 (capVertex i).2 s t k ha
-          (capVertex_strict i).admissible hact (capVertex_active i))
+          (capVertex_admissible i) hact (capVertex_active i))
   intro a u A v s t k ha hb
   rcases ha.selected with hA | hT | hcap
   · exact target a u A v s t k ha hb (Or.inl hA)
   · exact target a u A v s t k ha hb (Or.inr hT)
-  · exact pairProperty_cap_first ha hcap s t k (fun i =>
+  · exact pairProperty_cap_first ha hb hcap s t k (fun i =>
       target (capVertex i).1 (capVertex i).2 A v s t k
-        (capVertex_strict i).admissible hb (capVertex_active i))
+        (capVertex_admissible i) hb (capVertex_active i))
 
 end SquaresInCircles.Seven

@@ -1,5 +1,6 @@
-import SquaresInCircles.Seven.InwardSideAxial
+import SquaresInCircles.Seven.InwardTurnBounds
 import SquaresInCircles.Seven.AxialProfile
+import SquaresInCircles.Seven.Contacts
 
 /-!
 # The inward axis, positive signs, two axial labels
@@ -12,15 +13,10 @@ namespace SquaresInCircles.Seven
 
 lemma axial_remainder_pos {a u : ℝ} (h : Admissible a u)
     (hA : label a u = axial u) : 0 < remainder a u := by
-  have hw := h.remainder_nonneg
-  by_contra hn
-  have hzero : remainder a u = 0 := by linarith
-  have hid := remainder_identity a u
-  have hslack := h.slack_nonneg
-  have ha : a = 1 := by nlinarith [sq_nonneg (u-1/2)]
-  have hu : u = 1/2 := by nlinarith [sq_nonneg (a-1)]
+  refine h.remainder_nonneg.lt_of_ne fun hz => ?_
+  have hc := Equality.remainder_zero h hz.symm
   have hle := h.label_le_side
-  rw [hA,ha,hu] at hle
+  rw [hA,hc.1,hc.2] at hle
   dsimp [axial,side] at hle
   linarith [pi_lt_22_over_7]
 
