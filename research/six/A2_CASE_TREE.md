@@ -553,19 +553,39 @@ P12/P14/P16 D-secondary chain stresses remain separately concave after
 enlarging their S-angle interval to [-2/5,1/6].  The exact extension checker
 has worst endpoint margin greater than 0.0074216.
 
-Therefore the only remaining small-s branch is
+The only remaining nonnegative-w small-s branch at this point is
 
     R22-c:
       D--S=S-secondary, 0<=w<=d.
 
-The exact adjacent-pair source checker then removes every alternate W--N and
-S--E source.  It is enough to keep only
+The exact adjacent-pair source checker removes every alternate W--N and S--E
+source, leaving only
 
     W--N in {W-primary,N-secondary},
     S--E in {S-primary,E-secondary}.
 
-Thus R22-c now consists of four equality-source graphs per central pattern,
-all sharing the same committed tangent-coercivity estimate.
+The factorized stress then splits as
+
+    Phi = A_u(n,w)+B_v(e,s)+D(w,s,eps).
+
+The exact N/W envelope checker proves
+
+    A_u(n,w) >= A_Wp(0,w),
+
+and the exact E/S envelope checker proves, for both patterns 12 and 13,
+
+    B_v(e,s) >= B_Sp(0,s),   s<=0,
+    B_v(e,s) >= B_Es(0,s),   s>=0.
+
+The already-certified reduced monotonicity then forces w=s=0, where the
+remaining diagonal defect is
+
+    2m(d_*-1/sqrt(2))(1-cos eps) >= 0.
+
+Therefore **R22-c is closed exactly** for all four equality-source graphs in
+both central patterns.  See `check_A2_R22c_NW_envelope.py`,
+`check_A2_R22c_ES_envelope.py`, and
+`check_A2_R22c_reduced_monotonicity.py`.
 
 ### A22- : w < 0
 
@@ -592,11 +612,9 @@ What the structural-first pass has established is nevertheless useful:
 
 - the nine patterns split disjointly as `4 + 3 + 2`;
 - A2.2 on `w>=0, s>=1/6` is completely closed by S1--S2 plus P11--P16;
-- the only A2.2 residuals are now `R22-c` (nonnegative w but small s) and
-  `R22-d` (negative w);
+- the nonnegative-w small-s family `R22-c` is now exactly closed;
+- the only remaining A2.2 residual family is `R22-d` (negative w);
 - A2.1 and A2.3 residuals are now explicit rather than hidden behind a guessed
   global stress family.
 
-The next structural priority is `R22-c`: understand the small-s branch
-without assuming a false lower bound.  After that, refine the negative-w
-family `R22-d`.
+The next structural priority is the negative-w family `R22-d`.
