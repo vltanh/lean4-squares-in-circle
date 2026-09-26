@@ -359,14 +359,83 @@ Therefore on A22+L,
 
     D--S in {D-secondary,S-secondary}.             (S1-axis)
 
-##### Remaining A22+L leaf
+##### Structural lemma S2: D-secondary forces w <= 1/5
 
-After S1, the only open large-s / nonnegative-w leaf is
+Assume instead that D--S uses D-secondary.  If `w>1/5`, put again
 
-    R22-b: D--S = D-secondary and w > 1/5.
+    delta=d-w,     t=d-s.
 
-The S-secondary branch and the D-secondary branch with `w<=1/5` are already
-terminal by P11--P16.
+Since `w>1/5` and `d<=pi/4`,
+
+    0<=delta<pi/4-1/5<59/100.                      (S2-range)
+
+From the W-secondary D--W separation (S1-DW),
+
+    b_D
+      > [H(delta)-B-a_D sin delta]/cos delta
+      >= [H(delta)-B-rho0 sin delta]/cos delta.    (S2-bD)
+
+The signed D--S difference on D-secondary is
+
+    Y=a_S cos t+b_S sin t-b_D.
+
+Its negative side is harmless because `Y>-2B>-1>-H(t)`.
+
+For the upper side, using `a_S<=rho0`, `b_S<B`, and (S2-bD),
+
+    Y-H(t)
+      < A(t)-N(delta)/cos delta,
+
+where
+
+    A(t)
+      =(rho0-1/2)cos t+(B-1/2)sin t-1/2,
+
+    N(delta)
+      =H(delta)-B-rho0 sin delta.
+
+Since `B<1/2`, `cos t<=1`, and `rho0<28/25`,
+
+    A(t) < 3/25.                                   (S2-A)
+
+On `0<=delta<59/100`, elementary Taylor bounds give
+
+    cos delta > 83/100,
+    sin delta < 14/25.
+
+Therefore
+
+    N(delta)-(3/25)cos delta
+      = 4/125 +(19/50)cos delta
+        -(rho0-1/2)sin delta
+
+      > 4/125 +(19/50)(83/100)
+        -(31/50)(14/25)
+
+      = 1/5000 > 0.                                (S2-N)
+
+Thus `N(delta)/cos delta>3/25`, contradicting (S2-A).
+So D-secondary separation is impossible whenever `w>1/5`.
+
+Hence on A22+L the D-secondary branch automatically has
+
+    0 <= w <= 1/5,
+
+and is terminal by P16/P14/P12.
+
+##### Consequence for A22+L
+
+Combining S1 and S2, **every** branch with
+
+    w>=0,    s>=1/6
+
+is now closed:
+
+- S-primary and D-primary are structurally impossible (S1);
+- D-secondary forces `w<=1/5` (S2), then P16/P14/P12 apply;
+- S-secondary is terminal by P16/P15/P11.
+
+No A22+L residual remains.
 
 #### A22+S : s < 1/6
 
@@ -402,14 +471,12 @@ eliminated by pure separator/cap/marker geometry alone**.
 What the structural-first pass has established is nevertheless useful:
 
 - the nine patterns split disjointly as `4 + 3 + 2`;
-- A2.2 on `w>=0, s>=1/6` is almost completely funneled into P11--P16;
-- the only nonnegative-w / large-s A2.2 residuals are `R22-a` and `R22-b`;
-- the additional A2.2 residuals are exactly `R22-c` (small s) and
+- A2.2 on `w>=0, s>=1/6` is completely closed by S1--S2 plus P11--P16;
+- the only A2.2 residuals are now `R22-c` (nonnegative w but small s) and
   `R22-d` (negative w);
 - A2.1 and A2.3 residuals are now explicit rather than hidden behind a guessed
   global stress family.
 
-The next structural priority is `R22-a`: try to exclude the two D--S primary
-source axes. Then attack `R22-b` by proving D-secondary forces
-`w<=1/5` or by placing that leaf in an already-proved non-stress terminal
-theorem. Only after those should `R22-c` and `R22-d` be revisited.
+The next structural priority is `R22-c`: understand the small-s branch
+without assuming a false lower bound.  After that, refine the negative-w
+family `R22-d`.
