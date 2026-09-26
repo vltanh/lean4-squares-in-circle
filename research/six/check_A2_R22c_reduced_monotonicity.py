@@ -156,55 +156,60 @@ def parts(lo,hi,step):
         y=min(x+step,hi); out.append((x,y)); x=y
     return out
 
-# Pair-envelope derivative bounds.
-AP=parts(0,F(157,200),F(1,400)); AP.append((F(157,200),PI.hi/4))
-loA=min(a_der(a,b).lo for a,b in AP)
-assert loA>-F(29,100)
-print("a'(w) >",float(loA))
+def main():
+    # Pair-envelope derivative bounds.
+    AP=parts(0,F(157,200),F(1,400)); AP.append((F(157,200),PI.hi/4))
+    loA=min(a_der(a,b).lo for a,b in AP)
+    assert loA>-F(29,100)
+    print("a'(w) >",float(loA))
+    
+    BN=parts(-F(2,5),0,F(1,400))
+    hiBN=max(bneg_der(a,b).hi for a,b in BN)
+    assert hiBN<F(2,5)
+    print("b_-'(s) <",float(hiBN))
+    
+    BP=parts(0,F(1,6),F(1,400))
+    loBP=min(bpos_der(a,b).lo for a,b in BP)
+    assert loBP>1
+    print("b_+'(s) >",float(loBP))
+    
+    # D support branch ranges.
+    # If D is on the cap branch then |delta|<31/100:
+    # R>5/3 makes 1/(2R)<3/10, while sin(31/100)>3/10.
+    # If D is on the vertex branch then delta<-5/17:
+    # positive delta is <1/5, while vertex requires |sin delta|>5/17.
+    Bcap=parts(-F(1,12),F(3,5),F(1,50))
+    Dcap=parts(-F(31,100),F(1,5),F(1,50))
+    loW=F(10); loS=F(10); hiS=-F(10)
+    for ba,bb in Bcap:
+        for da,db in Dcap:
+            zw=Dcap_dir(ba,bb,da,db,F(1,2),-F(1,2))
+            zs=Dcap_dir(ba,bb,da,db,-F(1,2),-F(1,2))
+            loW=min(loW,zw.lo); loS=min(loS,zs.lo); hiS=max(hiS,zs.hi)
+    assert loW>F(29,100) and loS>-F(19,20) and hiS<-F(1,2)
+    print("cap D_w >",float(loW),"D_s in",float(loS),float(hiS))
+    
+    Bv=parts(-F(1,12),F(3,5),F(1,200))
+    Dv=parts(-F(3,5),-F(5,17),F(1,200))
+    loW=F(10)
+    for ba,bb in Bv:
+        for da,db in Dv:
+            loW=min(loW,Dvert_dir(ba,bb,da,db,F(1,2),-F(1,2)).lo)
+    assert loW>F(29,100)
+    print("vertex D_w >",float(loW))
+    
+    Bv2=parts(-F(1,12),F(3,5),F(1,50))
+    Dv2=parts(-F(3,5),-F(5,17),F(1,50))
+    loS=F(10); hiS=-F(10)
+    for ba,bb in Bv2:
+        for da,db in Dv2:
+            z=Dvert_dir(ba,bb,da,db,-F(1,2),-F(1,2))
+            loS=min(loS,z.lo); hiS=max(hiS,z.hi)
+    assert loS>-F(19,20) and hiS<-F(1,2)
+    print("vertex D_s in",float(loS),float(hiS))
+    
+    print("A2.2 R22-c reduced monotonicity: PASS")
+    
 
-BN=parts(-F(2,5),0,F(1,400))
-hiBN=max(bneg_der(a,b).hi for a,b in BN)
-assert hiBN<F(2,5)
-print("b_-'(s) <",float(hiBN))
-
-BP=parts(0,F(1,6),F(1,400))
-loBP=min(bpos_der(a,b).lo for a,b in BP)
-assert loBP>1
-print("b_+'(s) >",float(loBP))
-
-# D support branch ranges.
-# If D is on the cap branch then |delta|<31/100:
-# R>5/3 makes 1/(2R)<3/10, while sin(31/100)>3/10.
-# If D is on the vertex branch then delta<-5/17:
-# positive delta is <1/5, while vertex requires |sin delta|>5/17.
-Bcap=parts(-F(1,12),F(3,5),F(1,50))
-Dcap=parts(-F(31,100),F(1,5),F(1,50))
-loW=F(10); loS=F(10); hiS=-F(10)
-for ba,bb in Bcap:
-    for da,db in Dcap:
-        zw=Dcap_dir(ba,bb,da,db,F(1,2),-F(1,2))
-        zs=Dcap_dir(ba,bb,da,db,-F(1,2),-F(1,2))
-        loW=min(loW,zw.lo); loS=min(loS,zs.lo); hiS=max(hiS,zs.hi)
-assert loW>F(29,100) and loS>-F(19,20) and hiS<-F(1,2)
-print("cap D_w >",float(loW),"D_s in",float(loS),float(hiS))
-
-Bv=parts(-F(1,12),F(3,5),F(1,200))
-Dv=parts(-F(3,5),-F(5,17),F(1,200))
-loW=F(10)
-for ba,bb in Bv:
-    for da,db in Dv:
-        loW=min(loW,Dvert_dir(ba,bb,da,db,F(1,2),-F(1,2)).lo)
-assert loW>F(29,100)
-print("vertex D_w >",float(loW))
-
-Bv2=parts(-F(1,12),F(3,5),F(1,50))
-Dv2=parts(-F(3,5),-F(5,17),F(1,50))
-loS=F(10); hiS=-F(10)
-for ba,bb in Bv2:
-    for da,db in Dv2:
-        z=Dvert_dir(ba,bb,da,db,-F(1,2),-F(1,2))
-        loS=min(loS,z.lo); hiS=max(hiS,z.hi)
-assert loS>-F(19,20) and hiS<-F(1,2)
-print("vertex D_s in",float(loS),float(hiS))
-
-print("A2.2 R22-c reduced monotonicity: PASS")
+if __name__ == "__main__":
+    main()
