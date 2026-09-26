@@ -49,11 +49,11 @@ def atan_inv(m,n):
 PI=16*atan_inv(5,28)-4*atan_inv(239,8)
 
 def sin_pos_pt(x:F,n=14):
-    assert 0<=x<=1
+    assert 0<=x<=F(3,2)
     z=[(F(-1) if k&1 else F(1))*x**(2*k+1)/F(factorial(2*k+1)) for k in range(n+2)]
     a=sum(z[:n+1],F(0)); b=a+z[n+1]; return I(min(a,b),max(a,b))
 def cos_pos_pt(x:F,n=14):
-    assert 0<=x<=1
+    assert 0<=x<=F(3,2)
     z=[(F(-1) if k&1 else F(1))*x**(2*k)/F(factorial(2*k)) for k in range(n+2)]
     a=sum(z[:n+1],F(0)); b=a+z[n+1]; return I(min(a,b),max(a,b))
 def sin_pt(x): return sin_pos_pt(x) if x>=0 else -sin_pos_pt(-x)
