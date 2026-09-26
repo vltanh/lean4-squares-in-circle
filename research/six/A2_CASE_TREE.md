@@ -547,14 +547,16 @@ The small-s residual is first reduced structurally to
 
 The D-primary branch is then excluded by the two-edge hand stress
 `A2.2 hand lemma — the small-s D-primary branch` in `A2.md`.
-Therefore the only remaining R22-c cases are
+
+The D-secondary branch is also closed without a new stress: the existing
+P12/P14/P16 D-secondary chain stresses remain separately concave after
+enlarging their S-angle interval to [-2/5,1/6].  The exact extension checker
+has worst endpoint margin greater than 0.0074216.
+
+Therefore the only remaining small-s branch is
 
     R22-c:
-      D--S=S-secondary, 0<=w<=d,
-
-or
-
-      D--S=D-secondary, 0<=w<=1/5.
+      D--S=S-secondary, 0<=w<=d.
 
 All W--N and S--E source axes are still allowed at this stage.
 
