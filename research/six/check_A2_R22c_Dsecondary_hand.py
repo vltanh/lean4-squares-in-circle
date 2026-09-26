@@ -192,14 +192,14 @@ def test(D,label,ns_by_src,ws_by_src):
             if best is None or row[0]<best[0]: best=row
 
 test(LOW,'low',
-     lambda src: pts if src=='Np' else [F(-1,5),F(1,5)],
+     lambda src: LOW_N_PTS if src=='Np' else [F(-1,5),F(1,5)],
      lambda src: [F(0),F(1,5)])
 test(HIGH,'high',
      lambda src: [F(1,5),F(2,5)],
      lambda src: [F(0),F(1,20),F(1,10),F(3,20),F(1,5)] if src=='Ws' else [F(0),F(1,5)])
 test(NEG,'neg',
      lambda src: [F(-2,5)] if src=='Np' else
-                 ([-F(2,5),-F(7,20),-F(3,10),-F(1,4),-F(1,5)] if src=='Ns' else [F(-2,5),F(-1,5)]),
+                 (NEG_NS_PTS if src=='Ns' else [F(-2,5),F(-1,5)]),
      lambda src: [F(0),F(1,5)])
 
 assert best[0]>F(7,1000),best
