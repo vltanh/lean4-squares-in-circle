@@ -137,9 +137,16 @@ Do not compile continuously while developing the mathematics.
 6. Commit after each completed lemma.
 7. Report progress by roadmap label: A1, A2, B1, B2, B3, C1, C2, C3, D, E.
 8. Do not work on uniqueness or Lean until D is closed.
+9. **A2 structural-first gate:** do not introduce or optimize any new stress lemma until a complete structural case tree for all nine forbidden central patterns has been written. Existing stresses P9--P18 may be used only after the structural argument has placed a branch inside their stated domains. A new stress is permitted only if the structural case tree exhibits an explicit feasible residual configuration outside every existing hand domain.
 
 ## Immediate task
 
-**A2 only: collapse the remaining central-separator patterns.**
+**A2 only: write the complete structural case tree for the nine forbidden central patterns**
+
+    10, 12, 13, 14, 26, 28, 29, 30, 31.
+
+For each pattern, use only separator logic, angle/cap bounds, marker/order constraints, moving pins, local rigidity, and already-proved structural lemmas to determine which branches are impossible and which land in an existing hand certificate.
+
+Do **not** create another stress lemma during this task.
 
 Do not move to Phase B until A2 is proved or one of its proposed implications is replaced by the precise correct statement.
