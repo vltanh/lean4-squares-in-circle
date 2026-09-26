@@ -222,15 +222,151 @@ Again the whole n-range is terminal:
     -1/5 <= n <= 1/5    -> P14,
      1/5 <= n < 3/10    -> P12.
 
-##### Remaining A22+L leaves
+##### Structural lemma S1: D--S primary axes are impossible
 
-Only these remain open:
+On A22+L, neither D-primary nor S-primary can separate D from S.  This is a
+direct projection argument; no new stress is used.
 
-    R22-a: D--S is D-primary or S-primary;
+Put
+
+    t=d-s,     delta=d-w,
+    H(q)=(1+cos q+sin q)/2,
+    B=117/250,     a0=177/200.
+
+From (A22+) and `1/6<=s<2/5`,
+
+    27/200 < t < 5/8,      0<=delta<=pi/4.         (S1-range)
+
+The first inequality uses `pi>157/50`; the second uses `pi<19/6`.
+Also `rho0<28/25`.
+
+For the forced W-secondary D--W separator, let
+
+    z(q)=a_D sin q+b_D cos q.
+
+The fixed W/D pins determine the orientation of this separator: the D pin has
+larger W-secondary projection because the W-to-D pin chord points at 285
+degrees, while W-secondary has angle `270 degrees+w`.  Therefore
+
+    z(delta)-b_W > H(delta).
+
+Since `b_W>-B`,
+
+    z(delta)>H(delta)-B.                           (S1-DW)
+
+**S-primary.**  The signed D--S center difference on S-primary is
+
+    U=a_S-z(t).
+
+Its negative side is harmless:
+
+    z(t)<rho0 sin t+B cos t<57/50,
+
+so `U>-51/200>-H(t)`.
+
+For the positive side put `u=s-w`, so `delta=t+u`.
+
+- If `u<=0`, then `t>=delta`.  The function z is increasing on
+  `[0,pi/4]`, since
+  `z'(q)>=a0 cos q-B sin q>(a0-B)/sqrt(2)>0`.
+  Hence `z(t)>1-B=133/250`, and
+  `U<28/25-133/250<1<H(t)`.
+
+- If `u>0`, solve (S1-DW) for `b_D` and substitute at t:
+
+      z(t)
+        > [cos t (H(delta)-B)-rho0 sin u]/cos delta.
+
+  On `[0,pi/4]`, `H(q)>=1+q/4`.  Using
+  `cos t>81/100`, `t>27/200`, `u<2/5`, and
+  `rho0<28/25` gives
+
+      z(t) > 36503/400000.
+
+  But
+
+      rho0-H(t)
+        < 28/25-(1+27/800)
+        = 69/800
+        = 34500/400000.
+
+  Thus again `U<H(t)`.
+
+So S-primary cannot separate.
+
+**D-primary.**  The relevant signed difference is
+
+    V=a_D-a_S sin t+b_S cos t.
+
+Again `V>-51/200>-H(t)`.  If `b_S<0`, the upper bound is already
+`V<H(t)` from `t>27/200`.
+
+Assume `b_S>=0` and put
+
+    c=cos s, q=sin s,
+    C=1/2+c-(rho0-1),
+    R_s=sqrt(Q0-C^2),
+    U0=a_S+1/2, V0=b_S+1/2.
+
+S-cardinality and containment imply
+
+    U0 c-V0 q >= C,
+    U0^2+V0^2 <= Q0.
+
+Consequently
+
+    V0 <= c sqrt(Q0-C^2)-Cq,
+
+and direct substitution yields
+
+    V-H(t) <= G(d,s),
+
+where
+
+    G(d,s)
+      = rho0-1/2 + R_s cos d-C sin d-cos(d-s).     (S1-G)
+
+For fixed s,
+
+    partial_d G
+      = -R_s sin d-C cos d+sin(d-s)
+      < -627/2000 < 0,
+
+using `C>261/200`, `cos d>7/10`, and `sin(d-s)<3/5`.
+Hence the maximum is at `d0=pi/4-1/4`.
+
+At d0, direct differentiation gives
+
+    G_ss
+      = cos s sin d0 + cos(d0-s)
+        + cos d0 [C cos s/R_s-Q0 sin^2 s/R_s^3].
+
+Here `rho0-1>1/10` gives `R_s>9/10`; therefore
+
+    G_ss
+      > (23/25)(47/100)+23/25-480/729
+      > 0.
+
+So `G(d0,s)` is convex and its maximum is at `s=1/6` or `s=2/5`.
+Elementary rational Taylor bounds give
+
+    G(d0,1/6) < -1531/20000,
+    G(d0,2/5) <  -837/20000.
+
+Thus D-primary cannot separate either.
+
+Therefore on A22+L,
+
+    D--S in {D-secondary,S-secondary}.             (S1-axis)
+
+##### Remaining A22+L leaf
+
+After S1, the only open large-s / nonnegative-w leaf is
+
     R22-b: D--S = D-secondary and w > 1/5.
 
-These should be attacked first by source-axis geometry / pins / marker order,
-not by a new stress.
+The S-secondary branch and the D-secondary branch with `w<=1/5` are already
+terminal by P11--P16.
 
 #### A22+S : s < 1/6
 
