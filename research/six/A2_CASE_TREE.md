@@ -539,14 +539,24 @@ Hence
 
 ##### Residual after S3
 
-The small-s residual has therefore been reduced structurally to
+The small-s residual is first reduced structurally to
+
+    w>=0, -2/5<s<1/6, D--W=W-secondary,
+    D--S in {D-primary,S-secondary},
+    or D--S=D-secondary with 0<=w<=1/5.
+
+The D-primary branch is then excluded by the two-edge hand stress
+`A2.2 hand lemma — the small-s D-primary branch` in `A2.md`.
+Therefore the only remaining R22-c cases are
 
     R22-c:
-      w>=0, -2/5<s<1/6, D--W=W-secondary,
-      D--S in {D-primary,S-secondary},
-      or D--S=D-secondary with 0<=w<=1/5.
+      D--S=S-secondary, 0<=w<=d,
 
-S-primary is gone, and the large-w D-secondary branch is gone.
+or
+
+      D--S=D-secondary, 0<=w<=1/5.
+
+All W--N and S--E source axes are still allowed at this stage.
 
 ### A22- : w < 0
 
