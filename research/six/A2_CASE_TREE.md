@@ -558,7 +558,14 @@ Therefore the only remaining small-s branch is
     R22-c:
       D--S=S-secondary, 0<=w<=d.
 
-All W--N and S--E source axes are still allowed at this stage.
+The exact adjacent-pair source checker then removes every alternate W--N and
+S--E source.  It is enough to keep only
+
+    W--N in {W-primary,N-secondary},
+    S--E in {S-primary,E-secondary}.
+
+Thus R22-c now consists of four equality-source graphs per central pattern,
+all sharing the same committed tangent-coercivity estimate.
 
 ### A22- : w < 0
 
